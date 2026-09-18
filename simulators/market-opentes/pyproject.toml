@@ -1,0 +1,21 @@
+[project]
+name = "market-opentes"
+version = "0.1.0"
+description = "Camada de mercado transativo do OpenTES: modelos de otimizacao e decomposicao dual"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.0",
+    "pyomo>=6.9",
+    "matplotlib>=3.8",
+]
+
+# O solver nao entra aqui: o padrao e o CPLEX, cuja licenca academica e pessoal
+# e cuja instalacao fica fora do repositorio. Ver README.md.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["market_opentes"]

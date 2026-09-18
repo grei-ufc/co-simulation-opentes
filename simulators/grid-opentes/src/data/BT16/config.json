@@ -1,0 +1,215 @@
+{
+ "qtd_nodes_mv": 3,
+ "max_demand_kva": 90,
+ "devices": {
+  "user_action_device": {
+   "params": {
+    "4": {
+     "size": 7.295
+    },
+    "5": {
+     "size": 6.603
+    },
+    "6": {
+     "size": 8.604
+    },
+    "7": {
+     "size": 6.29
+    },
+    "8": {
+     "size": 8.144
+    },
+    "9": {
+     "size": 7.463
+    },
+    "10": {
+     "size": 6.232
+    },
+    "11": {
+     "size": 8.03
+    },
+    "13": {
+     "size": 8.204
+    },
+    "14": {
+     "size": 6.236
+    },
+    "15": {
+     "size": 8.262
+    },
+    "16": {
+     "size": 9.79
+    },
+    "17": {
+     "size": 8.523
+    },
+    "18": {
+     "size": 8.332
+    },
+    "19": {
+     "size": 6.247
+    },
+    "20": {
+     "size": 8.342
+    }
+   }
+  },
+  "stochastic_gen": {
+   "params": {
+    "6": {
+     "size": 7.0
+    },
+    "7": {
+     "size": 7.0
+    },
+    "8": {
+     "size": 7.0
+    },
+    "9": {
+     "size": 7.0
+    },
+    "10": {
+     "size": 7.0
+    },
+    "11": {
+     "size": 7.0
+    },
+    "15": {
+     "size": 7.0
+    },
+    "16": {
+     "size": 7.0
+    },
+    "17": {
+     "size": 7.0
+    },
+    "18": {
+     "size": 7.0
+    },
+    "19": {
+     "size": 7.0
+    },
+    "20": {
+     "size": 7.0
+    }
+   }
+  },
+  "storage_device": {
+   "params": {
+    "5": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "6": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "8": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "9": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "10": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "15": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "16": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "17": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "18": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    },
+    "19": {
+     "size": 12.0,
+     "max_energy_flow": 3.6,
+     "min_soc": 1.2000000000000002,
+     "max_soc": 10.8
+    }
+   }
+  },
+  "dso_storage_device": {
+   "params": {
+    "7": {
+     "size": 30.0,
+     "max_energy_flow": 9.0,
+     "min_soc": 3.0,
+     "max_soc": 27.0
+    },
+    "11": {
+     "size": 30.0,
+     "max_energy_flow": 9.0,
+     "min_soc": 3.0,
+     "max_soc": 27.0
+    },
+    "14": {
+     "size": 30.0,
+     "max_energy_flow": 9.0,
+     "min_soc": 3.0,
+     "max_soc": 27.0
+    },
+    "20": {
+     "size": 30.0,
+     "max_energy_flow": 9.0,
+     "min_soc": 3.0,
+     "max_soc": 27.0
+    }
+   }
+  }
+ },
+ "nodes_lv": [
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+ ],
+ "nodes_mv": [
+  0,
+  1,
+  2
+ ]
+}

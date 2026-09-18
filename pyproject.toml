@@ -23,5 +23,5 @@ dependencies = [
 package = false
 
 [tool.uv.sources]
-pade-agents = { path = "simulators_teams/pade-opentes", editable = true }
-grid-opentes = { path = "simulators_teams/grid-opentes", editable = true }
+pade-agents = { path = "simulators/pade-opentes", editable = true }
+grid-opentes = { path = "simulators/grid-opentes", editable = true }

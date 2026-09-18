@@ -1,0 +1,6 @@
+! Condutores: cabo multiplexado de aluminio (tabela de concessionaria)
+! e tronco de media tensao. Z0 != Z1 e exigencia do OpenDSS.
+
+New LineCode.MT_336MCM nphases=3 units=km R1=0.19 X1=0.38 C1=9.5 R0=0.57 X0=1.14 C0=4.75 normamps=400 emergamps=400   ! tronco de media tensao, 336 MCM CAA
+New LineCode.BT_TRONCO_70 nphases=3 units=km R1=0.443 X1=0.083 C1=0.0 R0=1.329 X0=0.249 C0=0 normamps=150 emergamps=150   ! multiplexado 3x70+70 mm2 Al
+New LineCode.BT_RAMAL_35 nphases=3 units=km R1=0.868 X1=0.093 C1=0.0 R0=2.604 X0=0.279 C0=0 normamps=100 emergamps=100   ! multiplexado 3x35+35 mm2 Al

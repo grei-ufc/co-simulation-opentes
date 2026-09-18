@@ -1,0 +1,376 @@
+{
+ "directed": false,
+ "multigraph": false,
+ "graph": {},
+ "nodes": [
+  {
+   "name": 0,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 0
+  },
+  {
+   "name": 1,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 1
+  },
+  {
+   "name": 2,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 2
+  },
+  {
+   "name": 3,
+   "voltage_level": "low voltage",
+   "active_power": 0.0,
+   "reactive_power": 0,
+   "id": 3
+  },
+  {
+   "name": 4,
+   "voltage_level": "low voltage",
+   "active_power": 7.295,
+   "reactive_power": 0,
+   "id": 4
+  },
+  {
+   "name": 5,
+   "voltage_level": "low voltage",
+   "active_power": 6.603,
+   "reactive_power": 0,
+   "id": 5
+  },
+  {
+   "name": 6,
+   "voltage_level": "low voltage",
+   "active_power": 8.604,
+   "reactive_power": 0,
+   "id": 6
+  },
+  {
+   "name": 7,
+   "voltage_level": "low voltage",
+   "active_power": 6.29,
+   "reactive_power": 0,
+   "id": 7
+  },
+  {
+   "name": 8,
+   "voltage_level": "low voltage",
+   "active_power": 8.144,
+   "reactive_power": 0,
+   "id": 8
+  },
+  {
+   "name": 9,
+   "voltage_level": "low voltage",
+   "active_power": 7.463,
+   "reactive_power": 0,
+   "id": 9
+  },
+  {
+   "name": 10,
+   "voltage_level": "low voltage",
+   "active_power": 6.232,
+   "reactive_power": 0,
+   "id": 10
+  },
+  {
+   "name": 11,
+   "voltage_level": "low voltage",
+   "active_power": 8.03,
+   "reactive_power": 0,
+   "id": 11
+  },
+  {
+   "name": 12,
+   "voltage_level": "low voltage",
+   "active_power": 0.0,
+   "reactive_power": 0,
+   "id": 12
+  },
+  {
+   "name": 13,
+   "voltage_level": "low voltage",
+   "active_power": 8.204,
+   "reactive_power": 0,
+   "id": 13
+  },
+  {
+   "name": 14,
+   "voltage_level": "low voltage",
+   "active_power": 6.236,
+   "reactive_power": 0,
+   "id": 14
+  },
+  {
+   "name": 15,
+   "voltage_level": "low voltage",
+   "active_power": 8.262,
+   "reactive_power": 0,
+   "id": 15
+  },
+  {
+   "name": 16,
+   "voltage_level": "low voltage",
+   "active_power": 9.79,
+   "reactive_power": 0,
+   "id": 16
+  },
+  {
+   "name": 17,
+   "voltage_level": "low voltage",
+   "active_power": 8.523,
+   "reactive_power": 0,
+   "id": 17
+  },
+  {
+   "name": 18,
+   "voltage_level": "low voltage",
+   "active_power": 8.332,
+   "reactive_power": 0,
+   "id": 18
+  },
+  {
+   "name": 19,
+   "voltage_level": "low voltage",
+   "active_power": 6.247,
+   "reactive_power": 0,
+   "id": 19
+  },
+  {
+   "name": 20,
+   "voltage_level": "low voltage",
+   "active_power": 8.342,
+   "reactive_power": 0,
+   "id": 20
+  }
+ ],
+ "links": [
+  {
+   "name": "mt_0_1",
+   "type": "line",
+   "length": 0.4,
+   "source": 0,
+   "target": 1,
+   "level": null,
+   "linecode": "MT_336MCM"
+  },
+  {
+   "name": "mt_1_2",
+   "type": "line",
+   "length": 0.35,
+   "source": 1,
+   "target": 2,
+   "level": null,
+   "linecode": "MT_336MCM"
+  },
+  {
+   "name": "bt_3_4",
+   "type": "line",
+   "length": 0.06,
+   "source": 3,
+   "target": 4,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_4_5",
+   "type": "line",
+   "length": 0.06,
+   "source": 4,
+   "target": 5,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_5_6",
+   "type": "line",
+   "length": 0.06,
+   "source": 5,
+   "target": 6,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_6_7",
+   "type": "line",
+   "length": 0.06,
+   "source": 6,
+   "target": 7,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_5_8",
+   "type": "line",
+   "length": 0.06,
+   "source": 5,
+   "target": 8,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_6_9",
+   "type": "line",
+   "length": 0.06,
+   "source": 6,
+   "target": 9,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_7_10",
+   "type": "line",
+   "length": 0.06,
+   "source": 7,
+   "target": 10,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_10_11",
+   "type": "line",
+   "length": 0.06,
+   "source": 10,
+   "target": 11,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_12_13",
+   "type": "line",
+   "length": 0.06,
+   "source": 12,
+   "target": 13,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_13_14",
+   "type": "line",
+   "length": 0.06,
+   "source": 13,
+   "target": 14,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_14_15",
+   "type": "line",
+   "length": 0.06,
+   "source": 14,
+   "target": 15,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_15_16",
+   "type": "line",
+   "length": 0.06,
+   "source": 15,
+   "target": 16,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_14_17",
+   "type": "line",
+   "length": 0.06,
+   "source": 14,
+   "target": 17,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_15_18",
+   "type": "line",
+   "length": 0.06,
+   "source": 15,
+   "target": 18,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_16_19",
+   "type": "line",
+   "length": 0.06,
+   "source": 16,
+   "target": 19,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_19_20",
+   "type": "line",
+   "length": 0.06,
+   "source": 19,
+   "target": 20,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  }
+ ],
+ "transformers": [
+  {
+   "name": "trafo_1_3",
+   "source": 1,
+   "target": 3,
+   "power": 45,
+   "nodes": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "bess_nodes": [
+    7,
+    11
+   ],
+   "prosumer_bess_nodes": [
+    5,
+    6,
+    8,
+    9,
+    10
+   ]
+  },
+  {
+   "name": "trafo_2_12",
+   "source": 2,
+   "target": 12,
+   "power": 45,
+   "nodes": [
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+   ],
+   "bess_nodes": [
+    14,
+    20
+   ],
+   "prosumer_bess_nodes": [
+    15,
+    16,
+    17,
+    18,
+    19
+   ]
+  }
+ ]
+}

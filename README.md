@@ -10,10 +10,10 @@ latência, jitter e perda de pacotes sejam contabilizados.
 
 | Container | Pasta | Papel |
 |-----------|-------|-------|
-| `comm`   | `simulators_teams/comm-opentes`   | Rede de comunicação (OMNeT++ + bridge ZMQ) |
-| `pade`   | `simulators_teams/pade-opentes`   | Agentes PADE (Python 3.12) |
-| `mosaik` | `simulators_teams/mosaik-opentes` | Orquestrador Mosaik + cenários + collectors |
-| `grid`   | `simulators_teams/grid-opentes`   | Rede elétrica IEEE 13 (OpenDSS via `py-dss-interface`) |
+| `comm`   | `simulators/comm-opentes`   | Rede de comunicação (OMNeT++ + bridge ZMQ) |
+| `pade`   | `simulators/pade-opentes`   | Agentes PADE (Python 3.12) |
+| `mosaik` | `simulators/mosaik-opentes` | Orquestrador Mosaik + cenários + collectors |
+| `grid`   | `simulators/grid-opentes`   | Rede elétrica IEEE 13 (OpenDSS via `py-dss-interface`) |
 
 ## Instalação
 
@@ -40,14 +40,14 @@ uv sync     # cria .venv com tudo (leva ~1s)
 
 Isso traz `mosaik`, `opender`, `py-dss-interface`, `pandas`, `matplotlib`,
 `pyzmq` e — como **dependências editáveis** apontando para o código deste repo —
-o `pade-agents` (`simulators_teams/pade-opentes`) e o `grid-opentes`
-(`simulators_teams/grid-opentes`). Editar o código dos simuladores reflete
+o `pade-agents` (`simulators/pade-opentes`) e o `grid-opentes`
+(`simulators/grid-opentes`). Editar o código dos simuladores reflete
 direto no ambiente. Útil para IDE/autocomplete, mexer no PADE ou no grid e rodar
 os scripts de figura:
 
 ```bash
 MOSAIK_OUTPUT_DIR=output/integrated \
-  uv run python simulators_teams/mosaik-opentes/plot_integrated.py
+  uv run python simulators/mosaik-opentes/plot_integrated.py
 ```
 
 > **Alcance de cada caminho:** o `uv` cobre todo o lado **Python**. A rede de
@@ -64,6 +64,7 @@ profile que o `down` simples não remove) e espera os simuladores ficarem pronto
 
 ```bash
 ./run.sh integrated     # co-simulação completa (o comando do dia a dia)
+./run.sh market         # mercado transativo (exige CPLEX; ver abaixo)
 ./run.sh --help         # lista todos os cenários e experimentos
 ```
 
@@ -74,6 +75,12 @@ profile que o `down` simples não remove) e espera os simuladores ficarem pronto
 | `integrated`      | **Co-simulação completa** dos 4 containers (Volt/Var causal) | `output/integrated/` |
 | `star`            | Comunicação pura: PADE ↔ OMNeT++ (50 agentes em estrela) — teste isolado | `output/star/` |
 | `ieee13`          | Rede elétrica IEEE 13 + 5 PVs + inversores (só elétrico) — teste isolado | `output/ieee13/` |
+| `market`          | **Mercado transativo** na rede MVLV75: negociação multiagente (PADE) + OpenDSS | `output/market/` |
+
+> O cenário `market` **exige um solver de otimização** (IBM CPLEX por padrão), que
+> não está no repositório nem nas imagens, por licença. Os demais cenários não
+> dependem disso. Instalação, limitações e alternativas em
+> [`simulators/market-opentes/README.md`](simulators/market-opentes/README.md#dependencias-e-o-solver).
 
 O `integrated` é **a** simulação (a aplicação); `star` e `ieee13` são bancadas
 de teste isoladas de cada bloco.
@@ -91,8 +98,8 @@ de teste isoladas de cada bloco.
 ```
 
 Os experimentos editam o `omnetpp.ini` (perda/semente) e **o restauram ao final**,
-mesmo se interrompidos. Detalhes e leitura dos resultados em
-[`docs/EXPERIMENTO_PERDA.md`](docs/EXPERIMENTO_PERDA.md).
+mesmo se interrompidos. A leitura detalhada dos resultados é mantida fora do
+repositório, em `Docs_Externo/EXPERIMENTO_PERDA.md`.
 
 ### O cenário integrado (`integrated`) — acoplamento causal Volt/Var
 
@@ -170,7 +177,7 @@ caminho no host):
 
 ```bash
 MOSAIK_OUTPUT_DIR=output/sensibilidade_perda \
-  uv run python simulators_teams/mosaik-opentes/plot_loss_sweep.py
+  uv run python simulators/mosaik-opentes/plot_loss_sweep.py
 ```
 
 > **Atenção operacional**: os simuladores `--remote` do grid (portas 5671, 5673,
@@ -210,7 +217,7 @@ O IEEE 13 reproduz **exatamente** os valores do cenário de referência do TSRE
 IEEE 13 desbalanceado (barra 650/fonte em 1,0 pu; barras trifásicas 0,91–1,05 pu;
 fases inexistentes de trechos monofásicos em 0,0).
 
-Documentação: [`docs/INTEGRACAO.md`](docs/INTEGRACAO.md) (visão geral, decisões e
-resultados), [`docs/RESULTADOS.md`](docs/RESULTADOS.md) (guia da pasta `output/`)
-e [`docs/ALTERACOES_INTEGRACAO.txt`](docs/ALTERACOES_INTEGRACAO.txt) (changelog
-técnico das alterações e seus motivos).
+Documentação: [`docs/GUIA.md`](docs/GUIA.md) (o mapa do repositório, para quem
+chega agora), [`docs/INTEGRACAO.md`](docs/INTEGRACAO.md) (o que foi alterado em
+cada componente para integrá-los, e por quê) e
+[`docs/RESULTADOS.md`](docs/RESULTADOS.md) (guia da pasta `output/`).

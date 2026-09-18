@@ -1,0 +1,22 @@
+! Rede MVLV75: estudo de caso do SiMTES (tese de Lucas S. Melo, 2022),
+! convertida do force.json. Gerado por src/simulators/gen_market_grid.py.
+! NAO EDITAR A MAO: rode o gerador.
+
+Clear
+Set DefaultBaseFrequency=60
+
+New Circuit.MVLV75 bus1=n0 basekV=13.8 pu=1.0 phases=3
+! Fonte rigida, para aproximar a barra slack ideal do pandapower.
+! MVAsc1 != MVAsc3 pelo mesmo motivo do Z0 != Z1 das linhas.
+~ MVAsc3=100000 MVAsc1=105000
+
+Redirect MVLV75_LineCodes.dss
+Redirect MVLV75_Lines.dss
+Redirect MVLV75_Transformers.dss
+Redirect MVLV75_Loads.dss
+
+Set VoltageBases=[13.8, 0.38]
+CalcVoltageBases
+
+Set Mode=snap
+Solve

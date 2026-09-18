@@ -335,7 +335,7 @@ wheels = [
 [[package]]
 name = "grid-opentes"
 version = "0.1.0"
-source = { editable = "simulators_teams/grid-opentes" }
+source = { editable = "simulators/grid-opentes" }
 dependencies = [
     { name = "mosaik" },
     { name = "mosaik-api" },
@@ -731,14 +731,14 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "grid-opentes", editable = "simulators_teams/grid-opentes" },
+    { name = "grid-opentes", editable = "simulators/grid-opentes" },
     { name = "matplotlib", specifier = ">=3.10.0" },
     { name = "mosaik", specifier = "==3.5.0" },
     { name = "mosaik-api", specifier = "==3.0.6" },
     { name = "mosaik-api-v3", specifier = ">=3.0.13,<3.1" },
     { name = "mosaik-csv", specifier = "==2.0.1" },
     { name = "opender", specifier = "==2.1.6" },
-    { name = "pade-agents", editable = "simulators_teams/pade-opentes" },
+    { name = "pade-agents", editable = "simulators/pade-opentes" },
     { name = "pandas", specifier = ">=2.3.2" },
     { name = "py-dss-interface", specifier = ">=2.3.0" },
     { name = "pyzmq", specifier = ">=26.0.3,<28" },
@@ -756,7 +756,7 @@ wheels = [
 
 [[package]]
 name = "pade-agents"
-source = { editable = "simulators_teams/pade-opentes" }
+source = { editable = "simulators/pade-opentes" }
 dependencies = [
     { name = "click" },
     { name = "requests" },

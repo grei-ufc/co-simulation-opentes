@@ -1,0 +1,39 @@
+! Caso de mercado transativo sobre a IEEE 13 barras.
+! Gerado por src/simulators/gen_ieee13_market.py. Nao editar a mao.
+!
+! A rede e a IEEE 13 oficial, sem alteracao: linhas, transformadores,
+! regulador e capacitores vem do arquivo original. O que muda e a
+! camada de carga, porque a interface do mercado escreve uma carga por
+! no. Ver o cabecalho do gerador para as decisoes de conversao.
+
+Clear
+Redirect IEEE13Nodeckt_w_loadcurve.dss
+
+! As cargas oficiais saem de cena; quem representa a demanda agora e o
+! `Load_{no}`, que o agente escreve a cada intervalo.
+Batchedit Load..* enabled=no
+! O PV entra como carga negativa, pelo pv_kw.csv.
+Batchedit PVSystem..* enabled=no
+
+New Load.Load_611 bus1=611.3 phases=1 conn=wye model=1 kV=2.4 kW=170.000 kvar=82.335 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_632 bus1=632.1.2.3 phases=3 conn=wye model=1 kV=4.16 kW=0.000 kvar=0.000 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_634 bus1=634.1.2.3 phases=3 conn=wye model=1 kV=0.48 kW=400.000 kvar=193.729 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_645 bus1=645.2 phases=1 conn=wye model=1 kV=2.4 kW=170.000 kvar=82.335 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_646 bus1=646.2.3 phases=1 conn=delta model=1 kV=4.16 kW=230.000 kvar=111.394 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_652 bus1=652.1 phases=1 conn=wye model=1 kV=2.4 kW=128.000 kvar=61.993 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_670 bus1=670.1.2.3 phases=3 conn=wye model=1 kV=4.16 kW=200.000 kvar=96.864 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_671 bus1=671.1.2.3 phases=3 conn=delta model=1 kV=4.16 kW=1155.000 kvar=559.392 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_675 bus1=675.1.2.3 phases=3 conn=wye model=1 kV=4.16 kW=843.000 kvar=408.284 Vminpu=0.8 Vmaxpu=1.2
+New Load.Load_692 bus1=692.3.1 phases=1 conn=delta model=1 kV=4.16 kW=170.000 kvar=82.335 Vminpu=0.8 Vmaxpu=1.2
+
+! Regulador com o ajuste oficial (vreg=122, banda 2 V, PT 20, CT 700,
+! R=3, X=9) e derivacoes LIVRES. Ver ESTUDO_IEEE13.md: congelar as
+! derivacoes em qualquer valor faz a rede violar por conta do
+! regulador, e nao da carga ou da geracao.
+Batchedit RegControl..* maxtapchange=16
+Set ControlMode=static
+Set MaxControlIter=100
+
+Set mode=snap
+Set number=1
+Solve

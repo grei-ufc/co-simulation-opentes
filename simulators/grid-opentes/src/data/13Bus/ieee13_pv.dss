@@ -1,0 +1,37 @@
+New XYCurve.MyPvsT npts=4 xarray=[0, 25, 75, 100] yarray=[1.2, 1.0, 0.8, 0.6]
+New XYCurve.MyEff npts=4 xarray=[0.1, 0.2, 0.4, 1.0] yarray=[0.86, 0.90, 0.93, 0.97]
+
+! A barra 646 e alimentada pelo ramal 632-645-646, ambos os trechos na
+! configuracao 603, cujo faseamento oficial e "C B N" (IEEE 13 Node Test Feeder,
+! Distribution System Analysis Subcommittee, tabela de configuracoes de linha).
+! Ou seja, 646 so tem as fases B e C: os nos 2 e 3. Declarado como `phases=3
+! Bus1=646.1.2.3`, o terminal da fase A ficava ligado a um no que nao existe em
+! nenhum outro elemento, e 37% da potencia do PV1 era injetada nele: pedindo
+! 3000 kW, o elemento entregava 1886,7 kW (0 na fase 1 e 943,4 em cada uma das
+! outras). Com potencia proxima de zero e o elemento ativo, o no solto ainda
+! tornava a solucao degenerada, com a fonte em 0 kW e todas as barras lendo a
+! tensao da fonte.
+New PVSystem.PV1 phases=2 Bus1=646.3.2 kV=4.16 kVA=5000 irrad=0.8 Pmpp=5000
+~ temperature=25 PF=1 EffCurve=MyEff P-TCurve=MyPvsT
+~ Daily=my_shape1_irrad TDaily=my_shape1_temperature
+~ Vminpu=0.001 Model=1
+
+New PVSystem.PV2 phases=3 Bus1=632.1.2.3 kV=4.16 kVA=3000 irrad=0.8 Pmpp=3000
+~ temperature=25 PF=1 EffCurve=MyEff P-TCurve=MyPvsT
+~ Daily=my_shape2_irrad TDaily=my_shape2_temperature
+~ Vminpu=0.001 Model=1
+
+New PVSystem.PV3 phases=3 Bus1=634.1.2.3 kV=0.48 kVA=3000 irrad=0.8 Pmpp=3000
+~ temperature=25 PF=1 EffCurve=MyEff P-TCurve=MyPvsT
+~ Daily=my_shape3_irrad TDaily=my_shape3_temperature
+~ Vminpu=0.001 Model=1
+
+New PVSystem.PV4 phases=1 Bus1=645.3 kV=2.4 kVA=2000 irrad=0.8 Pmpp=2000
+~ temperature=25 PF=1 EffCurve=MyEff P-TCurve=MyPvsT
+~ Daily=my_shape4_irrad TDaily=my_shape4_temperature
+~ Vminpu=0.001 Model=1
+
+New PVSystem.PV5 phases=1 Bus1=652.1 kV=2.4 kVA=2000 irrad=0.8 Pmpp=2000
+~ temperature=25 PF=1 EffCurve=MyEff P-TCurve=MyPvsT
+~ Daily=my_shape5_irrad TDaily=my_shape5_temperature
+~ Vminpu=0.001 Model=1

@@ -1,0 +1,67 @@
+# Override de rede: roda o cenario de mercado no NAMESPACE DE REDE DO HOST.
+#
+# POR QUE EXISTE
+# --------------
+# O kernel 7.1.5-76070105 do Pop!_OS nao carrega o modulo `veth`:
+#
+#   BPF: [171486] ENUM (anon)
+#   BPF: Invalid name
+#   failed to validate module [veth] BTF: -22
+#
+# E defeito de empacotamento do kernel, no BTF do modulo, e nao configuracao da
+# maquina: o Secure Boot esta desligado, o lockdown esta em `none` e o vermagic
+# do modulo bate com o kernel em uso. Sem `veth` o Docker nao consegue criar o
+# par de interfaces de nenhuma rede bridge, e todo `docker compose up` morre em
+# "failed to add the host <=> sandbox pair interfaces: operation not supported".
+#
+# Em modo host nao ha par de interfaces a criar. O cenario roda igual.
+#
+# ISTO E CONTORNO, NAO CORRECAO. O caminho definitivo e reiniciar num kernel cuja
+# arvore de modulos esteja sa (ha 6.17.4, 6.17.9, 6.18.7 e 7.0.11 instalados) ou
+# esperar o Pop!_OS corrigir o pacote do 7.1.5.
+#
+# USO
+# ---
+#   COMPOSE_FILE=docker-compose.yaml:docker-compose.host.yml ./run.sh market
+#
+# O QUE MUDA
+# ----------
+# Sem rede do compose nao ha DNS por nome de servico, entao todo host vira
+# `localhost`. As portas sao as mesmas de sempre e nenhuma colide entre os
+# servicos deste cenario:
+#
+#   comm-tisch 5556   opendss 5671   elec-collector 5673   pade-market 5678
+#
+# O `pade-market` publicava 15684->5678 no arquivo principal para nao disputar a
+# 5678 com o `pv-panel`. O `pv-panel` nao participa do cenario de mercado, entao
+# em modo host a 5678 fica livre para ele.
+#
+# O `networks: !reset null` e necessario: `network_mode` e `networks` sao
+# mutuamente exclusivos, e sem apagar a lista herdada o compose recusa o arquivo.
+
+services:
+  comm-tisch:
+    networks: !reset null
+    network_mode: host
+
+  opendss:
+    networks: !reset null
+    network_mode: host
+
+  elec-collector:
+    networks: !reset null
+    network_mode: host
+
+  pade-market:
+    networks: !reset null
+    network_mode: host
+    environment:
+      - OMNET_HOST=localhost
+
+  mosaik-market:
+    networks: !reset null
+    network_mode: host
+    environment:
+      - PADE_HOST=localhost
+      - OPENDSS_HOST=localhost
+      - ELEC_COLLECTOR_HOST=localhost

@@ -1,0 +1,41 @@
+! Cargas. P e Q sao sobrescritos pelos agentes em tempo de execucao;
+! o valor aqui e o pico, usado quando se roda o circuito sozinho.
+
+New Load.Load_6 phases=3 bus1=n6 kV=0.38 kW=10.2950 kvar=4.3857 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_7 phases=3 bus1=n7 kV=0.38 kW=12.4260 kvar=5.2935 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_8 phases=3 bus1=n8 kV=0.38 kW=12.4200 kvar=5.2909 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_9 phases=3 bus1=n9 kV=0.38 kW=13.2470 kvar=5.6432 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_10 phases=3 bus1=n10 kV=0.38 kW=9.9290 kvar=4.2297 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_11 phases=3 bus1=n11 kV=0.38 kW=10.1530 kvar=4.3252 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_13 phases=3 bus1=n13 kV=0.38 kW=8.1250 kvar=3.4612 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_14 phases=3 bus1=n14 kV=0.38 kW=6.8560 kvar=2.9206 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_15 phases=3 bus1=n15 kV=0.38 kW=7.1790 kvar=3.0582 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_16 phases=3 bus1=n16 kV=0.38 kW=7.7260 kvar=3.2913 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_17 phases=3 bus1=n17 kV=0.38 kW=9.3510 kvar=3.9835 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_18 phases=3 bus1=n18 kV=0.38 kW=8.4340 kvar=3.5929 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_19 phases=3 bus1=n19 kV=0.38 kW=6.0580 kvar=2.5807 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_20 phases=3 bus1=n20 kV=0.38 kW=7.1030 kvar=3.0259 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_21 phases=3 bus1=n21 kV=0.38 kW=6.5870 kvar=2.8061 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_23 phases=3 bus1=n23 kV=0.38 kW=6.2040 kvar=2.6429 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_24 phases=3 bus1=n24 kV=0.38 kW=7.1430 kvar=3.0429 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_25 phases=3 bus1=n25 kV=0.38 kW=6.4740 kvar=2.7579 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_26 phases=3 bus1=n26 kV=0.38 kW=6.0040 kvar=2.5577 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_27 phases=3 bus1=n27 kV=0.38 kW=5.7750 kvar=2.4601 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_28 phases=3 bus1=n28 kV=0.38 kW=6.0040 kvar=2.5577 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_29 phases=3 bus1=n29 kV=0.38 kW=5.5980 kvar=2.3847 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_30 phases=3 bus1=n30 kV=0.38 kW=4.9110 kvar=2.0921 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_31 phases=3 bus1=n31 kV=0.38 kW=7.3690 kvar=3.1392 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_32 phases=3 bus1=n32 kV=0.38 kW=7.2940 kvar=3.1072 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_33 phases=3 bus1=n33 kV=0.38 kW=7.9500 kvar=3.3867 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_35 phases=3 bus1=n35 kV=0.38 kW=3.4490 kvar=1.4693 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_36 phases=3 bus1=n36 kV=0.38 kW=3.8910 kvar=1.6576 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_37 phases=3 bus1=n37 kV=0.38 kW=3.9280 kvar=1.6733 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_38 phases=3 bus1=n38 kV=0.38 kW=3.6540 kvar=1.5566 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_39 phases=3 bus1=n39 kV=0.38 kW=3.7000 kvar=1.5762 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_40 phases=3 bus1=n40 kV=0.38 kW=5.2230 kvar=2.2250 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_41 phases=3 bus1=n41 kV=0.38 kW=4.4430 kvar=1.8927 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_42 phases=3 bus1=n42 kV=0.38 kW=4.3750 kvar=1.8637 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_43 phases=3 bus1=n43 kV=0.38 kW=4.4130 kvar=1.8799 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_44 phases=3 bus1=n44 kV=0.38 kW=5.2170 kvar=2.2224 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_45 phases=3 bus1=n45 kV=0.38 kW=4.7540 kvar=2.0252 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye
+New Load.Load_46 phases=3 bus1=n46 kV=0.38 kW=3.3280 kvar=1.4177 model=1 vminpu=0.7 vmaxpu=1.4 conn=wye

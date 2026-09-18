@@ -1,0 +1,8 @@
+! Transformadores NBR 5440. vk=3.5%, vkr=1.4%.
+
+New Transformer.trafo_1_3 phases=3 windings=2 xhl=3.2078 %loadloss=1.4 %noloadloss=0.25 %imag=0.25
+~ wdg=1 bus=n1 conn=delta kv=13.8 kva=45
+~ wdg=2 bus=n3 conn=wye kv=0.38 kva=45
+New Transformer.trafo_2_12 phases=3 windings=2 xhl=3.2078 %loadloss=1.4 %noloadloss=0.25 %imag=0.25
+~ wdg=1 bus=n2 conn=delta kv=13.8 kva=45
+~ wdg=2 bus=n12 conn=wye kv=0.38 kva=45

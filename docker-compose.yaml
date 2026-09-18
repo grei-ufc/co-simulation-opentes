@@ -2,7 +2,7 @@ name: opentes-integration
 
 x-tsre-simulator: &tsre-simulator
   build:
-    context: ./simulators_teams/grid-opentes
+    context: ./simulators/grid-opentes
     dockerfile: Dockerfile
   image: opentes/grid:local
   networks:
@@ -11,12 +11,12 @@ x-tsre-simulator: &tsre-simulator
     - PYTHONUNBUFFERED=1
     - PYTHONDONTWRITEBYTECODE=1   # nao grava .pyc no src montado (evita bytecode stale)
   volumes:
-    - ./simulators_teams/grid-opentes/src:/app/src
+    - ./simulators/grid-opentes/src:/app/src
 
 services:
   comm:
     build:
-      context: ./simulators_teams/comm-opentes
+      context: ./simulators/comm-opentes
       dockerfile: Dockerfile
     image: opentes/comm:local
     container_name: opentes-comm
@@ -25,13 +25,50 @@ services:
     ports:
       - "5555:5555"
     volumes:
-      - ./simulators_teams/comm-opentes:/root/models
+      - ./simulators/comm-opentes:/root/models
+    networks:
+      - opentes-net
+
+  # Rede LPWA 6TiSCH da tese, como servidor de rotas para os agentes do mercado.
+  # Nao participa do passo do Mosaik: responde consultas por ZMQ na 5556.
+  comm-tisch:
+    build:
+      context: ./simulators/comm-opentes
+      dockerfile: Dockerfile
+    image: opentes/comm:local
+    container_name: opentes-comm-tisch
+    profiles:
+      - market
+    expose:
+      - "5556"
+    ports:
+      - "5556:5556"
+    volumes:
+      - ./simulators/comm-opentes:/root/models
+      # As redes de teste, para o servidor 6TiSCH poder usar a topologia de
+      # radio de cada uma. Gravavel porque o `links_csv` e SAIDA do Tisch.cc: e
+      # dele que sai a figura de PER por distancia.
+      - ./simulators/grid-opentes/src/data:/grid-data
+    environment:
+      # O `nodes_xy.csv` e o `adjacency.txt` que ficam ao lado do modelo sao os
+      # da MVLV75, os Apendices B e C da tese. Enquanto ela era a unica rede com
+      # mercado, estar embutido nao incomodava. Com uma segunda rede o problema
+      # aparece, e em silencio: um agente cujo nome nao esta no arquivo de
+      # posicoes e entregue SEM ATRASO (ver `startPacket` no Tisch.cc), entao a
+      # co-simulacao roda, nao acusa nada, e mede uma rede que nao existe.
+      # `TISCH_ARGS` aponta o servidor para a topologia da rede em uso; vazio,
+      # vale a da tese.
+      - TISCH_ARGS=${TISCH_ARGS:-}
+    command: >-
+      bash -lc "source /root/omnetpp/setenv &&
+      opp_makemake -f --deep -O out -o sim_exec -lzmq && make -j4 &&
+      ./sim_exec -u Cmdenv -c tisch $$TISCH_ARGS"
     networks:
       - opentes-net
 
   pade:
     build:
-      context: ./simulators_teams/pade-opentes
+      context: ./simulators/pade-opentes
       dockerfile: Dockerfile
     image: opentes/pade:local
     container_name: opentes-pade
@@ -42,14 +79,14 @@ services:
     ports:
       - "15678:5678"
     volumes:
-      - ./simulators_teams/pade-opentes/agents:/app/agents
+      - ./simulators/pade-opentes/agents:/app/agents
     command: python3 agents/pade_star.py
     networks:
       - opentes-net
 
   mosaik:
     build:
-      context: ./simulators_teams/mosaik-opentes
+      context: ./simulators/mosaik-opentes
       dockerfile: Dockerfile
     image: opentes/mosaik:local
     container_name: opentes-mosaik
@@ -65,9 +102,9 @@ services:
       - PADE_HOST=pade
       - PADE_PORT=5678
     volumes:
-      - ./simulators_teams/mosaik-opentes:/app
+      - ./simulators/mosaik-opentes:/app
       - ./output:/app/output
-      - ./simulators_teams/grid-opentes/src/data:/grid-data:ro
+      - ./simulators/grid-opentes/src/data:/grid-data:ro
     command: sh -c "python -u scenarios/star.py && python plot_results_star.py"
     networks:
       - opentes-net
@@ -75,18 +112,19 @@ services:
   elec-collector:
     image: opentes/mosaik:local
     build:
-      context: ./simulators_teams/mosaik-opentes
+      context: ./simulators/mosaik-opentes
       dockerfile: Dockerfile
     container_name: opentes-elec-collector
     profiles:
       - ieee13
       - integrated
+      - market
     expose:
       - "5673"
     ports:
       - "5673:5673"
     volumes:
-      - ./simulators_teams/mosaik-opentes:/app
+      - ./simulators/mosaik-opentes:/app
       - ./output:/app/output
     command: python -u collectors/elec_collector.py --remote 0.0.0.0:5673
     networks:
@@ -95,7 +133,7 @@ services:
   mosaik-ieee13:
     image: opentes/mosaik:local
     build:
-      context: ./simulators_teams/mosaik-opentes
+      context: ./simulators/mosaik-opentes
       dockerfile: Dockerfile
     container_name: opentes-mosaik-ieee13
     profiles:
@@ -113,16 +151,16 @@ services:
       - GRID_DATA_DIR=/grid-data/13Bus
       - ELEC_COLLECTOR_HOST=elec-collector
     volumes:
-      - ./simulators_teams/mosaik-opentes:/app
+      - ./simulators/mosaik-opentes:/app
       - ./output:/app/output
-      - ./simulators_teams/grid-opentes/src/data:/grid-data:ro
+      - ./simulators/grid-opentes/src/data:/grid-data:ro
     networks:
       - opentes-net
 
   pade-integrated:
     image: opentes/pade:local
     build:
-      context: ./simulators_teams/pade-opentes
+      context: ./simulators/pade-opentes
       dockerfile: Dockerfile
     container_name: opentes-pade-integrated
     profiles:
@@ -136,7 +174,7 @@ services:
     ports:
       - "15683:5678"
     volumes:
-      - ./simulators_teams/pade-opentes/agents:/app/agents
+      - ./simulators/pade-opentes/agents:/app/agents
     command: python3 agents/agent_example_1_mosaik_updated.py
     networks:
       - opentes-net
@@ -144,7 +182,7 @@ services:
   mosaik-integrated:
     image: opentes/mosaik:local
     build:
-      context: ./simulators_teams/mosaik-opentes
+      context: ./simulators/mosaik-opentes
       dockerfile: Dockerfile
     container_name: opentes-mosaik-integrated
     profiles:
@@ -178,9 +216,142 @@ services:
       - CSV_TEMP_HOST=csv-data-2
       - ELEC_COLLECTOR_HOST=elec-collector
     volumes:
-      - ./simulators_teams/mosaik-opentes:/app
+      - ./simulators/mosaik-opentes:/app
       - ./output:/app/output
-      - ./simulators_teams/grid-opentes/src/data:/grid-data:ro
+      - ./simulators/grid-opentes/src/data:/grid-data:ro
+    networks:
+      - opentes-net
+
+  pade-market:
+    image: opentes/pade:local
+    build:
+      context: ./simulators/pade-opentes
+      dockerfile: Dockerfile
+    container_name: opentes-pade-market
+    profiles:
+      - market
+    environment:
+      - PADE_PORT=5678
+      - AMS_PORT=8000
+      - AGENT_STEP_SIZE=900
+      - MARKET_OPENTES_PATH=/market
+      # Qual rede de teste. MVLV75 e a da tese de referencia; BT16 e a de
+      # bancada e BT38 a rede final, ambas geradas por gen_test_grid.py e
+      # autocontidas (config, perfis e cenarios ao lado do circuito). O
+      # run.sh resolve MARKET_CONFIG e MARKET_DATA_DIR conforme a escolha.
+      - MARKET_CONFIG=${MARKET_CONFIG:-/market/data/config.json}
+      - MARKET_DATA_DIR=${MARKET_DATA_DIR:-/market/data}
+      # Onde o agente de mercado grava o `run.json`. Um diretorio por rede: com
+      # um so, cada execucao sobrescrevia o registro da anterior.
+      - MARKET_RUN_DIR=${MARKET_RUN_DIR:-/market/data/run}
+      - MARKET_GRID_DIR=/grid-data/${MARKET_NETWORK:-MVLV75}
+      - MARKET_CIRCUIT=/grid-data/${MARKET_NETWORK:-MVLV75}/Master.dss
+      # Teto de rodadas da decomposicao dual. Precisa acompanhar o V_BACKOFF: com
+      # a margem de 2e-3 a regiao viavel aperta e a convergencia passa de 28 para
+      # 34 rodadas. Com o teto antigo, de 30, a negociacao era CORTADA antes de
+      # convergir e o resultado saia com `converged=False` sem que nada avisasse.
+      - MARKET_MAX_ROUNDS=${MARKET_MAX_ROUNDS:-60}
+      - MARKET_ALPHA=${MARKET_ALPHA:-0.6}
+      - MARKET_EPS=${MARKET_EPS:-1e-3}
+      - MARKET_SCENARIOS=${MARKET_SCENARIOS:-1}
+      - MARKET_NEGOTIATE=${MARKET_NEGOTIATE:-1}
+      - MARKET_OPERATION=${MARKET_OPERATION:-1}
+      - MARKET_REALIZED=${MARKET_REALIZED:-1}
+      # Como a demanda realizada difere da programada. `perturb` e o mecanismo da
+      # tese, que altera a programacao em ate +/-10%; `day` toma um dia inteiro
+      # diferente do reservatorio, varias vezes mais severo. Ver operation.py.
+      - MARKET_REALIZED_MODE=${MARKET_REALIZED_MODE:-perturb}
+      - MARKET_REALIZED_SPREAD=${MARKET_REALIZED_SPREAD:-0.10}
+      - MARKET_REALIZED_DAY=${MARKET_REALIZED_DAY:-9}
+      # Recuo da restricao de tensao. A restricao e imposta sobre o modelo
+      # linearizado; o fluxo nao linear cai um pouco abaixo do ponto planejado, e
+      # o recuo cobre esse residuo, medido entre 1e-4 e 7,6e-4 pu na MVLV75.
+      #
+      # 1e-3 vem de varredura, e nao de estimativa. O valor anterior, 2e-3, era o
+      # dobro do necessario, e a folga que sobrava impedia a fase de operacao de
+      # agir: das 95 janelas, NENHUMA exigia intervencao. Medido, com perturb:
+      #
+      #   margem   viol. finais   janelas com intervencao   rodadas
+      #     8e-4         1                   5                40
+      #     1e-3         0                   4                28
+      #   1,2e-3         2                   3                28
+      #   1,5e-3         2                   0                28
+      #     2e-3         0                   0                34
+      #
+      # Abaixo de 1e-3 o erro de linearizacao comeca a vazar para o resultado
+      # final; acima, a folga apaga o mecanismo de operacao. 1e-3 e o unico que
+      # entrega os dois.
+      - MARKET_V_BACKOFF=${MARKET_V_BACKOFF:-1e-3}
+      # Limiar de ACAO da fase de operacao. O limite continua 0,97 e 1,03; isto
+      # decide so quando o DSO intervem. Ver config.py.
+      # 0,971 vem de medicao: com o limiar no proprio limite, so 4 das 95
+      # janelas exigiam intervencao; com 0,971 sao 21, e a tensao final MELHORA,
+      # de 0,97007 para 0,97029 pu, porque o DSO corrige mais cedo. As violacoes
+      # finais continuam em zero nos dois casos.
+      - MARKET_V_ACAO_MIN=${MARKET_V_ACAO_MIN:-0.971}
+      - MARKET_V_ACAO_MAX=${MARKET_V_ACAO_MAX:-1.03}
+      # O CPLEX vem do host por volume: licenca academica e pessoal, nao entra
+      # na imagem nem no repositorio. Ver market-opentes/README.md.
+      - MARKET_SOLVER=${MARKET_SOLVER:-cplex}
+      - MARKET_SOLVER_PATH=/opt/cplex/bin/x86-64_linux/cplex
+      # Fator de potencia do armazenamento. `none` reproduz a hipotese dQ = 0 da
+      # Eq. 6.16; um numero liga o termo dV/dQ na restricao de tensao E o reativo
+      # do dispositivo na rede, que precisam andar juntos.
+      - MARKET_STORAGE_PF=${MARKET_STORAGE_PF:-none}
+      # Chave de experimento: o dispositivo injeta reativo mas o modelo ignora.
+      - MARKET_IGNORE_DQ=${MARKET_IGNORE_DQ:-}
+      # Camada de rede entre os agentes: ideal, lossy ou omnet (6TiSCH da tese).
+      - NET_BACKEND=${NET_BACKEND:-ideal}
+      - NET_TIME_SCALE=${NET_TIME_SCALE:-1.0}
+      - NET_TRACE=${NET_TRACE:-}
+      # Tamanho informado a rede: `real` usa o conteudo serializado;
+      # `thesis` reproduz as tres classes declaradas pelo trabalho
+      # original (100 fixos, 100 a 500 no lance de tempo real, 1000 a
+      # 1500 nas mensagens com carga). Ver network_link.py.
+      - NET_MESSAGE_SIZE=${NET_MESSAGE_SIZE:-real}
+      - OMNET_HOST=${OMNET_HOST:-comm-tisch}
+      - OMNET_NET_PORT=${OMNET_NET_PORT:-5556}
+    expose:
+      - "5678"
+    ports:
+      - "15684:5678"
+    volumes:
+      - ./simulators/pade-opentes/agents:/app/agents
+      - ./simulators/market-opentes:/market
+      - ./simulators/grid-opentes/src/data:/grid-data:ro
+      - ${CPLEX_HOME:-/nonexistent}:/opt/cplex:ro
+    command: python3 agents/market_agents.py
+    networks:
+      - opentes-net
+
+  mosaik-market:
+    image: opentes/mosaik:local
+    build:
+      context: ./simulators/mosaik-opentes
+      dockerfile: Dockerfile
+    container_name: opentes-mosaik-market
+    profiles:
+      - market
+    depends_on:
+      - pade-market
+      - opendss
+      - elec-collector
+    environment:
+      - MOSAIK_SCENARIO=scenarios/market.py
+      - MOSAIK_OUTPUT_DIR=${MOSAIK_OUTPUT_DIR:-/app/output/market}
+      - MOSAIK_N_PASSOS=${MOSAIK_N_PASSOS:-96}
+      - MOSAIK_STEP_SIZE=900
+      - RESULT_TAG=${RESULT_TAG:-negociado}
+      - MARKET_CIRCUIT=/app/src/data/${MARKET_NETWORK:-MVLV75}/Master.dss
+      - PADE_HOST=pade-market
+      - PADE_PORT=5678
+      - OPENDSS_HOST=opendss
+      - ELEC_COLLECTOR_HOST=elec-collector
+    volumes:
+      - ./simulators/mosaik-opentes:/app
+      - ./output:/app/output
+      - ./simulators/grid-opentes/src/data:/grid-data:ro
+    command: python -u scenarios/market.py
     networks:
       - opentes-net
 

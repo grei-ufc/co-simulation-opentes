@@ -11,10 +11,16 @@ qualquer pessoa — mesmo sem conhecer o código — consiga ler os resultados.
 
 ```
 output/
-├── integrated/   ← a co-simulação completa (A APLICAÇÃO): rede elétrica + comunicação
+├── integrated/   ← co-simulação completa do IEEE 13: rede elétrica + comunicação
+├── market/       ← mercado transativo na rede de 75 barras
 ├── ieee13/       ← teste isolado da rede elétrica (sem comunicação)
 └── star/         ← teste isolado da comunicação (sem rede elétrica)
 ```
+
+> **Atenção ao passo de tempo.** Os cenários `integrated`, `ieee13` e `star`
+> avançam de **5 em 5 minutos** (288 passos por dia). O cenário `market` avança
+> de **15 em 15 minutos** (96 intervalos), que é a resolução do mercado. Ao
+> comparar arquivos de cenários diferentes, confira qual é a base.
 
 ---
 
@@ -213,7 +219,83 @@ execução, não comparamos as duas):
 
 ---
 
-## 2. `output/ieee13/` — teste isolado da rede elétrica
+## 2. `output/market/` — o mercado transativo
+
+Roda a negociação multiagente sobre a rede de **75 barras**, em **96 intervalos
+de 15 minutos**. Com `MARKET_NETWORK=BT16` ou `BT38` a mesma execução usa uma das
+redes próprias e grava em `output/market_BT16/` e `output/market_BT38/`; a
+estrutura dos arquivos é idêntica, muda o número de barras. Como o `integrated`, roda **duas vezes** e grava dois arquivos:
+
+- **`result_baseline.csv`** — execução **sem mecanismo nenhum**: nem negociação
+  do dia seguinte, nem correção na operação. É a linha de base.
+- **`result_negociado.csv`** — execução **com** a negociação multiagente.
+
+A rede vê a **mesma demanda realizada** nas duas passadas, então a comparação
+isola o efeito do mercado.
+
+### Como ler as colunas
+
+Cada linha é um intervalo de 15 minutos. As colunas seguem o padrão
+`DSS-0.Bus-n<barra>-V1_pu`, ou seja, a tensão da barra `<barra>` em pu. São 75
+barras, o que dá **7.200 medições de tensão** por arquivo.
+
+O número que resume o resultado é a **contagem de pares (barra, intervalo) abaixo
+de 0,97 pu**. Não é o número de barras ruins nem de instantes ruins: é a
+contagem de células da tabela de 75 por 96. Serve melhor que a tensão mínima
+porque distingue uma violação isolada de um problema espalhado.
+
+| Caso | Tensão mínima | Tensão máxima | Pontos abaixo de 0,97 pu |
+|---|---:|---:|---:|
+| `result_baseline.csv` | 0,93946 pu | 1,02488 pu | **337** |
+| `result_negociado.csv` | 0,97033 pu | 1,02282 pu | **0** |
+
+O horário crítico é **17:45**, quando a demanda sobe e a geração solar já caiu.
+
+### As figuras, em `simulators/market-opentes/data/`
+
+Diferente dos outros cenários, as figuras do mercado não ficam em `output/`, e
+sim junto do pacote que as gera.
+
+| Figura | O que mostra |
+|---|---|
+| `tensao_mercado.png` | tensão mínima e máxima da rede nas 24 h, com e sem negociação |
+| `programacao_no.png` | a programação que o concentrador propõe e a que o DSO aceita, rodada a rodada, num nó |
+| `dlmp.png` | onde e quando o preço apareceu, por nó e por hora |
+| `convergencia.png` | o desacordo entre as partes caindo, e o preço estabilizando |
+| `operacao.png` | a fase de operação: tensão antes e depois da intervenção |
+| `comunicacao.png` | o custo de comunicação da negociação |
+| `tisch_per.png` | erro de pacote por distância na rede 6TiSCH |
+| `ciclos.png` | tempo de rede de cada ciclo contra a fatia dele na janela de 15 min |
+| `arquitetura_simsg.png`, `fluxo_cosimulacao.png` | diagramas da arquitetura e do fluxo |
+
+Também são gravados três CSV de liquidação: `transactions.csv` (energia e custo
+por prosumidor nos dois mercados), `flexibility.csv` (quanta flexibilidade cada
+um entregou) e `dlmp.csv` (o preço locacional por nó e intervalo).
+
+> **A unidade do preço.** Com o peso adimensional adotado, o multiplicador não
+> está em unidade monetária, e as colunas saem como `_signal`. Vira preço quando
+> o peso for calibrado em moeda, e aí as colunas saem como `_eur`. A própria tese
+> de referência trata o valor como variável de controle, não como dinheiro.
+
+### Como gerar
+
+```bash
+export CPLEX_HOME=/caminho/para/cplex        # licença pessoal, não vai no repo
+./run.sh market
+
+# as figuras, depois da execução
+docker run --rm -v "$PWD/simulators/market-opentes:/market" \
+  -v "$PWD/output:/app/output" -w /market opentes/mosaik:local \
+  python -m market_opentes.plot_results --output-dir /app/output/market
+```
+
+A figura de ciclos exige uma camada de rede: o `./run.sh market` roda com entrega
+ideal. Cada figura sai **carimbada no rodapé** com a configuração que a produziu,
+justamente para que execuções diferentes não sejam confundidas.
+
+---
+
+## 3. `output/ieee13/` — teste isolado da rede elétrica
 
 Roda **só** a rede (OpenDSS + 5 PVs + inversores), **sem** comunicação nem
 agentes. Serve para **validar a física** contra o trabalho de referência do TSRE.
@@ -229,7 +311,7 @@ se os números aqui ainda baterem com a referência, a física está intacta.
 
 ---
 
-## 3. `output/star/` — teste isolado da comunicação
+## 4. `output/star/` — teste isolado da comunicação
 
 Roda **só** a comunicação (50 agentes PADE conversando em estrela via OMNeT++),
 **sem** rede elétrica. É a bancada para estudar a rede de comunicação sozinha.
@@ -266,7 +348,8 @@ parâmetro de perda) estão em [`INTEGRACAO.md`](INTEGRACAO.md#resultados).
 
 O estudo do **impacto da qualidade da comunicação** sobre o controle distribuído
 (varredura de perda **0→100% em passos de 5%**, **20 sementes/nível**) tem doc
-própria: [`EXPERIMENTO_PERDA.md`](EXPERIMENTO_PERDA.md). Roda com
+própria, mantida fora do repositório em `Docs_Externo/EXPERIMENTO_PERDA.md`.
+Roda com
 `./run.sh loss-multiseed` e gera `sensibilidade_perda_multiseed.png`. Achado central
 (**re-rodado após 2 correções — solve `ab0b04e` + loadshape `c63cc3a`**): o controle
 **regula e é seguro em toda a faixa de perda** (reduz o desvio de tensão ~7–11% em

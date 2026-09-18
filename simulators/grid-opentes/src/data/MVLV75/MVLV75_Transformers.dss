@@ -1,0 +1,25 @@
+! Transformadores de distribuicao 13.8/0.38 kV, delta-estrela.
+! Perfil de potencia: 'force' (potencia declarada no force.json, serie NBR 5440)
+! Percentuais do pandapower: vk=4.0%, vkr=1.2%, pfe=0.24%, i0=0.24%
+! -> XHL=3.81576%, %r por enrolamento=0.6%, %noloadloss=0.24%, %imag=0.0
+
+New Transformer.trafo_2_7 phases=3 windings=2
+~ wdg=1 bus=n2 conn=delta kV=13.8 kVA=112.5 %r=0.6
+~ wdg=2 bus=n7 conn=wye kV=0.38 kVA=112.5 %r=0.6
+~ XHL=3.81576 %noloadloss=0.24 %imag=0.0
+New Transformer.trafo_3_15 phases=3 windings=2
+~ wdg=1 bus=n3 conn=delta kV=13.8 kVA=75.0 %r=0.6
+~ wdg=2 bus=n15 conn=wye kV=0.38 kVA=75.0 %r=0.6
+~ XHL=3.81576 %noloadloss=0.24 %imag=0.0
+New Transformer.trafo_4_27 phases=3 windings=2
+~ wdg=1 bus=n4 conn=delta kV=13.8 kVA=45.0 %r=0.6
+~ wdg=2 bus=n27 conn=wye kV=0.38 kVA=45.0 %r=0.6
+~ XHL=3.81576 %noloadloss=0.24 %imag=0.0
+New Transformer.trafo_5_35 phases=3 windings=2
+~ wdg=1 bus=n5 conn=delta kV=13.8 kVA=75.0 %r=0.6
+~ wdg=2 bus=n35 conn=wye kV=0.38 kVA=75.0 %r=0.6
+~ XHL=3.81576 %noloadloss=0.24 %imag=0.0
+New Transformer.trafo_6_55 phases=3 windings=2
+~ wdg=1 bus=n6 conn=delta kV=13.8 kVA=112.5 %r=0.6
+~ wdg=2 bus=n55 conn=wye kV=0.38 kVA=112.5 %r=0.6
+~ XHL=3.81576 %noloadloss=0.24 %imag=0.0

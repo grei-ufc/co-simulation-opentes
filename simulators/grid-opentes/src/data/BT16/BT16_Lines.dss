@@ -1,0 +1,20 @@
+! Linhas. Comprimento em km.
+
+New Line.mt_0_1 phases=3 bus1=n0 bus2=n1 linecode=MT_336MCM length=0.400000 units=km
+New Line.mt_1_2 phases=3 bus1=n1 bus2=n2 linecode=MT_336MCM length=0.350000 units=km
+New Line.bt_3_4 phases=3 bus1=n3 bus2=n4 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_4_5 phases=3 bus1=n4 bus2=n5 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_5_6 phases=3 bus1=n5 bus2=n6 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_6_7 phases=3 bus1=n6 bus2=n7 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_5_8 phases=3 bus1=n5 bus2=n8 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_6_9 phases=3 bus1=n6 bus2=n9 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_7_10 phases=3 bus1=n7 bus2=n10 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_10_11 phases=3 bus1=n10 bus2=n11 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_12_13 phases=3 bus1=n12 bus2=n13 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_13_14 phases=3 bus1=n13 bus2=n14 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_14_15 phases=3 bus1=n14 bus2=n15 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_15_16 phases=3 bus1=n15 bus2=n16 linecode=BT_TRONCO_70 length=0.060000 units=km
+New Line.bt_14_17 phases=3 bus1=n14 bus2=n17 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_15_18 phases=3 bus1=n15 bus2=n18 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_16_19 phases=3 bus1=n16 bus2=n19 linecode=BT_RAMAL_35 length=0.060000 units=km
+New Line.bt_19_20 phases=3 bus1=n19 bus2=n20 linecode=BT_RAMAL_35 length=0.060000 units=km

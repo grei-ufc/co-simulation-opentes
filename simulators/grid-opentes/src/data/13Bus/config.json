@@ -1,0 +1,169 @@
+{
+ "qtd_nodes_mv": 9,
+ "max_demand_kva": 5000,
+ "devices": {
+  "user_action_device": {
+   "params": {
+    "611": {
+     "size": 169.908
+    },
+    "632": {
+     "size": 0.0
+    },
+    "634": {
+     "size": 387.2
+    },
+    "645": {
+     "size": 170.0
+    },
+    "646": {
+     "size": 230.0
+    },
+    "652": {
+     "size": 125.44
+    },
+    "670": {
+     "size": 197.36
+    },
+    "671": {
+     "size": 1155.0
+    },
+    "675": {
+     "size": 824.51
+    },
+    "692": {
+     "size": 170.0
+    }
+   }
+  },
+  "stochastic_gen": {
+   "params": {
+    "632": {
+     "size": 3000.0
+    },
+    "634": {
+     "size": 3000.0
+    },
+    "645": {
+     "size": 2000.0
+    },
+    "646": {
+     "size": 5000.0
+    },
+    "652": {
+     "size": 2000.0
+    }
+   }
+  },
+  "storage_device": {
+   "params": {
+    "611": {
+     "size": 1650.0,
+     "max_energy_flow": 500.0,
+     "min_soc": 165.0,
+     "max_soc": 1485.0
+    },
+    "632": {
+     "size": 1650.0,
+     "max_energy_flow": 500.0,
+     "min_soc": 165.0,
+     "max_soc": 1485.0
+    },
+    "634": {
+     "size": 1320.0,
+     "max_energy_flow": 400.0,
+     "min_soc": 132.0,
+     "max_soc": 1188.0
+    },
+    "645": {
+     "size": 990.0,
+     "max_energy_flow": 300.0,
+     "min_soc": 99.0,
+     "max_soc": 891.0
+    },
+    "646": {
+     "size": 1320.0,
+     "max_energy_flow": 400.0,
+     "min_soc": 132.0,
+     "max_soc": 1188.0
+    },
+    "652": {
+     "size": 990.0,
+     "max_energy_flow": 300.0,
+     "min_soc": 99.0,
+     "max_soc": 891.0
+    },
+    "670": {
+     "size": 2640.0,
+     "max_energy_flow": 800.0,
+     "min_soc": 264.0,
+     "max_soc": 2376.0
+    },
+    "671": {
+     "size": 2970.0,
+     "max_energy_flow": 900.0,
+     "min_soc": 297.0,
+     "max_soc": 2673.0
+    },
+    "675": {
+     "size": 2970.0,
+     "max_energy_flow": 900.0,
+     "min_soc": 297.0,
+     "max_soc": 2673.0
+    },
+    "692": {
+     "size": 1320.0,
+     "max_energy_flow": 400.0,
+     "min_soc": 132.0,
+     "max_soc": 1188.0
+    }
+   }
+  },
+  "dso_storage_device": {
+   "params": {
+    "634": {
+     "size": 3300.0,
+     "max_energy_flow": 1000.0,
+     "min_soc": 330.0,
+     "max_soc": 2970.0
+    },
+    "645": {
+     "size": 3300.0,
+     "max_energy_flow": 1000.0,
+     "min_soc": 330.0,
+     "max_soc": 2970.0
+    },
+    "646": {
+     "size": 4950.0,
+     "max_energy_flow": 1500.0,
+     "min_soc": 495.0,
+     "max_soc": 4455.0
+    },
+    "652": {
+     "size": 2970.0,
+     "max_energy_flow": 900.0,
+     "min_soc": 297.0,
+     "max_soc": 2673.0
+    }
+   }
+  }
+ },
+ "nodes_lv": [
+  611,
+  632,
+  634,
+  645,
+  646,
+  652,
+  670,
+  671,
+  675,
+  692
+ ],
+ "nodes_mv": [
+  0,
+  633,
+  680,
+  684
+ ]
+}

@@ -1,0 +1,7 @@
+! LineCodes equivalentes aos std_types do pandapower usados na referencia.
+! Sequencia positiva identica a do pandapower; sequencia zero em relacao
+! tipica de linha aerea (R0=3.0xR1, X0=3.0xX1, C0=0.5xC1), que nao influi
+! com cargas equilibradas e e exigida pelo OpenDSS (Z0 != Z1).
+
+New LineCode.MT_34AL1_6ST1A nphases=3 units=km R1=0.8342 X1=0.36 C1=9.7 R0=2.5026 X0=1.08 C0=4.85 normamps=170.0 emergamps=170.0   ! pandapower: 34-AL1/6-ST1A 10.0
+New LineCode.BT_15AL1_3ST1A nphases=3 units=km R1=1.8769 X1=0.35 C1=11.0 R0=5.6307 X0=1.05 C0=5.5 normamps=105.0 emergamps=105.0   ! pandapower: 15-AL1/3-ST1A 0.4

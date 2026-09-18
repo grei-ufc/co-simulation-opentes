@@ -1,0 +1,835 @@
+{
+ "directed": false,
+ "multigraph": false,
+ "graph": {},
+ "nodes": [
+  {
+   "name": 0,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 0
+  },
+  {
+   "name": 1,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 1
+  },
+  {
+   "name": 2,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 2
+  },
+  {
+   "name": 3,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 3
+  },
+  {
+   "name": 4,
+   "voltage_level": "medium voltage",
+   "active_power": 0,
+   "reactive_power": 0,
+   "id": 4
+  },
+  {
+   "name": 5,
+   "voltage_level": "low voltage",
+   "active_power": 0.0,
+   "reactive_power": 0,
+   "id": 5
+  },
+  {
+   "name": 6,
+   "voltage_level": "low voltage",
+   "active_power": 10.295,
+   "reactive_power": 0,
+   "id": 6
+  },
+  {
+   "name": 7,
+   "voltage_level": "low voltage",
+   "active_power": 12.426,
+   "reactive_power": 0,
+   "id": 7
+  },
+  {
+   "name": 8,
+   "voltage_level": "low voltage",
+   "active_power": 12.42,
+   "reactive_power": 0,
+   "id": 8
+  },
+  {
+   "name": 9,
+   "voltage_level": "low voltage",
+   "active_power": 13.247,
+   "reactive_power": 0,
+   "id": 9
+  },
+  {
+   "name": 10,
+   "voltage_level": "low voltage",
+   "active_power": 9.929,
+   "reactive_power": 0,
+   "id": 10
+  },
+  {
+   "name": 11,
+   "voltage_level": "low voltage",
+   "active_power": 10.153,
+   "reactive_power": 0,
+   "id": 11
+  },
+  {
+   "name": 12,
+   "voltage_level": "low voltage",
+   "active_power": 0.0,
+   "reactive_power": 0,
+   "id": 12
+  },
+  {
+   "name": 13,
+   "voltage_level": "low voltage",
+   "active_power": 8.125,
+   "reactive_power": 0,
+   "id": 13
+  },
+  {
+   "name": 14,
+   "voltage_level": "low voltage",
+   "active_power": 6.856,
+   "reactive_power": 0,
+   "id": 14
+  },
+  {
+   "name": 15,
+   "voltage_level": "low voltage",
+   "active_power": 7.179,
+   "reactive_power": 0,
+   "id": 15
+  },
+  {
+   "name": 16,
+   "voltage_level": "low voltage",
+   "active_power": 7.726,
+   "reactive_power": 0,
+   "id": 16
+  },
+  {
+   "name": 17,
+   "voltage_level": "low voltage",
+   "active_power": 9.351,
+   "reactive_power": 0,
+   "id": 17
+  },
+  {
+   "name": 18,
+   "voltage_level": "low voltage",
+   "active_power": 8.434,
+   "reactive_power": 0,
+   "id": 18
+  },
+  {
+   "name": 19,
+   "voltage_level": "low voltage",
+   "active_power": 6.058,
+   "reactive_power": 0,
+   "id": 19
+  },
+  {
+   "name": 20,
+   "voltage_level": "low voltage",
+   "active_power": 7.103,
+   "reactive_power": 0,
+   "id": 20
+  },
+  {
+   "name": 21,
+   "voltage_level": "low voltage",
+   "active_power": 6.587,
+   "reactive_power": 0,
+   "id": 21
+  },
+  {
+   "name": 22,
+   "voltage_level": "low voltage",
+   "active_power": 0.0,
+   "reactive_power": 0,
+   "id": 22
+  },
+  {
+   "name": 23,
+   "voltage_level": "low voltage",
+   "active_power": 6.204,
+   "reactive_power": 0,
+   "id": 23
+  },
+  {
+   "name": 24,
+   "voltage_level": "low voltage",
+   "active_power": 7.143,
+   "reactive_power": 0,
+   "id": 24
+  },
+  {
+   "name": 25,
+   "voltage_level": "low voltage",
+   "active_power": 6.474,
+   "reactive_power": 0,
+   "id": 25
+  },
+  {
+   "name": 26,
+   "voltage_level": "low voltage",
+   "active_power": 6.004,
+   "reactive_power": 0,
+   "id": 26
+  },
+  {
+   "name": 27,
+   "voltage_level": "low voltage",
+   "active_power": 5.775,
+   "reactive_power": 0,
+   "id": 27
+  },
+  {
+   "name": 28,
+   "voltage_level": "low voltage",
+   "active_power": 6.004,
+   "reactive_power": 0,
+   "id": 28
+  },
+  {
+   "name": 29,
+   "voltage_level": "low voltage",
+   "active_power": 5.598,
+   "reactive_power": 0,
+   "id": 29
+  },
+  {
+   "name": 30,
+   "voltage_level": "low voltage",
+   "active_power": 4.911,
+   "reactive_power": 0,
+   "id": 30
+  },
+  {
+   "name": 31,
+   "voltage_level": "low voltage",
+   "active_power": 7.369,
+   "reactive_power": 0,
+   "id": 31
+  },
+  {
+   "name": 32,
+   "voltage_level": "low voltage",
+   "active_power": 7.294,
+   "reactive_power": 0,
+   "id": 32
+  },
+  {
+   "name": 33,
+   "voltage_level": "low voltage",
+   "active_power": 7.95,
+   "reactive_power": 0,
+   "id": 33
+  },
+  {
+   "name": 34,
+   "voltage_level": "low voltage",
+   "active_power": 0.0,
+   "reactive_power": 0,
+   "id": 34
+  },
+  {
+   "name": 35,
+   "voltage_level": "low voltage",
+   "active_power": 3.449,
+   "reactive_power": 0,
+   "id": 35
+  },
+  {
+   "name": 36,
+   "voltage_level": "low voltage",
+   "active_power": 3.891,
+   "reactive_power": 0,
+   "id": 36
+  },
+  {
+   "name": 37,
+   "voltage_level": "low voltage",
+   "active_power": 3.928,
+   "reactive_power": 0,
+   "id": 37
+  },
+  {
+   "name": 38,
+   "voltage_level": "low voltage",
+   "active_power": 3.654,
+   "reactive_power": 0,
+   "id": 38
+  },
+  {
+   "name": 39,
+   "voltage_level": "low voltage",
+   "active_power": 3.7,
+   "reactive_power": 0,
+   "id": 39
+  },
+  {
+   "name": 40,
+   "voltage_level": "low voltage",
+   "active_power": 5.223,
+   "reactive_power": 0,
+   "id": 40
+  },
+  {
+   "name": 41,
+   "voltage_level": "low voltage",
+   "active_power": 4.443,
+   "reactive_power": 0,
+   "id": 41
+  },
+  {
+   "name": 42,
+   "voltage_level": "low voltage",
+   "active_power": 4.375,
+   "reactive_power": 0,
+   "id": 42
+  },
+  {
+   "name": 43,
+   "voltage_level": "low voltage",
+   "active_power": 4.413,
+   "reactive_power": 0,
+   "id": 43
+  },
+  {
+   "name": 44,
+   "voltage_level": "low voltage",
+   "active_power": 5.217,
+   "reactive_power": 0,
+   "id": 44
+  },
+  {
+   "name": 45,
+   "voltage_level": "low voltage",
+   "active_power": 4.754,
+   "reactive_power": 0,
+   "id": 45
+  },
+  {
+   "name": 46,
+   "voltage_level": "low voltage",
+   "active_power": 3.328,
+   "reactive_power": 0,
+   "id": 46
+  }
+ ],
+ "links": [
+  {
+   "name": "mt_0_1",
+   "type": "line",
+   "length": 0.6,
+   "source": 0,
+   "target": 1,
+   "level": null,
+   "linecode": "MT_336MCM"
+  },
+  {
+   "name": "mt_1_2",
+   "type": "line",
+   "length": 0.8,
+   "source": 1,
+   "target": 2,
+   "level": null,
+   "linecode": "MT_336MCM"
+  },
+  {
+   "name": "mt_2_3",
+   "type": "line",
+   "length": 1.0,
+   "source": 2,
+   "target": 3,
+   "level": null,
+   "linecode": "MT_336MCM"
+  },
+  {
+   "name": "mt_3_4",
+   "type": "line",
+   "length": 1.2,
+   "source": 3,
+   "target": 4,
+   "level": null,
+   "linecode": "MT_336MCM"
+  },
+  {
+   "name": "bt_5_6",
+   "type": "line",
+   "length": 0.045,
+   "source": 5,
+   "target": 6,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_6_7",
+   "type": "line",
+   "length": 0.045,
+   "source": 6,
+   "target": 7,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_7_8",
+   "type": "line",
+   "length": 0.045,
+   "source": 7,
+   "target": 8,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_6_9",
+   "type": "line",
+   "length": 0.045,
+   "source": 6,
+   "target": 9,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_7_10",
+   "type": "line",
+   "length": 0.045,
+   "source": 7,
+   "target": 10,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_8_11",
+   "type": "line",
+   "length": 0.045,
+   "source": 8,
+   "target": 11,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_12_13",
+   "type": "line",
+   "length": 0.055,
+   "source": 12,
+   "target": 13,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_13_14",
+   "type": "line",
+   "length": 0.055,
+   "source": 13,
+   "target": 14,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_14_15",
+   "type": "line",
+   "length": 0.055,
+   "source": 14,
+   "target": 15,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_15_16",
+   "type": "line",
+   "length": 0.055,
+   "source": 15,
+   "target": 16,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_16_17",
+   "type": "line",
+   "length": 0.055,
+   "source": 16,
+   "target": 17,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_14_18",
+   "type": "line",
+   "length": 0.055,
+   "source": 14,
+   "target": 18,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_18_19",
+   "type": "line",
+   "length": 0.055,
+   "source": 18,
+   "target": 19,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_16_20",
+   "type": "line",
+   "length": 0.055,
+   "source": 16,
+   "target": 20,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_20_21",
+   "type": "line",
+   "length": 0.055,
+   "source": 20,
+   "target": 21,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_22_23",
+   "type": "line",
+   "length": 0.06,
+   "source": 22,
+   "target": 23,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_23_24",
+   "type": "line",
+   "length": 0.06,
+   "source": 23,
+   "target": 24,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_24_25",
+   "type": "line",
+   "length": 0.06,
+   "source": 24,
+   "target": 25,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_25_26",
+   "type": "line",
+   "length": 0.06,
+   "source": 25,
+   "target": 26,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_26_27",
+   "type": "line",
+   "length": 0.06,
+   "source": 26,
+   "target": 27,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_27_28",
+   "type": "line",
+   "length": 0.06,
+   "source": 27,
+   "target": 28,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_25_29",
+   "type": "line",
+   "length": 0.06,
+   "source": 25,
+   "target": 29,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_29_30",
+   "type": "line",
+   "length": 0.06,
+   "source": 29,
+   "target": 30,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_29_31",
+   "type": "line",
+   "length": 0.06,
+   "source": 29,
+   "target": 31,
+   "level": 2,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_27_32",
+   "type": "line",
+   "length": 0.06,
+   "source": 27,
+   "target": 32,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_32_33",
+   "type": "line",
+   "length": 0.06,
+   "source": 32,
+   "target": 33,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_34_35",
+   "type": "line",
+   "length": 0.075,
+   "source": 34,
+   "target": 35,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_35_36",
+   "type": "line",
+   "length": 0.075,
+   "source": 35,
+   "target": 36,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_36_37",
+   "type": "line",
+   "length": 0.075,
+   "source": 36,
+   "target": 37,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_37_38",
+   "type": "line",
+   "length": 0.075,
+   "source": 37,
+   "target": 38,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_38_39",
+   "type": "line",
+   "length": 0.075,
+   "source": 38,
+   "target": 39,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_39_40",
+   "type": "line",
+   "length": 0.075,
+   "source": 39,
+   "target": 40,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_40_41",
+   "type": "line",
+   "length": 0.075,
+   "source": 40,
+   "target": 41,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_41_42",
+   "type": "line",
+   "length": 0.075,
+   "source": 41,
+   "target": 42,
+   "level": 0,
+   "linecode": "BT_TRONCO_70"
+  },
+  {
+   "name": "bt_38_43",
+   "type": "line",
+   "length": 0.075,
+   "source": 38,
+   "target": 43,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_43_44",
+   "type": "line",
+   "length": 0.075,
+   "source": 43,
+   "target": 44,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_41_45",
+   "type": "line",
+   "length": 0.075,
+   "source": 41,
+   "target": 45,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  },
+  {
+   "name": "bt_45_46",
+   "type": "line",
+   "length": 0.075,
+   "source": 45,
+   "target": 46,
+   "level": 1,
+   "linecode": "BT_RAMAL_35"
+  }
+ ],
+ "transformers": [
+  {
+   "name": "trafo_1_5",
+   "source": 1,
+   "target": 5,
+   "power": 75,
+   "nodes": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+   ],
+   "bess_nodes": [
+    10
+   ],
+   "prosumer_bess_nodes": [
+    6,
+    8,
+    9
+   ]
+  },
+  {
+   "name": "trafo_2_12",
+   "source": 2,
+   "target": 12,
+   "power": 45,
+   "nodes": [
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21
+   ],
+   "bess_nodes": [
+    16,
+    18
+   ],
+   "prosumer_bess_nodes": [
+    13,
+    14,
+    15,
+    19,
+    21
+   ]
+  },
+  {
+   "name": "trafo_3_22",
+   "source": 3,
+   "target": 22,
+   "power": 45,
+   "nodes": [
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33
+   ],
+   "bess_nodes": [
+    28,
+    33
+   ],
+   "prosumer_bess_nodes": [
+    23,
+    24,
+    26,
+    27,
+    29,
+    32
+   ]
+  },
+  {
+   "name": "trafo_4_34",
+   "source": 4,
+   "target": 34,
+   "power": 30,
+   "nodes": [
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46
+   ],
+   "bess_nodes": [
+    35,
+    40
+   ],
+   "prosumer_bess_nodes": [
+    36,
+    37,
+    38,
+    39,
+    43,
+    44
+   ]
+  }
+ ]
+}

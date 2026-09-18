@@ -1,0 +1,21 @@
+! Rede BT38: rede final, 4 alimentadores de baixa tensao com penetracao fotovoltaica desigual entre eles
+! Gerada por src/simulators/gen_test_grid.py. NAO EDITAR A MAO.
+
+Clear
+Set DefaultBaseFrequency=60
+
+New Circuit.BT38 bus1=n0 basekV=13.8 pu=1.0 phases=3
+! Fonte forte: o objeto de estudo e a queda na rede de distribuicao,
+! nao a impedancia do sistema de subtransmissao.
+~ MVAsc3=100000 MVAsc1=105000
+
+Redirect BT38_LineCodes.dss
+Redirect BT38_Lines.dss
+Redirect BT38_Transformers.dss
+Redirect BT38_Loads.dss
+
+Set VoltageBases=[13.8, 0.38]
+CalcVoltageBases
+
+Set Mode=snap
+Solve

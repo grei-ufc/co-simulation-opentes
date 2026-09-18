@@ -20,8 +20,8 @@ cd "$(dirname "$0")"
 # ============================================================================
 # Configuracao comum
 # ============================================================================
-INI="simulators_teams/comm-opentes/omnetpp.ini"
-ALL_PROFILES=(--profile ieee13 --profile integrated)
+INI="simulators/comm-opentes/omnetpp.ini"
+ALL_PROFILES=(--profile ieee13 --profile integrated --profile market)
 # simuladores que precisam estar de pe antes do mosaik conectar
 DEPS=(comm pade-integrated opendss pv-panel csv-data-1 csv-data-2 elec-collector)
 RESULT=""   # preenchido por cada comando; exibido no final
@@ -37,6 +37,13 @@ Cenarios:
                           Roda 2 passadas: baseline (sem controle) e Volt/Var.
   ieee13                  Rede eletrica isolada (OpenDSS + Smart PV).
   star                    Comunicacao isolada (PADE + OMNeT++).
+  market                  Mercado transativo: negociacao
+                          multiagente (PADE) + OpenDSS. Roda 2 passadas:
+                          baseline (sem negociacao) e negociado.
+                          EXIGE um solver: export CPLEX_HOME=... (ver
+                          simulators/market-opentes/README.md).
+                          A rede vem de MARKET_NETWORK: MVLV75 (padrao, a da
+                          tese), BT16 (bancada) ou BT38 (rede final).
 
 Experimentos:
   48h                     Cenario integrado em horizonte de 48h (2 dias com a
@@ -106,11 +113,18 @@ _wait_remote_sims() {
 # --- omnetpp.ini: leitura, escrita e restauracao ---------------------------
 _set_drop()   { sed -i -E "s/(node_0\.drop_probability = ).*/\1${1}/" "$INI"; }
 _set_seed()   { sed -i -E "s/^(seed-0-mt = ).*/\1${1}/" "$INI"; }
-_set_simlim() { sed -i -E "s/^(sim-time-limit = ).*/\1${1}/" "$INI"; }
+# So a PRIMEIRA ocorrencia, que e a da secao [General]. O omnetpp.ini tem outra
+# em [Config tisch], com valor proprio, que nao pode ser sobrescrita.
+# A substituicao precisa consumir o VALOR antigo, e nao so o rotulo: com
+# `s//sim-time-limit = X/` o sed troca apenas o trecho casado, `sim-time-limit = `,
+# e o valor anterior fica no fim da linha. A cada restauracao a linha dobrava, e
+# depois de algumas dezenas de corridas ela tinha 163 mil caracteres e o sed
+# passou a falhar com "lista de argumentos muito longa".
+_set_simlim() { sed -i -E "0,/^sim-time-limit = .*/s//sim-time-limit = ${1}/" "$INI"; }
 
 ORIG_DROP="$(grep -E 'node_0\.drop_probability' "$INI" | sed -E 's/.*=[[:space:]]*//')"
 ORIG_SEED="$(grep -E '^seed-0-mt'               "$INI" | sed -E 's/.*=[[:space:]]*//')"
-ORIG_SIMLIM="$(grep -E '^sim-time-limit'        "$INI" | sed -E 's/.*=[[:space:]]*//')"
+ORIG_SIMLIM="$(grep -m1 -E '^sim-time-limit'    "$INI" | sed -E 's/.*=[[:space:]]*//')"
 
 # Restaura o ini mesmo se o script for interrompido no meio (Ctrl-C, erro).
 _ini_restore() {
@@ -135,6 +149,67 @@ _run_pass() {
     CONTROL_ENABLED="$control" RESULT_TAG="$tag" \
         docker compose --profile integrated up --abort-on-container-exit \
             --exit-code-from mosaik-integrated mosaik-integrated
+}
+
+# Espera o processo PADE do mercado subir os 33 agentes.
+# A prontidao e detectada pela linha "[market-mas] pronto", emitida DEPOIS do
+# listenTCP de todos os agentes. Esperar pela linha que anuncia a criacao dos
+# agentes nao serve: ela sai antes das portas abrirem, e o mosaik conecta cedo
+# demais e morre com "Could not connect to pade-market:5678".
+_wait_pade_market() {
+    local i
+    echo ">> aguardando os agentes PADE do mercado..."
+    for i in $(seq 1 60); do
+        if docker compose --profile market logs pade-market 2>/dev/null \
+                | grep -q "market-mas. pronto"; then
+            sleep 2
+            return 0
+        fi
+        sleep 1
+    done
+    echo "!! timeout aguardando o pade-market" >&2
+    return 1
+}
+
+# Uma passada do cenario de mercado.
+#   $1 = tag (nome do arquivo de saida) | $2 = MARKET_NEGOTIATE (0/1)
+# Espera o servidor de rotas 6TiSCH compilar e abrir a porta ZMQ. A primeira
+# execucao compila o OMNeT++ inteiro e leva minutos; as seguintes reaproveitam o
+# `out/` do volume montado e sobem em segundos.
+_wait_comm_tisch() {
+    local i
+    echo ">> aguardando o servidor 6TiSCH (a 1a vez compila o OMNeT++)..."
+    for i in $(seq 1 600); do
+        if docker compose --profile market logs comm-tisch 2>/dev/null \
+                | grep -q "6TiSCH. pronto"; then
+            return 0
+        fi
+        sleep 1
+    done
+    echo "!! timeout aguardando o comm-tisch" >&2
+    return 1
+}
+
+_run_market_pass() {
+    local tag="$1" negotiate="$2"
+    local operation="${MARKET_OPERATION:-1}"
+    # A rede ve a demanda realizada nas DUAS passadas; o que muda e se os
+    # agentes reagem a ela.
+    _cleanup
+    # As MESMAS variaveis nas duas chamadas do compose. Passar MARKET_NEGOTIATE
+    # so na segunda faz o compose ver a configuracao do pade-market mudar e
+    # RECRIAR o container bem na hora em que o mosaik conecta, o que aparece
+    # como "Could not connect to pade-market:5678".
+    if [ "${NET_BACKEND:-ideal}" = "omnet" ]; then
+        docker compose --profile market up -d comm-tisch
+        _wait_comm_tisch
+    fi
+    RESULT_TAG="$tag" MARKET_NEGOTIATE="$negotiate" MARKET_OPERATION="$operation" \
+        docker compose --profile market up -d opendss elec-collector pade-market
+    _wait_pade_market
+    RESULT_TAG="$tag" MARKET_NEGOTIATE="$negotiate" MARKET_OPERATION="$operation" \
+        docker compose --profile market up --abort-on-container-exit \
+            --exit-code-from mosaik-market mosaik-market
 }
 
 # Gera uma figura a partir dos resultados frescos.
@@ -177,6 +252,116 @@ cmd_integrated() {
     echo ">> gerando dashboard a partir dos resultados frescos..."
     _plot /app/output/integrated plot_integrated.py
     RESULT="output/integrated/  (result_baseline.csv, result_volt_var.csv + comm_trace_*.csv + dashboard_integrated.png)"
+}
+
+cmd_market() {
+    # O solver nao esta no repositorio nem na imagem (licenca). Ver
+    # simulators/market-opentes/README.md.
+    if [ ! -x "${CPLEX_HOME:-/nao-definido}/bin/x86-64_linux/cplex" ]; then
+        echo "!! CPLEX nao encontrado." >&2
+        echo "   Defina CPLEX_HOME apontando para a sua instalacao, por exemplo:" >&2
+        echo "     export CPLEX_HOME=\$HOME/IBM/CPLEX_Studio2211/cplex" >&2
+        echo "   Detalhes e alternativas em simulators/market-opentes/README.md" >&2
+        exit 1
+    fi
+    export CPLEX_HOME
+
+    # Qual rede. A da tese guarda config e perfis no pacote do mercado; as redes
+    # geradas por gen_test_grid.py guardam tudo ao lado do circuito, para serem
+    # autocontidas. E a unica diferenca entre os dois casos.
+    local net="${MARKET_NETWORK:-MVLV75}"
+    local dir_local="simulators/grid-opentes/src/data/$net"
+    if [ ! -f "$dir_local/Master.dss" ]; then
+        echo "!! rede '$net' nao encontrada em $dir_local" >&2
+        echo "   redes disponiveis: $(ls simulators/grid-opentes/src/data | tr '\n' ' ')" >&2
+        exit 1
+    fi
+    export MARKET_NETWORK="$net"
+    if [ "$net" = "MVLV75" ]; then
+        export MARKET_CONFIG=/market/data/config.json
+        export MARKET_DATA_DIR=/market/data
+        : "${MOSAIK_OUTPUT_DIR:=/app/output/market}"
+    else
+        export MARKET_CONFIG="/grid-data/$net/config.json"
+        export MARKET_DATA_DIR="/grid-data/$net"
+        : "${MOSAIK_OUTPUT_DIR:=/app/output/market_$net}"
+        # Cada rede grava o proprio registro de execucao e o proprio traco. Com um
+        # diretorio so, a execucao de uma rede sobrescrevia o `run.json` da
+        # anterior, inclusive o da MVLV75, que as Figuras 58 e 59 dela citam como
+        # procedencia. Aconteceu com a execucao da IEEE 13.
+        : "${MARKET_RUN_DIR:=/market/data/run_$net}"
+        export MARKET_RUN_DIR
+        if [ "${NET_BACKEND:-ideal}" = "omnet" ]; then
+            : "${NET_TRACE:=/market/data/msg_trace_$net.csv}"
+            export NET_TRACE
+        fi
+        # A sensibilidade dV/dP e dV/dQ e do circuito, e nao do mecanismo: sem
+        # ela o DSO nao tem restricao de tensao. Uma vez por rede.
+        if [ ! -f "$dir_local/sensitivity_day.npz" ]; then
+            echo ">> [market] gerando a sensibilidade de $net (uma vez por rede)"
+            docker compose run --rm --no-deps -e GRID_DIR="/app/src/data/$net" \
+                opendss python src/simulators/sensitivity.py day \
+                --load-csv "/app/src/data/$net/load_kw.csv" \
+                --pv-csv "/app/src/data/$net/pv_kw.csv" \
+                --out "/app/src/data/$net/sensitivity_day.npz"
+        fi
+    fi
+    export MOSAIK_OUTPUT_DIR
+
+    # Topologia de radio do servidor 6TiSCH. Os `nodes_xy.csv` e `adjacency.txt`
+    # que ficam junto do modelo OMNeT++ sao os Apendices B e C da tese, ou seja a
+    # MVLV75. Rodar OUTRA rede com NET_BACKEND=omnet sem trocar isso nao da erro:
+    # o `startPacket` do Tisch.cc entrega SEM ATRASO todo agente que nao acha no
+    # arquivo de posicoes, e o resultado sai medindo uma rede que nao existe.
+    if [ "${NET_BACKEND:-ideal}" = "omnet" ] && [ "$net" != "MVLV75" ]; then
+        if [ -f "$dir_local/nodes_xy.csv" ]; then
+            # As aspas do valor sao PARTE do argumento: o OMNeT++ le o lado
+            # direito como expressao NED, e string sem aspas da erro de sintaxe.
+            # Elas sobrevivem porque a expansao de $TISCH_ARGS dentro do
+            # container nao passa por remocao de aspas.
+            export TISCH_ARGS="--**.tisch.positions_file=\"/grid-data/$net/nodes_xy.csv\" --**.tisch.adjacency_file=\"/grid-data/$net/adjacency.txt\" --**.tisch.links_csv=\"/grid-data/$net/tisch_links.csv\""
+            # Conferencia obrigatoria: um nome que o servidor nao acha no
+            # arquivo de posicoes e entregue SEM ATRASO e sem aviso. O sintoma e
+            # um traco de mensagens com atraso zero em tudo, que passa
+            # despercebido. Aqui o erro aparece ANTES de rodar.
+            python3 - "$dir_local" <<'PYCHK' || exit 1
+import csv, json, sys
+d = sys.argv[1]
+force = json.load(open(f"{d}/force.json"))
+lv = [n["name"] for n in force["nodes"] if n["voltage_level"] == "low voltage"]
+esperados = {"DSO", "Market"}
+esperados |= {str(n) for n in lv}
+esperados |= {str(t["source"]) for t in force["transformers"]}
+tem = {r["node"] for r in csv.DictReader(open(f"{d}/nodes_xy.csv"))}
+faltam = sorted(esperados - tem)
+if faltam:
+    print(f"!! nodes_xy.csv nao tem {len(faltam)} nomes que os agentes procuram: "
+          f"{faltam[:8]}", file=sys.stderr)
+    print("   O servidor 6TiSCH entrega SEM ATRASO o que nao acha, e a "
+          "co-simulacao roda medindo uma rede que nao existe.", file=sys.stderr)
+    sys.exit(1)
+PYCHK
+            echo ">> [market] radio 6TiSCH sobre a topologia de $net "\
+                 "($(( $(wc -l < "$dir_local/nodes_xy.csv") - 1 )) posicoes)"
+        else
+            echo "!! rede '$net' nao tem nodes_xy.csv: o servidor 6TiSCH usaria a" >&2
+            echo "   topologia da MVLV75 e entregaria tudo sem atraso. Gere a" >&2
+            echo "   topologia da rede ou rode com NET_BACKEND=lossy." >&2
+            exit 1
+        fi
+    fi
+
+    echo ">> [market] rede $net, resultados em ${MOSAIK_OUTPUT_DIR#/app/}"
+
+    # duas passadas: sem negociacao (linha de base) e com negociacao
+    # A linha de base nao tem mecanismo de mercado nenhum: nem negociacao do dia
+    # seguinte, nem correcao na operacao. A rede ve a mesma demanda realizada nas
+    # duas passadas, entao a comparacao isola o efeito do mecanismo.
+    echo ">> [market] passada 'baseline' (programacao dos prosumidores, sem mecanismo)"
+    MARKET_OPERATION=0 _run_market_pass baseline 0
+    echo ">> [market] passada 'negociado' (com a negociacao multiagente)"
+    _run_market_pass negociado 1
+    RESULT="${MOSAIK_OUTPUT_DIR#/app/}/  (result_baseline.csv, result_negociado.csv)"
 }
 
 cmd_48h() {
@@ -269,6 +454,7 @@ case "$COMMAND" in
     star)              ;;
     ieee13)            ;;
     integrated)        ;;
+    market)            ;;
     48h)               ;;
     loss-sweep)        ;;
     loss-multiseed)    ;;
@@ -287,6 +473,7 @@ case "$COMMAND" in
     star)           cmd_star ;;
     ieee13)         cmd_ieee13 ;;
     integrated)     cmd_integrated ;;
+    market)         cmd_market ;;
     48h)            cmd_48h ;;
     loss-sweep)     cmd_loss_sweep "$@" ;;
     loss-multiseed) cmd_loss_multiseed ;;
