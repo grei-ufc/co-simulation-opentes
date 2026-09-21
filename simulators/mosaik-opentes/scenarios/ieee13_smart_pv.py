@@ -105,7 +105,7 @@ def run_scenario():
             pv_panel_obj = pv_sim.PVPanel.create(
                 1,
                 P_mpp=info["pmpp"],
-                irradiance_base=0.8,
+                irradiance_base=1.0,
                 pt_curve_x=info["pt_curve_x"],
                 pt_curve_y=info["pt_curve_y"],
             )[0]

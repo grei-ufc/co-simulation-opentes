@@ -154,11 +154,12 @@ Duas correcoes foram necessarias para rodar no Linux (o TSRE foi desenvolvido no
 Windows):
 
 ```text
-- grid-opentes/src/simulators/gen_pv_loadshapes.py: gera o arquivo
-  ieee13_shape_pv_5min.dss (Loadshapes/Tshapes) a partir dos CSVs de
-  irradiancia/temperatura. O ieee13_pv.dss referencia essas curvas (Daily/
-  TDaily) mas o pv_creator nao as gerava -> sem elas, o OpenDSS nao cria os
-  PVSystems (get_detected_pvsystems retornava vazio).
+- grid-opentes/src/simulators/pv_creator.py: gera as curvas de irradiancia e
+  temperatura, o ieee13_shape_pv_5min.dss (Loadshapes/Tshapes) e o
+  ieee13_pv.dss a partir das estacoes do BR-PVGen. A versao 1.0.0 do TSRE nao
+  gerava as Loadshapes (sem elas, o OpenDSS nao cria os PVSystems) e gravava a
+  temperatura dividida por 25; a versao atual e a 1.1.1 do TSRE, adaptada ao
+  IEEE 13, com a temperatura em graus Celsius e os filtros do pv_validator.py.
 - run_ieee13_cosim_*.dss: "Redirect Loadshape.dss" corrigido para
   "LoadShape.dss" (case-sensitive no Linux; o redirect falho abortava a criacao
   dos PVs).

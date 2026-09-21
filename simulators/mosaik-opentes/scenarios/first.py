@@ -117,7 +117,7 @@ def create_scenario(world):
 
         # painel PV (irradiancia/temperatura -> P_dc disponivel)
         panel = pv_sim.PVPanel.create(
-            1, P_mpp=info['pmpp'], irradiance_base=0.8,
+            1, P_mpp=info['pmpp'], irradiance_base=1.0,
             pt_curve_x=info['pt_curve_x'], pt_curve_y=info['pt_curve_y'])[0]
         world.connect(irr, panel, (f'my_shape{n}_irrad', 'irradiance'))
         world.connect(tmp, panel, (f'my_shape{n}_temperature', 'temperature'))
@@ -131,7 +131,7 @@ def create_scenario(world):
 
         # PONTE 1 (observacao): Bus -> medidor (time_shifted; reporta o ultimo
         # estado resolvido e quebra o ciclo DSS->PADE->PVSystem->DSS)
-        world.connect(bus, medidor, ('V1_pu', 'V_in'), ('V2_pu', 'V_in'), ('V3_pu', 'V_in'),
+        world.connect(bus, medidor, ('V1_pu', 'V_in_1'), ('V2_pu', 'V_in_2'), ('V3_pu', 'V_in_3'),
                       time_shifted=True,
                       initial_data={'V1_pu': 1.0, 'V2_pu': 1.0, 'V3_pu': 1.0})
         # comunicacao: medidor -> OMNeT++ -> controlador (mensagem marcada com a barra)

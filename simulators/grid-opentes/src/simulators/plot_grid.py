@@ -289,6 +289,8 @@ def posicionar(rede, eixos=None, livre=None, glifos=None,
 
 def desenhar(pasta, saida):
     pasta = Path(pasta)
+    if (pasta / "IEEE13Node_BusXY.csv").exists():
+        return desenhar_ieee13(pasta, saida)
     rede = json.loads((pasta / "force.json").read_text())
     cfg = json.loads((pasta / "config.json").read_text())
     pv = {int(k) for k in cfg["devices"]["stochastic_gen"]["params"]}
@@ -398,6 +400,169 @@ def desenhar(pasta, saida):
     print(f"  {len(rede['nodes'])} barras, {len(rede['transformers'])} "
           f"transformadores, {len(pv)} com geracao, {len(b_pros)} com bateria "
           f"de prosumidor, {len(b_rede)} com bateria de rede")
+
+
+# ---------------------------------------------------------------------------
+# IEEE 13 barras
+# ---------------------------------------------------------------------------
+
+# O layout em árvore acima supõe uma linha de média tensão com transformadores
+# descendo para alimentadores de baixa, que é o formato das redes BT. O IEEE 13
+# não tem esse formato: é um alimentador só, com um transformador no meio de um
+# ramal (633-634) e uma chave (671-692). Passado pelo layout em árvore, ele saía
+# com 634, 611 e 652 soltos e 684 ligado a 671 por uma diagonal. Aqui as
+# posições vêm das coordenadas do desenho oficial do alimentador, que já é
+# ortogonal e sem cruzamentos.
+
+ESC_13 = (0.02, 0.015)    # unidades do IEEE13Node_BusXY.csv -> unidades do desenho
+# A cabeceira (fonte, T1, 650, regulador) é posta acima de 632 por estes
+# deslocamentos, e não pelo arquivo: com a escala vertical acima os símbolos
+# não caberiam nos vãos de 50 unidades do desenho oficial.
+CABECEIRA_13 = {"RG60": 0.9, "650": 1.8, "SourceBus": 3.4}
+
+# Por barra: posição do rótulo (dx, dy, ha, va) e da fila de dispositivos
+# (x0, y0, passo_x, passo_y), relativas à barra. Cada barra põe rótulo e fila
+# nos quadrantes que as linhas deixam livres.
+LAYOUT_13 = {
+    646: ((0, .24, "center", "bottom"), (-.36, -.42, .36, 0)),
+    645: ((0, .24, "center", "bottom"), (-.36, -.42, .36, 0)),
+    632: ((-.14, -.14, "right", "top"), (.36, .36, .36, 0)),
+    633: ((0, .24, "center", "bottom"), None),
+    634: ((0, .24, "center", "bottom"), (.40, 0, .36, 0)),
+    670: ((-.20, 0, "right", "center"), (.36, 0, .36, 0)),
+    611: ((0, .24, "center", "bottom"), (0, -.42, .36, 0)),
+    684: ((0, .24, "center", "bottom"), None),
+    671: ((-.14, .14, "right", "bottom"), (-.36, -.36, -.36, 0)),
+    692: ((.10, .24, "center", "bottom"), (0, -.42, .36, 0)),
+    675: ((0, .24, "center", "bottom"), (0, -.42, .36, 0)),
+    652: ((-.20, 0, "right", "center"), (.40, 0, .36, 0)),
+    680: ((0, -.24, "center", "top"), None),
+    650: ((.20, 0, "left", "center"), None),
+}
+
+
+def _ler_busxy(pasta):
+    xy = {}
+    for ln in (pasta / "IEEE13Node_BusXY.csv").read_text().splitlines():
+        partes = [p.strip() for p in ln.split(",")]
+        if len(partes) == 3:
+            xy[partes[0]] = (float(partes[1]) * ESC_13[0],
+                             float(partes[2]) * ESC_13[1])
+    x632, y632 = xy["632"]
+    for nome, dy in CABECEIRA_13.items():
+        xy[nome] = (x632, y632 + dy)
+    return xy
+
+
+def _regulador(ax, x, y, rotulo):
+    """Círculo atravessado por uma seta, o símbolo do regulador na figura
+    oficial do alimentador."""
+    r = 0.20
+    ax.add_patch(Circle((x, y), r, facecolor="white", edgecolor=TINTA,
+                        linewidth=1.5, zorder=4))
+    ax.annotate("", xy=(x + 0.26, y + 0.26), xytext=(x - 0.26, y - 0.26),
+                arrowprops=dict(arrowstyle="-|>", color=TINTA, lw=1.2,
+                                mutation_scale=9), zorder=6)
+    ax.text(x - 0.32, y, rotulo, ha="right", va="center", fontsize=7.4,
+            fontweight="bold", color=TINTA, zorder=6, linespacing=1.4)
+
+
+def _transformador_h(ax, x, y, rotulo):
+    """Transformador de dois enrolamentos com o eixo na horizontal, para o
+    que fica no meio de um ramal."""
+    r = 0.14
+    for dx in (-r * 0.62, r * 0.62):
+        ax.add_patch(Circle((x + dx, y), r, facecolor="white",
+                            edgecolor=TINTA, linewidth=1.5, zorder=4))
+    ax.text(x, y - 0.30, rotulo, ha="center", va="top", fontsize=7.4,
+            fontweight="bold", color=TINTA, zorder=6, linespacing=1.4)
+
+
+def _chave(ax, p0, p1):
+    """Chave seccionadora com a lâmina levantada, o símbolo da figura oficial
+    do alimentador. É só o símbolo: no IEEE13Nodeckt.dss a chave 671-692 é
+    uma linha com `Switch=y` e opera fechada."""
+    (x0, y), (x1, _) = p0, p1
+    a, b = x0 + 0.25 * (x1 - x0), x0 + 0.75 * (x1 - x0)
+    linha(ax, (x0, y), (a, y))
+    linha(ax, (a, y), (b - 0.02, y + 0.22))
+    linha(ax, (b, y), (x1, y))
+
+
+def desenhar_ieee13(pasta, saida):
+    cfg = json.loads((pasta / "config.json").read_text())
+    pv = {int(k) for k in cfg["devices"]["stochastic_gen"]["params"]}
+    b_pros = {int(k) for k in cfg["devices"]["storage_device"]["params"]}
+    b_rede = {int(k) for k in cfg["devices"]["dso_storage_device"]["params"]}
+
+    xy = _ler_busxy(pasta)
+    pos = {int(k): v for k, v in xy.items() if k.isdigit()}
+    fonte, reg = xy["SourceBus"], xy["RG60"]
+
+    fig, ax = plt.subplots(figsize=(6.6, 5.0))
+
+    # ramais do alimentador, na topologia do IEEE13Nodeckt.dss
+    for a, b in ((632, 670), (670, 671), (671, 680), (632, 633), (632, 645),
+                 (645, 646), (692, 675), (671, 684), (684, 611), (684, 652)):
+        linha(ax, pos[a], pos[b])
+    _chave(ax, pos[671], pos[692])
+
+    # 633-634: transformador de distribuição no meio do ramal
+    xm = (pos[633][0] + pos[634][0]) / 2
+    linha(ax, pos[633], (xm - 0.23, pos[633][1]))
+    linha(ax, (xm + 0.23, pos[634][1]), pos[634])
+    _transformador_h(ax, xm, pos[633][1], "XFM-1  500 kVA\n4,16/0,48 kV")
+
+    # cabeceira: fonte, transformador da subestação, 650, regulador, 632
+    x = fonte[0]
+    ym = (fonte[1] + pos[650][1]) / 2
+    linha(ax, fonte, (x, ym + 0.33))
+    transformador(ax, x, ym, "T1  5000 kVA\n115/4,16 kV")
+    linha(ax, (x, ym - 0.33), pos[650])
+    linha(ax, pos[650], (x, reg[1] + 0.20))
+    _regulador(ax, x, reg[1], "Regulador\nde tensão")
+    linha(ax, (x, reg[1] - 0.20), pos[632])
+
+    ax.add_patch(Circle(fonte, R_BARRA, facecolor=TINTA, edgecolor=TINTA,
+                        zorder=5))
+    ax.text(x + 0.20, fonte[1], "Fonte 115 kV", ha="left", va="center",
+            fontsize=8.5, fontweight="bold", color=TINTA, zorder=6)
+
+    for b, (px, py) in pos.items():
+        (dx, dy, ha, va), fila = LAYOUT_13[b]
+        barra(ax, px, py, b, dx=dx, dy=dy, ha=ha, va=va)
+        if fila is None:
+            continue
+        gx, gy, sx, sy = px + fila[0], py + fila[1], fila[2], fila[3]
+        for tem, glifo in ((b in pv, lambda X, Y: modulo_pv(ax, X, Y)),
+                           (b in b_pros, lambda X, Y: bateria(ax, X, Y, AZUL)),
+                           (b in b_rede, lambda X, Y: bateria(ax, X, Y, VERMELHO))):
+            if tem:
+                glifo(gx, gy)
+                gx, gy = gx + sx, gy + sy
+
+    # legenda com os próprios glifos, como na figura da tese
+    lx, ly = 5.4, 6.7
+    for glifo, texto in (
+            (lambda X, Y: bateria(ax, X, Y, VERMELHO),
+             "Dispositivo de armazenamento de rede"),
+            (lambda X, Y: bateria(ax, X, Y, AZUL),
+             "Dispositivo de armazenamento de prosumidor"),
+            (lambda X, Y: modulo_pv(ax, X, Y), "Módulo de geração fotovoltaica")):
+        glifo(lx, ly)
+        ax.text(lx + 0.30, ly, texto, ha="left", va="center", fontsize=8.5,
+                color=TINTA)
+        ly -= 0.42
+
+    ax.set_xlim(-0.9, 9.6)
+    ax.set_ylim(-0.6, 7.5)
+    ax.set_aspect("equal")
+    ax.axis("off")
+    fig.tight_layout(pad=0.3)
+    fig.savefig(saida, dpi=200, facecolor="white")
+    print(f"gravado {saida}")
+    print(f"  {len(pos)} barras, {len(pv)} com geracao, {len(b_pros)} com "
+          f"bateria de prosumidor, {len(b_rede)} com bateria de rede")
 
 
 if __name__ == "__main__":

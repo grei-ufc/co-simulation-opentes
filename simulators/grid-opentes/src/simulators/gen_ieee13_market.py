@@ -97,7 +97,8 @@ PV_POR_NO = {646: ("PV1", 5000, 5000), 632: ("PV2", 3000, 3000),
              652: ("PV5", 2000, 2000)}
 PT_X, PT_Y = [0, 25, 75, 100], [1.2, 1.0, 0.8, 0.6]
 EF_X, EF_Y = [0.1, 0.2, 0.4, 1.0], [0.86, 0.90, 0.93, 0.97]
-IRRAD_BASE = 0.8
+# A irradiancia das curvas esta em pu de 1000 W/m2 (ver `pv_creator.py`).
+IRRAD_BASE = 1.0
 
 # Derivacoes do regulador na solucao publicada. Nao sao usadas como valor fixo
 # (ver a secao de regulador no ESTUDO_IEEE13.md), ficam registradas para conferir
@@ -108,20 +109,21 @@ TAPS_PUBLICADOS = (10, 8, 11)
 #
 # O procedimento esta no ESTUDO_IEEE13.md: para cada um dos 96 intervalos
 # resolve-se, com a matriz de sensibilidade do proprio caso, a menor injecao
-# total que mantem TODAS as barras dentro da faixa. Com 1000 kW por no o dia
-# inteiro fica factivel; abaixo disso sobra folga (800 kW deixam 0,98 mpu de
-# violacao residual, 600 kW deixam 6,3 mpu). A necessidade medida soma 7737 kW
-# e 12,3 MWh de energia movimentada, concentrada em 646, 634, 645 e 652, que sao
+# total que mantem TODAS as barras dentro da faixa. Com 600 kW por no o dia
+# inteiro fica factivel; abaixo disso sobra folga (400 kW deixam 6,1 mpu de
+# violacao residual, 200 kW deixam 15,0 mpu). A necessidade medida soma 4226 kW
+# e 6,3 MWh de energia movimentada, concentrada em 646, 634, 652 e 645, que sao
 # as barras onde o PV excede a carga local com folga.
 #
 # A divisao entre os dois tipos segue a arquitetura: REDE onde o DSO precisa de
 # alavanca direta, isto e nas barras que violam, e PROSUMIDOR em todos os nos,
-# porque e ele que participa do mercado. O total fica com margem sobre os
-# 7737 kW medidos, para o mecanismo ter espaco de negociacao em vez de operar
-# colado no limite.
-ARMAZ_REDE = {646: 1500.0, 645: 1000.0, 634: 1000.0, 652: 900.0}
-ARMAZ_PROSUMIDOR = {611: 500.0, 632: 500.0, 634: 400.0, 645: 300.0, 646: 400.0,
-                    652: 300.0, 670: 800.0, 671: 900.0, 675: 900.0, 692: 400.0}
+# porque e ele que participa do mercado. O total, 5350 kW, e 1,27 vez os
+# 4226 kW medidos, para o mecanismo ter espaco de negociacao sem operar colado
+# no limite; com o limite de cada no igual a soma dos dois tipos, a folga
+# residual do dia e zero (conferido com a mesma matriz de sensibilidade).
+ARMAZ_REDE = {646: 800.0, 645: 550.0, 634: 550.0, 652: 500.0}
+ARMAZ_PROSUMIDOR = {611: 300.0, 632: 300.0, 634: 200.0, 645: 150.0, 646: 200.0,
+                    652: 150.0, 670: 450.0, 671: 500.0, 675: 500.0, 692: 200.0}
 HORAS_DE_ARMAZENAMENTO = 3.3          # capacidade em kWh por kW de potencia
 SOC_MIN, SOC_MAX = 0.1, 0.9
 
@@ -413,36 +415,22 @@ def escrever_pool(carga, pv):
 
 
 # ---------------------------------------------------------------------------
-# Topologia de radio, para a figura de PER por distancia
+# Posicoes de radio para o servidor 6TiSCH
 # ---------------------------------------------------------------------------
 # A tese publica a topologia 6TiSCH da MVLV75 (Apendices B e C). Para a IEEE 13
-# nao existe topologia publicada, entao ela e CONSTRUIDA aqui, e isso precisa
-# ficar dito em qualquer figura que saia dela.
+# nao existe topologia publicada, entao as POSICOES sao construidas aqui. Os
+# ENLACES nao: o servidor 6TiSCH (`comm-opentes/Tisch.cc`) sorteia o
+# sombreamento de Pister-Hack de cada par com o gerador do OMNeT++, aplica o
+# limiar de PER e grava o resultado em `tisch_links.csv`, que e o levantamento da
+# rede de fato simulada (e o que a Figura 42 le). Uma estimativa feita aqui, com
+# outro gerador, divergiria dela.
 #
 # As coordenadas do `IEEE13Node_BusXY.csv` sao de desenho, nao de escala: entre
 # 650 e 632 sao 100 unidades para 2000 pes, e entre 632 e 645 sao 100 unidades
 # para 500 pes. Usa-las como metros daria distancias erradas por um fator de
 # quatro. Aqui as DIRECOES vem do desenho e os COMPRIMENTOS vem do `length` real
 # de cada linha, entao a geometria resultante respeita o alimentador.
-FREQ_HZ = 915e6
-TX_DBM, TX_GAIN, RX_GAIN = 0.0, 0.0, 0.0
-SHIFT_DB = 40.0
-SENSIBILIDADE_DBM = -106.37
-LIMIAR_PER = 0.5
-# Tabela 7 da tese: PER em funcao do RSSI acima do nivel de sensibilidade.
-PER_TABELA = [1.0, 0.8, 0.4, 0.15, 0.03, 0.006, 0.0015, 0.0]
 PES_PARA_M = 0.3048
-
-
-def _per_do_rssi(rssi):
-    acima = rssi - SENSIBILIDADE_DBM
-    if acima <= 0:
-        return 1.0
-    i = int(acima)
-    if i >= len(PER_TABELA) - 1:
-        return PER_TABELA[-1]
-    f = acima - i
-    return PER_TABELA[i] * (1 - f) + PER_TABELA[i + 1] * f
 
 
 def posicoes_em_metros(linhas):
@@ -481,26 +469,9 @@ def posicoes_em_metros(linhas):
     return pos
 
 
-def escrever_tisch(linhas, semente=13):
-    rng = np.random.default_rng(semente)
+def escrever_posicoes(linhas):
     pos = posicoes_em_metros(linhas)
     nomes = sorted(pos)
-    saida = ["i,j,name_i,name_j,distance_m,rssi_dbm,per,adjacent"]
-    viaveis = 0
-    for i in range(len(nomes)):
-        for j in range(i + 1, len(nomes)):
-            d = float(np.hypot(*(pos[nomes[i]] - pos[nomes[j]])))
-            if d < 1e-9:
-                rssi, per = 0.0, 0.0
-            else:
-                fspl = 20.0 * math.log10(3e8 / (4.0 * math.pi * d * FREQ_HZ))
-                rssi = TX_DBM + TX_GAIN + RX_GAIN + fspl - rng.uniform(0.0, SHIFT_DB)
-                per = _per_do_rssi(rssi)
-            ok = per < LIMIAR_PER
-            viaveis += ok
-            saida.append(f"{i},{j},{nomes[i]},{nomes[j]},{d:.4f},{rssi:.4f},"
-                         f"{per:.6f},{1 if ok else 0}")
-    (DATA / "tisch_links.csv").write_text("\n".join(saida) + "\n")
 
     # O arquivo de posicoes e indexado pelos NOS DO MERCADO, e nao pelos nomes
     # de barra do OpenDSS, porque e por eles que o `node_map_from_case` procura:
@@ -517,7 +488,7 @@ def escrever_tisch(linhas, semente=13):
     linhas_xy.append(f"DSO,{sub[0]:.2f},{sub[1]:.2f}")
     linhas_xy.append(f"Market,{sub[0]:.2f},{sub[1]:.2f}")
     (DATA / "nodes_xy.csv").write_text("\n".join(linhas_xy) + "\n")
-    return len(nomes) + 2, viaveis
+    return len(linhas_xy) - 1
 
 
 def main():
@@ -531,7 +502,7 @@ def main():
     escrever_master(barras, cargas)
     escrever_config(carga)
     escrever_pool(carga, pv)
-    n_radio, viaveis = escrever_tisch(linhas)
+    n_radio = escrever_posicoes(linhas)
 
     liquida = sum(carga.values()) - sum(pv.values())
     print(f"{len(force['nodes'])} nos, {len(PROSUMIDORES)} prosumidores, "
@@ -542,7 +513,8 @@ def main():
     print(f"liquida  de {liquida.min():7.1f} a {liquida.max():7.1f} kW")
     print(f"armazenamento  rede {sum(ARMAZ_REDE.values()):.0f} kW   "
           f"prosumidor {sum(ARMAZ_PROSUMIDOR.values()):.0f} kW")
-    print(f"radio 6TiSCH construido: {n_radio} posicoes, {viaveis} enlaces viaveis")
+    print(f"radio 6TiSCH: {n_radio} posicoes em nodes_xy.csv (os enlaces sao "
+          f"sorteados pelo servidor, que grava tisch_links.csv)")
 
 
 if __name__ == "__main__":

@@ -38,7 +38,8 @@ src/
 │   ├── smart_inverter_simulator.py  # inversor inteligente IEEE 1547 (OpenDER)
 │   ├── pv_panel_simulator.py     # painel PV (irradiância/temperatura -> P_dc)
 │   ├── csv_sim_pandas.py         # séries climáticas (CSV -> Mosaik)
-│   └── gen_pv_loadshapes.py      # utilitário: gera as curvas do PV a partir dos CSVs
+│   ├── pv_creator.py             # curvas de irradiância e temperatura dos PVs (estações BR-PVGen)
+│   └── pv_validator.py           # filtros e validações das curvas e dos PVs
 └── data/13Bus/                   # o modelo IEEE 13 (ver abaixo)
 ```
 

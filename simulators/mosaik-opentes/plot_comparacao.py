@@ -112,10 +112,15 @@ def figura_volt_var(b, v):
     # texto-resumo
     ax3 = fig.add_subplot(gs[1, 4]); ax3.axis("off")
     red = 100 * (1 - np.mean(std_v) / np.mean(std_b))
+    # A maxima e calculada, e nao afirmada: com o PV da barra 646 acima de
+    # 1,05 pu no caso sem controle, o Volt/Var absorve reativo e a reduz.
+    max_b = [_vmean(b, x).max() for x in buses]
+    max_v = [_vmean(v, x).max() for x in buses]
+    k = int(np.argmax(max_b))
     txt = (f"Resumo (5 barras PV)\n\n"
            f"σ médio:\n  {np.mean(std_b):.4f} → {np.mean(std_v):.4f}\n  (−{red:.0f}%)\n\n"
            f"Mínima crítica (Bus 652):\n  {min_b[-1]:.3f} → {min_v[-1]:.3f} pu\n\n"
-           f"Sem sobretensão:\n  máximos preservados")
+           f"Máxima (Bus {buses[k]}):\n  {max_b[k]:.3f} → {max_v[k]:.3f} pu")
     ax3.text(0.0, 0.95, txt, va="top", ha="left", fontsize=9,
              bbox=dict(fc="#f4f4f4", ec="#bbb"))
 

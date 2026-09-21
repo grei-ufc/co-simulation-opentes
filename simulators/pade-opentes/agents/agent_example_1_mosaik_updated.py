@@ -46,7 +46,12 @@ MOSAIK_MODELS = {
             ],
             'attrs': [
                 'val_in', 'val_out',   # comunicacao (mensagens via OMNeT++)
-                'V_in',                # entrada do medidor (tensao da barra)
+                # entrada do medidor: uma por fase. Um atributo so para as
+                # tres nao serve: o Mosaik indexa as entradas pela entidade de
+                # origem, e as tres fases vem da mesma barra, entao cada conexao
+                # sobrescrevia a anterior e o medidor lia uma fase so (a B), e
+                # nenhuma na barra 652, que so tem a fase A.
+                'V_in_1', 'V_in_2', 'V_in_3',
                 'P_avail_in',          # entrada do controlador (solar disponivel)
                 'P_ref', 'Q_ref',      # saida do controlador (setpoint do inversor)
             ],
@@ -73,8 +78,10 @@ class MosaikSim(MosaikCon):
             ag = ACTIVE_AGENTS.get(eid)
             if ag is None:
                 continue
-            if 'V_in' in attrs:  # medidor
-                vals = [v for v in attrs['V_in'].values()
+            # medidor: media das fases presentes (fase ausente chega como 0)
+            fases = [a for a in ('V_in_1', 'V_in_2', 'V_in_3') if a in attrs]
+            if fases:
+                vals = [v for a in fases for v in attrs[a].values()
                         if isinstance(v, (int, float)) and v > 0.1]
                 if vals:
                     ag.ao_medir_tensao(sum(vals) / len(vals), time)
