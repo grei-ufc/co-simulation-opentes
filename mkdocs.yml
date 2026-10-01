@@ -1,0 +1,129 @@
+site_name: OpenTES
+site_description: >-
+  Plataforma de co-simulação multidomínio para redes elétricas inteligentes:
+  PADE, OMNeT++, Mosaik e OpenDSS, com aplicação em mercado transativo.
+site_author: Time TTESO, GREI/UFC
+repo_url: https://github.com/grei-ufc/co-simulation-opentes
+repo_name: grei-ufc/co-simulation-opentes
+edit_uri: edit/main/docs/
+copyright: GREI, Grupo de Redes Elétricas Inteligentes, Universidade Federal do Ceará
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: pt-BR
+  logo: assets/grei-mark.png
+  favicon: assets/favicon.png
+  icon:
+    repo: fontawesome/brands/github
+  font:
+    text: Poppins
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: grei
+      toggle:
+        icon: material/weather-night
+        name: Mudar para o tema escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Mudar para o tema claro
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+
+extra_css:
+  - assets/grei.css
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Link para esta seção
+      toc_depth: 3
+      # Mesma regra do GitHub: preserva acentos, para que uma âncora escrita num
+      # arquivo .md funcione tanto aqui quanto na página do repositório.
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.keys
+  - pymdownx.smartsymbols
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+
+plugins:
+  - search:
+      lang:
+        - pt
+        - en
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/grei-ufc
+      name: GREI no GitHub
+    - icon: fontawesome/solid/graduation-cap
+      link: https://www.ufc.br
+      name: Universidade Federal do Ceará
+  generator: false
+
+nav:
+  - Início: index.md
+  - Começar:
+      - Instalação e execução: instalacao.md
+      - Cenários e experimentos: cenarios.md
+  - A plataforma:
+      - Mapa do repositório: GUIA.md
+      - Integração, componente a componente: INTEGRACAO.md
+      - Guia da pasta output/: RESULTADOS.md
+  - Mercado transativo:
+      - Formulação e desvios: MERCADO.md
+      - Medições do caso IEEE 13: estudos.md

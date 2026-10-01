@@ -1,0 +1,286 @@
+/* Identidade visual do GREI aplicada ao Material for MkDocs.
+ *
+ * Paleta e tipografia do manual de marca: verde #2F5E4B, creme #F4FFEB,
+ * Exo 2 Bold em títulos e Poppins Regular no texto de apoio. O Poppins é
+ * carregado pelo tema (theme.font.text); o Exo 2 entra aqui, porque o Material
+ * usa uma família só para texto e títulos.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,500;0,600;0,700;1,600&display=swap");
+
+:root {
+  --grei-verde: #2f5e4b;
+  --grei-verde-escuro: #1e4033;
+  --grei-verde-claro: #4a8168;
+  --grei-creme: #f4ffeb;
+  --grei-creme-fundo: #fbfff7;
+  --grei-tinta: #16241d;
+  --grei-cinza: #64786c;
+  --grei-linha: #c3d4c6;
+}
+
+/* ---------------------------------------------------------------- tema claro */
+
+[data-md-color-scheme="grei"] {
+  --md-primary-fg-color: var(--grei-verde);
+  --md-primary-fg-color--light: var(--grei-verde-claro);
+  --md-primary-fg-color--dark: var(--grei-verde-escuro);
+  --md-primary-bg-color: var(--grei-creme);
+  --md-primary-bg-color--light: #ffffff;
+
+  --md-accent-fg-color: var(--grei-verde-claro);
+  --md-accent-fg-color--transparent: rgba(74, 129, 104, 0.1);
+  --md-accent-bg-color: var(--grei-creme);
+
+  --md-default-bg-color: #ffffff;
+  --md-default-fg-color: var(--grei-tinta);
+  --md-default-fg-color--light: var(--grei-cinza);
+  --md-default-fg-color--lighter: rgba(22, 36, 29, 0.32);
+  --md-default-fg-color--lightest: rgba(22, 36, 29, 0.07);
+
+  --md-typeset-color: var(--grei-tinta);
+  --md-typeset-a-color: var(--grei-verde);
+  --md-typeset-mark-color: rgba(244, 255, 235, 0.9);
+  --md-typeset-table-color: var(--grei-linha);
+
+  --md-code-bg-color: var(--grei-creme-fundo);
+  --md-code-fg-color: var(--grei-tinta);
+
+  --md-footer-bg-color: var(--grei-verde-escuro);
+  --md-footer-bg-color--dark: #163026;
+
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------- tema escuro */
+
+[data-md-color-scheme="slate"][data-md-color-primary="custom"] {
+  --md-primary-fg-color: #163026;
+  --md-primary-fg-color--light: var(--grei-verde-claro);
+  --md-primary-fg-color--dark: #0f221b;
+  --md-primary-bg-color: var(--grei-creme);
+}
+
+[data-md-color-scheme="slate"][data-md-color-accent="custom"] {
+  --md-accent-fg-color: #7fc0a2;
+  --md-accent-fg-color--transparent: rgba(127, 192, 162, 0.1);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 155;
+  --md-typeset-a-color: #7fc0a2;
+}
+
+/* ------------------------------------------------------------------ tipografia */
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-header__title,
+.md-nav__title {
+  font-family: "Exo 2", "Poppins", -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+  color: var(--md-default-fg-color);
+  font-size: 2.1rem;
+  line-height: 1.2;
+}
+
+.md-typeset h2 {
+  margin-top: 2.2em;
+  padding-top: 0.4em;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+}
+
+[data-md-color-scheme="grei"] .md-typeset h2,
+[data-md-color-scheme="grei"] .md-typeset h3 {
+  color: var(--grei-verde-escuro);
+}
+
+/* ---------------------------------------------------------------------- tabelas */
+
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-typeset-table-color);
+  font-size: 0.72rem;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--grei-verde);
+  color: var(--grei-creme);
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: #163026;
+}
+
+/* ----------------------------------------------------------------- cabeçalho */
+
+.md-header {
+  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+}
+
+.md-header__button.md-logo img {
+  height: 1.5rem;
+  width: auto;
+}
+
+/* ------------------------------------------------------ a capa da página inicial */
+
+.grei-hero {
+  margin: 0 0 2rem;
+  padding: 2.2rem 2rem 2rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(135deg, var(--grei-verde) 0%, var(--grei-verde-escuro) 100%);
+  color: var(--grei-creme);
+}
+
+.grei-hero img {
+  max-width: 15rem;
+  margin-bottom: 1.1rem;
+}
+
+.grei-hero .md-typeset h1,
+.grei-hero h1 {
+  font-size: 1.7rem;
+  line-height: 1.25;
+  margin: 0 0 0.6rem;
+  color: var(--grei-creme);
+}
+
+.grei-hero h1 .headerlink {
+  display: none;
+}
+
+.grei-hero p {
+  margin: 0;
+  max-width: 44rem;
+  color: rgba(244, 255, 235, 0.88);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.grei-hero .md-button {
+  margin-top: 1.4rem;
+  margin-right: 0.5rem;
+  border-color: var(--grei-creme);
+  color: var(--grei-creme);
+}
+
+.grei-hero .md-button--primary {
+  background-color: var(--grei-creme);
+  border-color: var(--grei-creme);
+  color: var(--grei-verde-escuro);
+}
+
+.grei-hero .md-button:hover {
+  background-color: var(--grei-verde-claro);
+  border-color: var(--grei-verde-claro);
+  color: #ffffff;
+}
+
+/* ------------------------------------------------------------- grade de cartões */
+
+.grei-cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin: 1.4rem 0 2rem;
+}
+
+.grei-cartoes > div {
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.3rem;
+  background-color: var(--md-default-bg-color);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.grei-cartoes > div:hover {
+  border-color: var(--grei-verde-claro);
+  transform: translateY(-2px);
+}
+
+.grei-cartoes h3 {
+  margin: 0 0 0.4rem !important;
+  font-size: 0.85rem;
+}
+
+.grei-cartoes p {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: var(--md-default-fg-color--light);
+}
+
+.grei-cartoes p:last-child a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ números de destaque */
+
+.grei-numeros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.8rem;
+  margin: 1.4rem 0 2rem;
+}
+
+.grei-numeros > div {
+  padding: 0.9rem 1rem;
+  border-left: 3px solid var(--grei-verde-claro);
+  background-color: var(--md-default-fg-color--lightest);
+  border-radius: 0 0.2rem 0.2rem 0;
+}
+
+.grei-numeros strong {
+  display: block;
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--md-typeset-a-color);
+}
+
+.grei-numeros span {
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ------------------------------------------------------------------ diagramas */
+
+/* O Material deriva as cores do Mermaid da paleta ativa. No tema claro o
+ * resultado fica cinza; estas regras trazem o diagrama para a marca, sem tocar
+ * no tema escuro, onde o contraste padrão já funciona. */
+
+[data-md-color-scheme="grei"] .mermaid .node rect,
+[data-md-color-scheme="grei"] .mermaid .node polygon,
+[data-md-color-scheme="grei"] .mermaid .node circle,
+[data-md-color-scheme="grei"] .mermaid .actor {
+  fill: var(--grei-creme) !important;
+  stroke: var(--grei-verde) !important;
+}
+
+[data-md-color-scheme="grei"] .mermaid .label,
+[data-md-color-scheme="grei"] .mermaid .nodeLabel,
+[data-md-color-scheme="grei"] .mermaid text.actor > tspan {
+  fill: var(--grei-tinta) !important;
+}
+
+[data-md-color-scheme="grei"] .mermaid .flowchart-link,
+[data-md-color-scheme="grei"] .mermaid .messageLine0,
+[data-md-color-scheme="grei"] .mermaid .messageLine1 {
+  stroke: var(--grei-cinza) !important;
+}
+
+/* Nome de arquivo, variável ou comando não deve quebrar no meio dentro de uma
+ * tabela; quando não couber, o Material rola a tabela na horizontal. */
+.md-typeset table:not([class]) code {
+  white-space: nowrap;
+}

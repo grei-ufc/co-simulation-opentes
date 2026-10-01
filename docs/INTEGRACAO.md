@@ -20,12 +20,14 @@ O fluxo alvo da integração é:
 PADE -> Mosaik -> OMNeT++ -> Mosaik -> PADE -> Mosaik -> OpenDSS
 ```
 
-Dois benchmarks convivem no repositório, com propósitos diferentes:
+Benchmarks convivem no repositório, com propósitos diferentes:
 
 | Benchmark | Cenário | Para quê |
 |---|---|---|
 | **IEEE 13 Barras** | `integrated`, `ieee13` | validar a plataforma de ponta a ponta, com controle Volt/Var local |
-| **Rede de 75 barras** | `market` | exercitar a camada de mercado transativo, com negociação multiagente |
+| **IEEE 13 Barras** | `market` com `MARKET_NETWORK=13Bus` | o caso principal do mercado transativo, sobre o mesmo alimentador |
+| **Rede de 75 barras** | `market` (padrão) | reproduzir a tese de referência, com negociação multiagente |
+| **BT16 e BT38** | `market` | exercitar os dois extremos da faixa de tensão, que a rede da tese não alcança |
 
 ## Estrutura
 
@@ -41,7 +43,7 @@ função, não o time de origem):
   (prosumidor, concentrador, DSO), decomposição dual e figuras. Fica fora dos
   agentes de propósito, para poder rodar sem subir a co-simulação inteira.
 
-Proveniência: o conteúdo vem dos repos dos times — TSCC (comunicação) foi
+Proveniência: o conteúdo vem dos repos dos times. O TSCC (comunicação) foi
 fragmentado em `comm-opentes` (OMNeT++) + agentes em `pade-opentes` + cenário e
 collectors em `mosaik-opentes`; TTESO contribuiu com a lib PADE (`pade-opentes`);
 TSRE virou `grid-opentes`. O registro por componente está na seção
@@ -123,15 +125,22 @@ dos simuladores de rede ou eletrico. O elec_collector roda como container remoto
 ### 3. Controle do TSRE migrado para o PADE: Volt/Var no inversor PV
 
 Objetivo do projeto: trazer o controle para dentro dos agentes PADE. Na aplicacao
-do IEEE 13 NAO ha bateria — o atuador e o proprio inversor fotovoltaico, com
+do IEEE 13 NAO ha bateria: o atuador e o proprio inversor fotovoltaico, com
 controle Volt/Var.
 
 ```text
 - O agente (pade-opentes/agents/agent_example_1_mosaik_updated.py, evolucao da
   dupla de agentes do first.py do TSCC) foi generalizado para N pares
   medidor/controlador. Para cada PV:
-    AgenteA_i  -> mede a tensao da barra do PV_i e publica a medicao na rede
-                  OMNeT++ (mensagem FIPA-ACL marcada com a barra).
+    AgenteA_i  -> mede a tensao da barra do PV_i, como MEDIA das fases
+                  presentes, e publica a medicao na rede OMNeT++ (mensagem
+                  FIPA-ACL marcada com a barra). Cada fase tem o seu atributo
+                  de entrada (V_in_1 a V_in_3): o Mosaik indexa as entradas pela
+                  entidade de origem, e as tres fases vem da mesma barra, entao
+                  liga-las ao mesmo atributo fazia cada conexao sobrescrever a
+                  anterior e o medidor lia uma fase so. Na barra 652, que tem
+                  apenas a fase A, ele nao recebia tensao nenhuma e o PV5 nunca
+                  atuava.
     AgenteB_i  -> recebe a tensao da SUA barra (ja atrasada pela rede) e aplica
                   Volt/Var: P (ativa) = solar disponivel; Q (reativa) = f(V),
                   respeitando S = sqrt(P^2 + Q^2) <= kVA do inversor.
@@ -165,8 +174,10 @@ Windows):
   dos PVs).
 ```
 
-Apos isso, o bloco eletrico isolado (cenario ieee13) reproduz EXATAMENTE os
-valores do TSRE (pico P_dc ~3024,6 / P_ac ~2854,2 / P_meas ~1902,7 kW).
+Alem dessas duas, o PVSystem da barra 646 foi corrigido de trifasico para
+bifasico (ver "Validacao do bloco eletrico", no fim deste documento). As tres
+correcoes mudam os valores de geracao em relacao aos do TSRE, e a secao de
+validacao registra o antes e o depois.
 
 ### 5. Cenario integrado causal (mosaik-opentes/scenarios/first.py)
 
@@ -187,7 +198,7 @@ O cenario roda duas vezes (CONTROL_ENABLED=0 baseline e =1 Volt/Var) e grava em
 output/integrated/ com sufixo por execucao.
 
 Outros cenarios em mosaik-opentes/scenarios/: star.py (comunicacao isolada) e
-ieee13_smart_pv.py (rede eletrica isolada) — bancadas de teste de cada bloco.
+ieee13_smart_pv.py (rede eletrica isolada), bancadas de teste de cada bloco.
 
 ### 6. Modelo de comunicacao (comm-opentes/omnetpp.ini)
 
@@ -202,8 +213,8 @@ ieee13_smart_pv.py (rede eletrica isolada) — bancadas de teste de cada bloco.
 ```
 
 Motivo da semente: deixar o experimento comparavel/reprodutivel sem deixar de ser
-estocastico ao longo do tempo. (Discussao sobre o modelo de perda — fenomenologico
-hoje, mecanistico/INET no futuro — em docs/INTEGRACAO.md.)
+estocastico ao longo do tempo. (Discussao sobre o modelo de perda, hoje
+fenomenologico e no futuro mecanistico com o INET, adiante neste documento.)
 
 ### 7. Execucao: run.sh
 
@@ -227,7 +238,7 @@ internals e diferem so em parametros. O run.sh:
   resiliente na porta 5555) antes de rodar o Mosaik. Motivo: evitar o race em
   que o Mosaik tenta conectar ao elec-collector antes de ele ligar.
 - no ieee13 (que nao tem comm), sobe os deps e espera pelo LOG do
-  elec-collector. Motivo: o mesmo race — o depends_on do compose so garante
+  elec-collector. Motivo: o mesmo race, porque o depends_on do compose so garante
   que o container iniciou, nao que o app esta ouvindo.
 - nunca sonda as portas dos simuladores --remote do grid: eles aceitam UMA
   conexao Mosaik e encerram; um probe TCP mata o simulador (verificado: o
@@ -247,6 +258,11 @@ output/integrated/  -> result_{baseline,volt_var}.csv, comm_trace_{...}.csv,
                        (latencia/jitter/integridade/pacotes acumulados)
 output/ieee13/      -> result_run_ieee13_cosim_pv_5min.csv, ieee13_dashboard.png
 output/star/        -> results.csv, grafico_trafego.png
+output/market*/     -> result_{baseline,negociado}.csv, dlmp.csv,
+                       transactions.csv, flexibility.csv, run.json. Um diretorio
+                       por rede: market/ (MVLV75), market_13Bus/, market_BT16/,
+                       market_BT38/
+output/sensibilidade_48h/, output/sensibilidade_perda*/ -> experimentos
 ```
 
 A explicacao detalhada de cada arquivo esta em docs/RESULTADOS.md. A pasta
@@ -524,6 +540,47 @@ python src/simulators/plot_grid.py src/data/BT38     # -> src/data/BT38/diagrama
 ```
 
 
+### 13. O IEEE 13 como caso de mercado
+
+**Por que existe.** O alimentador que valida a plataforma no cenário
+`integrated` passou a ser também o caso principal da camada de mercado. Ele é
+publicado, citável e desbalanceado, e a geração fotovoltaica já instalada nele
+produz sobretensão de verdade, que é o que faltava na MVLV75. Com isso, os dois
+lados do repositório passam a falar do mesmo circuito.
+
+`src/simulators/gen_ieee13_market.py` monta o caso a partir do circuito que já
+existe, e emite o mesmo conjunto de arquivos das redes geradas (`force.json`,
+`config.json`, perfis, `nodes_xy.csv`). As decisões de projeto foram medidas, e
+cada uma tem um script em `estudos/ieee13/`:
+
+```text
+- Regulador: ajuste oficial com derivacoes livres (regulador.py). O cenario
+  Volt/Var trava as derivacoes com maxtapchange=0, porque ali o inversor deve
+  ser o unico ator; num estudo de alocacao de armazenamento isso nao serve.
+- Armazenamento: 5.350 kW em 14 bancos, 1,27 vez a necessidade medida de
+  4.226 kW (dimensionamento.py, factivel_alocacao.py). A necessidade sai da
+  matriz de sensibilidade do proprio caso, intervalo a intervalo, e nao de regra
+  de bolso. Capacidade de 3,3 vezes a potencia, com SoC entre 10% e 90%.
+- Concentrador: um so, porque o alimentador tem um transformador so.
+- Terminais da subestacao (650, rg60) fora da restricao do operador.
+```
+
+**Topologia de rádio.** A posição de cada nó sai do circuito e vai em
+`nodes_xy.csv`. Os enlaces que valem são os que o servidor 6TiSCH sorteia e
+grava em `tisch_links.csv` durante a execução: 18 posições e 74 enlaces viáveis.
+O gerador já teve uma estimativa própria de enlaces, que divergia da simulada
+(16 posições e 52 enlaces) e foi retirada, porque um segundo sorteio da mesma
+grandeza só cria a chance de os dois números discordarem na documentação.
+
+**Resultado.** Ver a seção de resultados do `RESULTADOS.md` e o estudo completo
+em `Docs_Externo/ESTUDO_IEEE13.md`. Em uma linha: a programação que cada
+prosumidor faria sozinho piora a rede de 72 para 171 pares barra-intervalo
+violados, e a negociação zera os dois lados em 98 rodadas.
+
+```bash
+MARKET_NETWORK=13Bus ./run.sh market     # -> output/market_13Bus/
+```
+
 
 ## Ambiente Python
 
@@ -567,7 +624,7 @@ saídas do OpenDSS são produtos de simulação e estão no `.gitignore`.
 
 A co-simulação completa (`./run.sh integrated`) fecha o laço causal
 sobre o IEEE 13 Barras, sem bateria. Reproduz o estado do trabalho do TSRE
-(Paulo Victor) — os **5 inversores fotovoltaicos injetando** — porém agora
+(Paulo Victor), com os **5 inversores fotovoltaicos injetando**, porém agora
 **co-simulados e controlados**: cada inversor tem seu par de agentes PADE
 (medidor + controlador) e a tensão da sua barra trafega pela rede OMNeT++:
 
@@ -583,7 +640,7 @@ OpenDSS ← PVSystem PV_i (P_des, Q_des) ←────────────
 - Ganho do Volt/Var **suave** (`Q_MAX_PCT = 0,05`, faixa morta `±0,02`): com 5
   inversores + atraso/perda da rede, ganho alto **desestabiliza** (ver observações).
 
-O experimento roda **duas vezes** e compara — sem controle (baseline) e com
+O experimento roda **duas vezes** e compara sem controle (baseline) contra com
 controle (Volt/Var). A perda de pacotes é **parâmetro de modelo da rede**
 (`drop_probability = 0,15` herdado do TSCC), com **semente fixa** para
 reprodutibilidade.
@@ -592,32 +649,36 @@ reprodutibilidade.
 
 | Métrica | Valor |
 |---|---|
-| Pacotes enviados | 730 (5 medidores × 1 dia) |
-| Pacotes perdidos | 136 (**18,6%**) |
+| Pacotes enviados | 1.227 (5 medidores × 1 dia) |
+| Pacotes perdidos | 213 (**17,4%**) |
 | Latência | 32–451 ms (média 81 ms) |
-| Jitter | média 53 ms |
+| Jitter | média 44 ms (parâmetro do modelo: 50 ms) |
 
 **Efeito do controle Volt/Var nas 5 barras dos PVs (desvio-padrão e mínimo da tensão p.u.):**
 
-| Barra (PV) | Desvio base → Volt/Var | Mínima base → Volt/Var |
-|---|---:|---:|
-| 652 (PV5) | 0,0338 → **0,0273 (−19%)** | 0,9205 → **0,9382** |
-| 634 (PV3) | 0,0245 → **0,0210 (−14%)** | 0,9450 → **0,9557** |
-| 632 (PV2) | 0,0121 → **0,0107 (−12%)** | 0,9673 → 0,9714 |
-| 645 (PV4) | 0,0247 → 0,0242 (−2%) | 0,9665 → 0,9680 |
-| 646 (PV1) | 0,0290 → 0,0285 (−1%) | 0,9648 → 0,9662 |
-| **Média** | 0,0248 → **0,0224 (−10%)** | — |
+| Barra (PV) | Desvio base → Volt/Var | Mínima base → Volt/Var | Máxima base → Volt/Var |
+|---|---:|---:|---:|
+| 652 (PV5) | 0,0285 → **0,0228 (−20%)** | 0,9203 → **0,9366** | 1,0217 → 1,0217 |
+| 634 (PV3) | 0,0193 → **0,0162 (−16%)** | 0,9450 → **0,9552** | 1,0114 → 1,0114 |
+| 632 (PV2) | 0,0114 → **0,0099 (−13%)** | 0,9674 → 0,9718 | 1,0067 → 1,0067 |
+| 645 (PV4) | 0,0184 → **0,0163 (−12%)** | 0,9665 → 0,9712 | 1,0385 → **1,0317** |
+| 646 (PV1) | 0,0215 → **0,0191 (−11%)** | 0,9648 → 0,9700 | 1,0517 → **1,0437** |
+| **Média** | 0,0198 → **0,0169 (−15%)** | | |
 
-Reativo total dos 5 inversores: médio 84 kvar, máximo 320 kvar. Geração FV
-agregada (Σ P_meas): pico ≈ 4,5 MW.
+Reativo somado dos 5 inversores: módulo médio 86 kvar, injeção máxima de
+367 kvar às 20:55 e absorção máxima de 221 kvar às 15:05. Geração FV agregada
+(Σ P_meas): pico de 4.390 kW.
 
-### Observações — baseline × Volt/Var
+### Observações: baseline × Volt/Var
 
-- **Suporte de tensão (o ganho principal).** A rede tende à **subtensão** (várias
-  barras abaixo de 0,95 pu no baseline). O Volt/Var **injeta reativo e eleva as
-  barras mais críticas**: a mínima do Bus 652 sobe de 0,920 → 0,938 pu e a do
-  Bus 634 de 0,945 → 0,956 pu. O desvio-padrão da tensão cai em média 10% (até
-  19% na barra mais afetada), **sem introduzir sobretensão** (máximos preservados).
+- **Suporte de tensão no fim do dia.** A rede tende à **subtensão** quando a
+  geração encerra e a carga sobe. O Volt/Var **injeta reativo e eleva as barras
+  mais críticas**: a mínima do Bus 652 sobe de 0,9203 → 0,9366 pu e a do Bus 634
+  de 0,9450 → 0,9552 pu. O desvio-padrão da tensão cai em média 15%, e 20% na
+  barra 652.
+- **Corte de sobretensão no meio da tarde.** Na barra 646 o sentido se inverte: a
+  tensão passa de 1,05 pu sem controle, o inversor **absorve** reativo e a máxima
+  do dia cai de 1,0517 → 1,0437 pu. Na 645, de 1,0385 → 1,0317 pu.
 - **Estabilidade exige controle suave.** Com ganho agressivo (`Q_MAX_PCT = 0,44`,
   padrão do IEEE 1547) os **5 inversores simultâneos + atraso/perda da rede**
   sobre-injetam reativo e **desestabilizam** (tensão chegou a 1,12 pu, reativo a
@@ -626,9 +687,9 @@ agregada (Σ P_meas): pico ≈ 4,5 MW.
   agressividade segura do controle distribuído.
 - **A perda de pacotes é um parâmetro do modelo, não um resultado.** O
   `drop_probability` representa a confiabilidade do canal real e deve ser
-  **calibrado com a aplicação**. Aqui usamos o valor do TSCC (15%, ~18,6% medido)
+  **calibrado com a aplicação**. Aqui usamos o valor do TSCC (15%, 17,4% medido)
   com semente fixa. Mesmo assim, a ordem assíncrona das mensagens faz os valores
-  exatos variarem um pouco entre execuções — o efeito qualitativo se mantém.
+  exatos variarem um pouco entre execuções, e o efeito qualitativo se mantém.
 - **STATCOM à noite.** Com a solar nula (P = 0), toda a capacidade do inversor
   vira reativa; o PV opera como compensador e continua dando suporte de tensão.
 
@@ -636,7 +697,7 @@ agregada (Σ P_meas): pico ≈ 4,5 MW.
 
 O `drop_probability = 0,15` (modelo do TSCC) é **fenomenológico**: a cada pacote
 sorteia-se a perda com 15% de chance. Isso reproduz o *efeito estatístico* da
-perda, mas **não modela a causa** — na realidade um pacote se perde por
+perda, mas **não modela a causa**: na realidade um pacote se perde por
 congestionamento, colisão, ruído, timeout ou enlace saturado. Ou seja, a perda
 real **emerge** das condições da rede; ela é uma **saída**, não uma entrada.
 
@@ -646,7 +707,7 @@ sensibilidade** (varrer 0%, 5%, 15%… e medir o impacto no controle).
 
 Quando o projeto for para ambientes pesados (**transações econômicas**, muitos
 agentes, mercados P2P), o caminho é migrar do modelo fenomenológico para o
-**mecanístico** — o OMNeT++ tem o framework **INET**, que modela TCP/IP,
+**mecanístico**, e o OMNeT++ tem o framework **INET**, que modela TCP/IP,
 enlaces, filas e protocolos. Aí o **próprio tráfego** da co-simulação gera
 congestionamento e a **perda/latência emerge** dele: a pergunta deixa de ser
 "qual probabilidade eu ponho?" e passa a ser "esta rede aguenta o volume de
@@ -685,18 +746,44 @@ docker compose run --rm --no-deps -e MOSAIK_OUTPUT_DIR=/app/output/integrated \
 
 ### Validação do bloco elétrico (cenário `ieee13`, isolado)
 
-O cenário elétrico puro (`./run.sh ieee13`, IEEE 13 + 5 PVs) reproduz
-**exatamente** os valores do trabalho do TSRE (Paulo Victor, branch
-`paulo-victor`), confirmando que a integração não alterou a física:
+O cenário elétrico puro (`./run.sh ieee13`, IEEE 13 + 5 PVs) é a bancada de
+validação da física, sem agentes e sem rede de comunicação. Máximos do dia:
 
-| Grandeza (máximo no dia) | Nosso | Referência TSRE |
-|---|---:|---:|
-| P_dc (painel) | 3024,6 kW | 3024,6 kW |
-| P_ac (inversor) | 2854,2 kW | 2854,2 kW |
-| P_meas (injeção OpenDSS) | 1902,7 kW | 1902,7 kW |
+| PV (barra) | P_dc (painel) | P_ac (inversor) | P_meas (injeção OpenDSS) |
+|---|---:|---:|---:|
+| PV1 (646) | 2.531,8 kW | 2.372,5 kW | 2.372,3 kW |
+| PV2 (632) | 1.014,4 kW | 933,9 kW | 933,9 kW |
+| PV3 (634) | 1.015,2 kW | 934,7 kW | 934,7 kW |
+| PV4 (645) | 708,0 kW | 653,5 kW | 653,5 kW |
+| PV5 (652) | 517,0 kW | 469,8 kW | 469,8 kW |
+| **Σ** | | | **4.030,4 kW** |
 
-Tensões do IEEE 13 coerentes: barra 650 (fonte) = 1,000 pu; barras trifásicas
-0,91–1,05 pu; fases de trechos monofásicos (ex.: 611 A/B) em 0,0 (corretas).
+Dois defeitos herdados foram corrigidos aqui, e por isso os números divergem dos
+publicados pelo TSRE (P_dc 3.024,6 / P_ac 2.854,2 / P_meas 1.902,7 kW no PV1):
+
+- **Temperatura dividida por 25.** O gerador de curvas da versão 1.0.0 gravava a
+  temperatura do módulo dividida por 25, e o painel operava como se estivesse
+  permanentemente frio. Com a temperatura em graus Celsius, a curva P-T desconta
+  o aquecimento e a geração agregada de pico cai de 4.894 para 4.030 kW.
+- **PV1 declarado em fase inexistente.** A barra 646 é alimentada pelo ramal
+  632-645-646, na configuração de linha 603 (fases C, B e neutro). Com
+  `phases=3 Bus1=646.1.2.3`, o terminal da fase A ficava ligado a um nó que
+  nenhum outro elemento usa, e 37% da potência pedida era injetada nele, o que
+  explica a diferença entre P_ac e P_meas nos números antigos (2.854,2 contra
+  1.902,7 kW, exatamente 2/3). Com `phases=2 Bus1=646.3.2`, P_meas acompanha
+  P_ac. O `pv_validator.validar_no_circuito` recusa a declaração antiga.
+
+Com as duas correções, o circuito reproduz o **perfil de tensão publicado do
+IEEE 13** com erro médio de 0,00044 pu e máximo de 0,00134 pu nas 33 medidas de
+fase da tabela de referência (estudo em `Docs_Externo/ESTUDO_IEEE13.md`), que é
+uma validação mais forte do que a comparação com a execução anterior do TSRE.
+Tensões coerentes: barra 650 (fonte) = 1,000 pu; demais barras entre 0,909 e
+1,059 pu; fases de trechos monofásicos (ex.: 611 A/B) em 0,0 (corretas).
+
+No cenário `integrated` os mesmos painéis aparecem com P_meas igual ao P_dc
+(pico agregado de 4.390,0 kW): ali quem define a potência ativa é o agente
+(`P_ref` = solar disponível), sem o estágio de eficiência do inversor que o
+cenário isolado aplica.
 
 ### Como reproduzir
 

@@ -65,6 +65,7 @@ co-simulation-opentes/
 ├── README.md                instalação e comandos
 ├── docs/                    ver a seção 6
 ├── output/                  resultados das execuções (CSV das co-simulações)
+├── estudos/                 scripts que sustentam decisões de projeto
 └── simulators/
     ├── comm-opentes/        rede de comunicação, OMNeT++ em C++
     ├── pade-opentes/        agentes, PADE 3.0 em Python
@@ -105,9 +106,9 @@ simulador alimenta qual entrada de qual outro.
 
 ### `grid-opentes`, a rede elétrica
 
-Circuitos OpenDSS em `src/data/` (IEEE 13 Barras, IEEE 34, IEEE 123, a MVLV75 do
-mercado, e as duas redes próprias BT16 e BT38) e os simuladores Mosaik que os
-acionam. Quatro utilitários importam:
+Circuitos OpenDSS em `src/data/` (IEEE 13 Barras, a MVLV75 do mercado, e as duas
+redes próprias BT16 e BT38) e os simuladores Mosaik que os acionam. Seis
+utilitários importam:
 
 - `gen_market_grid.py` converte o grafo da tese (`force.json`) num circuito
   OpenDSS completo.
@@ -118,6 +119,14 @@ acionam. Quatro utilitários importam:
   `config.json`.
 - `sensitivity.py` obtém as matrizes `∂V/∂P` e `∂V/∂Q` por perturbação, o que
   substitui o Jacobiano que a tese extraía de um segundo simulador.
+- `gen_ieee13_market.py` monta o caso de mercado sobre o IEEE 13: alocação de
+  armazenamento, perfis, `config.json` e as posições dos nós.
+- `pv_creator.py` gera as curvas de irradiância e de temperatura de módulo dos
+  cinco sistemas fotovoltaicos a partir das estações do BR-PVGen, e escreve as
+  Loadshapes e as declarações de PVSystem. O `pv_validator.py` filtra as séries
+  (irradiância negativa, teto de 1,5 pu, faixa IEC de temperatura) e confere cada
+  nó declarado contra o circuito compilado, que é o que impede uma repetição do
+  defeito do PV1 descrito no `INTEGRACAO.md`.
 
 ### `market-opentes`, a otimização
 
@@ -134,6 +143,18 @@ a validação viáveis.
 | `settlement.py` | liquidação das transações e preço locacional |
 | `loading.py` | verificação de carregamento térmico dos condutores |
 | `plot_*.py` | as figuras |
+
+### `estudos/`, as decisões medidas
+
+Scripts curtos, fora do caminho de execução, que respondem a uma pergunta de
+projeto cada um e imprimem o número que a resposta usa. Existem para que uma
+decisão registrada na documentação possa ser refeita sem reconstruir o raciocínio.
+Em `estudos/ieee13/`: ajuste do regulador (`regulador.py`), dimensionamento do
+armazenamento pela matriz de sensibilidade (`dimensionamento.py` e
+`factivel_alocacao.py`), conferência da programação no fluxo não linear
+(`conferencia_nao_linear.py`), convenção de sinal do reativo
+(`convencao_reativo.py`) e o desvio-padrão da tensão contra a perda de pacotes
+(`sigma_perda.py`).
 
 ## 4. Como rodar
 
@@ -157,19 +178,28 @@ O `market` roda duas passadas, uma sem mecanismo nenhum e outra com a negociaç�
 e grava `result_baseline.csv` e `result_negociado.csv`. É a comparação entre as
 duas que mede o efeito do mercado.
 
-### Três redes
+### Quatro redes
 
 A rede vem de `MARKET_NETWORK`, e cada uma responde a uma pergunta diferente.
 
-| Rede | Barras BT | Para quê |
+| Rede | Barras | Para quê |
 |---|---|---|
-| `MVLV75` | 75 | a da tese de referência; é onde a comparação é feita |
-| `BT16` | 16 | bancada: 0,3 s por rodada, para iterar sobre o mecanismo |
-| `BT38` | 38 | a rede final do trabalho, com quatro alimentadores |
+| `MVLV75` | 75 BT | a da tese de referência; é onde a comparação é feita |
+| `BT16` | 16 BT | bancada: 0,3 s por rodada, para iterar sobre o mecanismo |
+| `BT38` | 38 BT | a rede final do trabalho, com quatro alimentadores |
+| `13Bus` | 13 MT | o mesmo benchmark da plataforma, agora como caso de mercado |
 
 ```bash
 MARKET_NETWORK=BT38 ./run.sh market      # -> output/market_BT38/
+MARKET_NETWORK=13Bus ./run.sh market     # -> output/market_13Bus/
 ```
+
+O caso `13Bus` fecha o círculo do repositório: o alimentador que valida a
+plataforma no cenário `integrated` também recebe a camada de mercado, com 14
+bancos de armazenamento somando 5.350 kW, dimensionados contra a necessidade
+medida do próprio caso. O estudo que sustenta o caso está em
+`Docs_Externo/ESTUDO_IEEE13.md`, e os scripts que o reproduzem, em
+`estudos/ieee13/`.
 
 A MVLV75 não exibe sobretensão: alimentadores de 60 a 180 m e PV sobre carga de
 0,37 dão cerca de 0,006 pu de elevação ao meio-dia, e a restrição superior nunca
@@ -193,7 +223,7 @@ Todas com valor padrão no `docker-compose.yaml`. As que mais importam:
 
 | Variável | Padrão | O que muda |
 |---|---|---|
-| `MARKET_V_BACKOFF` | `2e-3` | margem na restrição de tensão, contra o erro da linearização |
+| `MARKET_V_BACKOFF` | `1e-3` | margem na restrição de tensão, contra o erro da linearização |
 | `MARKET_MAX_ROUNDS` | `60` | teto de rodadas; precisa acompanhar o backoff |
 | `MARKET_SCENARIOS` | `1` | cenários por prosumidor; 1 é determinístico |
 | `MARKET_REALIZED_MODE` | `perturb` | como a demanda realizada difere da programada |
@@ -205,9 +235,34 @@ Todas com valor padrão no `docker-compose.yaml`. As que mais importam:
 
 Os resultados principais, para saber o que esperar antes de rodar.
 
-**A negociação resolve a violação de tensão.** No fluxo de potência não linear
-completo, com a demanda realizada da tese, os pontos abaixo de 0,97 pu vão de 337
-para zero, e a tensão mínima do dia sobe de 0,93946 para 0,97033 pu, com
+**O laço causal fecha, e a informação do agente atravessa a rede.** No cenário
+`integrated`, ao longo de um dia os cinco medidores enviam 1.227 pacotes e 213
+são descartados, uma perda de 17,4% sobre o parâmetro de 15%. A latência fica
+entre 32 e 451 ms, com média de 81 ms.
+
+**O Volt/Var nos agentes melhora o perfil de tensão nas duas pontas.** O
+desvio-padrão da tensão cai em média 15% nas barras com geração, e 20% na barra
+652, cuja mínima sobe de 0,9203 para 0,9366 pu. Na barra 646, onde o problema é o
+oposto, a máxima cai de 1,0517 para 1,0437 pu. O ganho do controle é o parâmetro
+que importa: com os 44% do kVA que a IEEE 1547 sugere, os cinco inversores sob
+atraso e perda sobre-injetam e a tensão chega a 1,12 pu.
+
+**O efeito do controle resiste a muita perda de pacote, neste caso.** Uma
+varredura de 0 a 100% de perda, com 20 sementes por nível, mantém a redução do
+desvio-padrão em 15% até 75% de perda e só a derruba a partir de 80%. A razão é a
+dinâmica lenta do caso: a tensão muda pouco entre passos de 5 min e o controlador
+segura o último reativo válido. Não generalize para controles de passo curto.
+
+**O IEEE 13 também serve como caso de mercado.** A programação que cada
+prosumidor faria sozinho leva as violações de 72 para 171 pares barra-intervalo,
+e a negociação as zera em 98 rodadas, com a tensão contida entre 0,9710 e
+1,0290 pu. Na co-simulação completa, com agentes reais e a rede 6TiSCH no laço,
+a negociação converge em 81 rodadas com 3.212 mensagens e nenhuma perda, e as
+leituras fora da faixa A da ANSI C84.1 caem de 191 para 104.
+
+**O resultado central da tese é reproduzido.** Na MVLV75, no fluxo de potência
+não linear completo, com a demanda realizada da tese, os pontos abaixo de
+0,97 pu vão de 337 para zero, e a tensão mínima do dia sobe de 0,93946 para 0,97033 pu, com
 convergência em 34 rodadas. O horário crítico é 17:45, o mesmo da tese.
 
 **A camada de comunicação quebra suposições do protocolo.** O
@@ -234,13 +289,15 @@ No repositório:
 | `INTEGRACAO.md` | o que foi mudado em cada componente para integrá-los, e por quê |
 | `RESULTADOS.md` | o que há em `output/` e como se lê |
 | `MERCADO.md` | a formulação do mercado, equação por equação, e os desvios |
+| [`estudos.md`](estudos.md) | os scripts que refazem as decisões de projeto do caso IEEE 13 |
 
 Fora do repositório, em `Docs_Externo/`, ficam os documentos de pesquisa que não
 descrevem o código: o confronto com a tese de referência (`COMPARACAO_TESE.md`),
 a cobertura do
 capítulo 6 (`REVISAO_TESE.md`), o registro cronológico com o porquê de cada
-decisão (`DIARIO_MERCADO_2026-08.md`), o experimento de perda de pacotes e a
-apresentação.
+decisão (`DIARIO_MERCADO_2026-08.md`), o estudo do IEEE 13 como caso de mercado
+(`ESTUDO_IEEE13.md`), o experimento de perda de pacotes (`EXPERIMENTO_PERDA.md`)
+e a apresentação.
 
 Para entender **o código**, comece pelo `INTEGRACAO.md`. Para **o modelo
 matemático**, o `MERCADO.md`. Para **a fidelidade à tese**, o
@@ -264,6 +321,14 @@ Coisas que já custaram tempo e estão documentadas para não custarem de novo.
   destinatário não estiver na tabela de agentes.
 - **`api_opendss.py` tem quebras de linha CRLF.** Editá-lo com ferramentas que
   normalizam para LF produz um diff do arquivo inteiro.
+- **O OpenDSS aceita em silêncio um elemento declarado numa fase que não
+  existe.** Ele não cria o nó, apenas ignora o terminal, e a potência pedida some
+  sem aviso. Foi o que aconteceu com o PV1 na barra 646: 37% da injeção ia para um
+  nó que nenhum outro elemento usa. Pior, com potência próxima de zero o nó solto
+  degenerava a solução, todas as barras liam a tensão da fonte e o OpenDSS
+  reportava convergência.
+- **Container do OpenDSS com `--user` dá segfault.** Rode como root e ajuste o
+  dono das saídas depois.
 - **Figuras e resultados podem ficar velhos sem erro nenhum.** Já aconteceu de
   uma figura ler um arquivo que os agentes tinham deixado de escrever, e seguir
   desenhando dados antigos em silêncio. Ao mudar o que se grava, confira quem lê.

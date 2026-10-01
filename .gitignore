@@ -26,6 +26,9 @@ simulators/comm-opentes/.cmdenv-log
 *.o
 *.o.d
 
+# Site estatico gerado pelo MkDocs a partir de docs/ e mkdocs.yml.
+site/
+
 # Local editor/system files
 .idea/
 .vscode/

@@ -14,13 +14,18 @@ Implementação de referência: repositório `market-simulation` (GREI-UFC).
 
 ## 1. Os quatro papéis
 
+As quantidades abaixo são as da MVLV75, a rede da tese. Elas saem da alocação de
+dispositivos de cada rede, então mudam com `MARKET_NETWORK`: no caso `13Bus`, por
+exemplo, são 10 prosumidores e um único concentrador, porque o alimentador tem um
+transformador só.
+
 | Sigla | Papel | Quantidade | Onde está |
 |---|---|---:|---|
 | AP | Agente Prosumidor | 25 (os nós com armazenamento) | `market_agents.ProsumerAgent` |
 | AC | Agente Concentrador | 5 (um por transformador) | `market_agents.ConcentratorAgent` |
 | AD | Agente DSO | 1 | `market_agents.DSOAgent` |
 | AM | Agente Mercado | 1 | `market_agents.MarketAgent` |
-| — | Solver | 1 | `market_agents.SolverAgent` |
+| | Solver | 1 | `market_agents.SolverAgent` |
 
 O AP programa os seus recursos e responde aos leilões. O AC agrega os
 prosumidores de um transformador e despacha o armazenamento de rede sob ele. O
@@ -526,9 +531,9 @@ fora do escopo desta camada.
   fica em 0,97020 pu e nenhuma violação. Isso NÃO existe na tese, que usa a mesma
   restrição linearizada sem recuo; só aparece quando a restrição passa a atuar de
   fato. Na operação, com o ponto de operação vindo do fluxo de potência, o
-  resíduo medido é maior: 1,5e-3 pu com margem de 1e-3, e 4,5e-4 pu com margem de
-  2e-3, que é o padrão atual (`MARKET_V_BACKOFF`). Aumentar mais troca resíduo
-  por custo de programação com retorno decrescente.
+  resíduo medido é maior: 1,5e-3 pu com margem de 1e-3, que é o padrão atual
+  (`MARKET_V_BACKOFF`), e 4,5e-4 pu com margem de 2e-3. Aumentar a margem troca
+  resíduo por custo de programação, com retorno decrescente.
 - **A fase de operação resolve o fluxo de potência uma vez, no arranque.** Os 96
   pontos de operação dependem só da demanda realizada, não das variáveis de
   decisão, então não há o que recalcular por rodada. A alternativa, resolver sob
@@ -563,6 +568,9 @@ fora do escopo desta camada.
   concorrente, e o `SolverProtocol` responde de dentro de um `defer_to_thread`.
   Sem a trava o socket para com `Operation cannot be accomplished in current
   state` e a negociação fica esperando para sempre.
-- **A rede é o caso de regressão, não o caso principal.** O `force.json` é um
-  grafo sintético do trabalho original. O IEEE European LV Test Feeder, decidido
-  como caso principal citável, ainda não foi montado.
+- **A MVLV75 é o caso de regressão, não o caso principal.** O `force.json` é um
+  grafo sintético do trabalho original, e serve para conferir que a implementação
+  reproduz a tese. O caso principal citável é o **IEEE 13 barras**, montado por
+  `gen_ieee13_market.py` e documentado em `Docs_Externo/ESTUDO_IEEE13.md`; as
+  redes BT16 e BT38 cobrem o que nenhum dos dois cobre, que é a sobretensão por
+  penetração fotovoltaica em alimentador longo.
