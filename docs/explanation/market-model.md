@@ -2,7 +2,7 @@
 
 Esta página responde três perguntas sem que seja preciso ler o código: **qual é
 o modelo matemático, onde ele está implementado e em que ele difere da
-formulação de origem.** Os resultados ficam em [Resultados](resultados.md).
+formulação de origem.** Os resultados ficam em [Resultados](../results.md).
 
 ## De onde vem a formulação
 
@@ -116,7 +116,7 @@ simulador e vale para rede desequilibrada.
 Na IEEE 13 o modelo por barra precisa resumir as fases numa só tensão, e a
 escolha natural é a média. A média esconde violação: a negociação feita sobre ela
 deixa a média dentro da faixa e a fase B acima de 1,03 pu (ver
-[Resultados](resultados.md)).
+[Resultados](../results.md)).
 
 A causa é física. Injetar 1 kW só na fase A da barra 671 sobe a fase A em 51 µpu,
 **baixa a fase B em 71 µpu** e sobe a C em 39 (média do dia). O efeito sobre a
@@ -202,7 +202,7 @@ CFP ao DSO passa de 10,9 para 24,2 kB por rodada, e a resposta do concentrador d
 
 Na rede 6TiSCH isso pesa: as mensagens dos ciclos 2 e 3 têm de 20 a 34 kB, e o
 ciclo 3 gasta de 474 a 541 s de rede por rodada, acima do orçamento de 300 s em
-todas elas (ver [Resultados](resultados.md#sobre-a-rede-6tisch)). Para caber, a
+todas elas (ver [Resultados](../results.md#sobre-a-rede-6tisch)). Para caber, a
 mensagem precisa ser comprimida, ou só a parte que mudou ser enviada.
 
 ## O regulador de tensão
@@ -291,7 +291,7 @@ EUR/(kW²·h)). Sem calibração, as colunas de preço do `dlmp.csv` saem com o 
   uma carga por barra, equilibrada entre as fases dela, e liga o PV1 em triângulo
   B-C (fisicamente ele é estrela B e C). Com as cargas e os PV nas fases físicas o
   desequilíbrio é bem maior, e o armazenamento atual não basta: ver
-  [O caso IEEE 13](caso.md).
+  [O caso IEEE 13](ieee13-case.md).
 - **O reativo é consequência, não decisão.** Com `MARKET_STORAGE_PF` o reativo
   acompanha o ativo pelo fator de potência; despachar reativo como serviço seria
   controle Volt/Var, fora do escopo desta camada.

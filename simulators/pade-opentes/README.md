@@ -39,7 +39,7 @@ Um único simulador Mosaik (`MarketMosaikSim`) vive no processo dos agentes. A
 cada passo, ele entrega ao Mosaik a potência de cada porta do armazenamento e as
 derivações do regulador, que o `grid-opentes` aplica no OpenDSS. A formulação e
 a sequência da negociação estão em
-[docs/paginas/mercado.md](../../docs/paginas/mercado.md).
+[docs/explanation/market-model.md](../../docs/explanation/market-model.md).
 
 ## Rodar
 

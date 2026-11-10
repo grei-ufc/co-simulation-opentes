@@ -156,7 +156,7 @@ def compute_sensitivity(dss, nodes, loads_kw, delta_kw=DEFAULT_DELTA_KW,
     derivacoes CONGELADAS (ControlMode=OFF). E o ponto da previsao que fixa as
     derivacoes do dia seguinte: o mercado decide depois, com elas como condicao
     de contorno, e o cenario de mercado aplica essas mesmas derivacoes na
-    co-simulacao. Ver docs/paginas/mercado.md, "O regulador de tensao".
+    co-simulacao. Ver docs/explanation/market-model.md, "O regulador de tensao".
 
     Returns:
         (V0, S, SQ): V0 com len(nodes) posicoes em pu; S em pu/kW e SQ em

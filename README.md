@@ -1,5 +1,7 @@
 # OpenTES: mercado transativo por fase sobre a IEEE 13 barras
 
+**[Documentação do projeto](https://grei-ufc.github.io/co-simulation-opentes/)**: instalação, tutoriais, guias práticos, referência dos comandos e das variáveis, e os conceitos por trás do caso IEEE 13, do modelo de mercado e da rede de comunicação.
+
 Co-simulação de um mercado transativo num alimentador de distribuição
 desequilibrado. Prosumidores com baterias negociam a programação do dia seguinte
 com o operador da rede (DSO), e um **preço sombra por fase** coordena os dois
@@ -48,14 +50,14 @@ flowchart TB
 
 | Para entender... | Comece por | E leia |
 |---|---|---|
-| o que é medido e o que deu | [docs/paginas/resultados.md](docs/paginas/resultados.md) | `output/market/` depois de rodar |
-| como a IEEE 13 vira um caso de mercado | [docs/paginas/caso.md](docs/paginas/caso.md) | `simulators/grid-opentes/src/simulators/gen_ieee13_market.py` |
-| a formulação: os três modelos e o preço sombra | [docs/paginas/mercado.md](docs/paginas/mercado.md) | `simulators/market-opentes/market_opentes/optimization.py`, `dual.py` |
-| por que a análise é por fase | [docs/paginas/mercado.md](docs/paginas/mercado.md), "A análise por fase" | `config.py` (as chaves por porta) e `sensitivity.py` (a matriz por fase) |
+| o que é medido e o que deu | [Resultados](https://grei-ufc.github.io/co-simulation-opentes/results/) | `output/market/` depois de rodar |
+| como a IEEE 13 vira um caso de mercado | [O caso IEEE 13](https://grei-ufc.github.io/co-simulation-opentes/explanation/ieee13-case/) | `simulators/grid-opentes/src/simulators/gen_ieee13_market.py` |
+| a formulação: os três modelos e o preço sombra | [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/) | `simulators/market-opentes/market_opentes/optimization.py`, `dual.py` |
+| por que a análise é por fase | [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/), "A análise por fase" | `config.py` (as chaves por porta) e `sensitivity.py` (a matriz por fase) |
 | quem manda mensagem para quem, e em que ordem | [simulators/pade-opentes/README.md](simulators/pade-opentes/README.md) | `simulators/pade-opentes/agents/market_agents.py` |
 | a rede de comunicação | [simulators/comm-opentes/README.md](simulators/comm-opentes/README.md) | `Tisch.cc` e `agents/network_link.py` |
-| como os simuladores são ligados | [docs/paginas/arquitetura.md](docs/paginas/arquitetura.md) | `simulators/mosaik-opentes/scenarios/market.py` |
-| como rodar e o que cada variável muda | [docs/paginas/instalacao.md](docs/paginas/instalacao.md) | `run.sh` e `docker-compose.yaml` |
+| como os simuladores são ligados | [Arquitetura](https://grei-ufc.github.io/co-simulation-opentes/explanation/architecture/) | `simulators/mosaik-opentes/scenarios/market.py` |
+| como rodar e o que cada variável muda | [Variáveis de ambiente](https://grei-ufc.github.io/co-simulation-opentes/reference/environment-variables/) | `run.sh` e `docker-compose.yaml` |
 
 Cada pasta de `simulators/` tem um README próprio com o papel dela no projeto,
 o que há dentro e como rodá-la sozinha.
@@ -108,18 +110,18 @@ simulators/
   pade-opentes/         agentes do mercado, sobre o framework PADE (incluído)
   mosaik-opentes/       orquestração: o cenário e o coletor de resultados
   comm-opentes/         rede de comunicação 6TiSCH no OMNeT++
-docs/                   documentação (MkDocs): páginas em docs/paginas/, site em docs/site/
+docs/, mkdocs.yml       documentação (MkDocs), publicada no GitHub Pages
 output/                 resultados das execuções (fora do git)
 pyproject.toml          ambiente Python local (uv), para IDE e scripts fora dos contêineres
 ```
 
 ## Documentação
 
-As páginas em [docs/paginas/](docs/paginas/) podem ser lidas direto no GitHub,
-ou como site:
+O site está em <https://grei-ufc.github.io/co-simulation-opentes/>, publicado a cada push no `main`. As
+páginas ficam em [docs/](docs/) e também podem ser vistas localmente:
 
 ```bash
-uvx --with mkdocs-material mkdocs serve -f docs/mkdocs.yml    # http://127.0.0.1:8000
+uv run --group docs mkdocs serve    # http://127.0.0.1:8000
 ```
 
 ## Origem e autoria
@@ -128,7 +130,7 @@ O mecanismo de mercado vem da tese de doutorado de Lucas Silveira Melo (UFC,
 2022, cap. 6), que o formulou e o aplicou a uma rede equilibrada, com uma
 tensão e um preço por barra. Este trabalho o estende à IEEE 13, desequilibrada:
 o operador vigia a tensão de cada fase, e o preço sombra é calculado por fase.
-As referências completas estão em [docs/paginas/mercado.md](docs/paginas/mercado.md).
+As referências completas estão em [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/).
 
 Time TTESO do projeto OpenTES, [GREI](https://github.com/grei-ufc), Universidade
 Federal do Ceará, sobre componentes das equipes TSCC (comunicação) e TSRE (rede

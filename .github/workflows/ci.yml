@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # git-revision-date-localized reads full file history
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+      # So as ferramentas da documentacao: a API e lida do codigo-fonte pelo
+      # griffe, sem importar os simuladores, entao o projeto nao precisa ser
+      # instalado.
+      - run: uv sync --locked --only-group docs
+      - run: uv run --only-group docs mkdocs build --strict
+
+  deploy:
+    # Publica em GitHub Pages (branch gh-pages), so a partir de main, nunca
+    # a partir de um pull request. Depende do job "docs" para nao publicar um
+    # build que nem passou no --strict.
+    needs: docs
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # git-revision-date-localized reads full file history
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+      - run: uv sync --locked --only-group docs
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - run: uv run --only-group docs mkdocs gh-deploy --force

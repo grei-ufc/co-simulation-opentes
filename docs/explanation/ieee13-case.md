@@ -34,7 +34,7 @@ máximo de 0,00134 pu, nas 33 medidas de fase da tabela oficial.
 | cargas | uma carga `Load_<barra>` por barra, nas mesmas fases e ligação da oficial, modelo de potência constante | a interface do mercado escreve uma carga por barra; a restrição do DSO é linearizada com potência constante |
 | geração fotovoltaica | cinco PV (15 MW de placa), subtraídos da demanda da barra | o mercado trabalha com demanda líquida |
 | armazenamento | portas monofásicas `Port_<barra>_<fase>`, com potência zero | o despacho por fase escreve nelas; com zero, o circuito resolve exatamente igual |
-| regulador | ajuste oficial (vreg 122 V, banda 2 V, R 3, X 9), derivações livres no ponto da previsão | ver [O modelo de mercado](mercado.md) |
+| regulador | ajuste oficial (vreg 122 V, banda 2 V, R 3, X 9), derivações livres no ponto da previsão | ver [O modelo de mercado](market-model.md) |
 | perfis | 96 intervalos de 15 min, das curvas de carga do circuito e das curvas de PV | `load_kw.csv`, `pv_kw.csv` |
 | preço spot | um dia de mercado day-ahead do Nordpool | `spot_price.csv`, dado de entrada |
 | cenários | nove dias sintéticos (fator e deslocamento sorteados, semente fixa) | `scenario_pool.npz`, para o modelo estocástico do prosumidor e a demanda realizada |
@@ -85,7 +85,7 @@ mercado; estão na tag `antes-da-limpeza`, em `estudos/ieee13/`.
     fotografia do pico de carga; travadas pela inicialização, 11,0%; com o ajuste
     oficial e derivações livres, 3,7%. O caso usa o **ajuste oficial**, e o
     mercado fixa as derivações pelo ponto da previsão (ver
-    [O modelo de mercado](mercado.md)).
+    [O modelo de mercado](market-model.md)).
 
 === "O armazenamento"
 

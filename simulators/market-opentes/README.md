@@ -52,4 +52,4 @@ não entra em imagem nem no repositório. Outro solver pode ser apontado com
 `MARKET_SOLVER` e `MARKET_SOLVER_PATH`, desde que resolva MIQP.
 
 A formulação completa, a análise por fase e os desvios em relação à referência
-estão em [docs/paginas/mercado.md](../../docs/paginas/mercado.md).
+estão em [docs/explanation/market-model.md](../../docs/explanation/market-model.md).

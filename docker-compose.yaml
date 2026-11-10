@@ -89,7 +89,7 @@ services:
       - MARKET_RUN_DIR=${MARKET_RUN_DIR:-/app/output/market}
       # Analise por fase (padrao): o DSO vigia a tensao de cada fase e o preco
       # sombra e por (barra, fase). 0 e a analise por barra, com a media das
-      # fases, para comparacao. Ver docs/paginas/mercado.md.
+      # fases, para comparacao. Ver docs/explanation/market-model.md.
       - MARKET_FASE=${MARKET_FASE:-1}
       # Como o armazenamento injeta nas fases: `independente` (inversor de quatro
       # fios, cada fase despachada separadamente) ou `equilibrado` (tres fios,

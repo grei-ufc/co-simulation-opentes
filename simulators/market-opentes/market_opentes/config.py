@@ -78,7 +78,7 @@ STORAGE_TAN_PHI = 0.0 if STORAGE_PF is None else math.tan(math.acos(STORAGE_PF))
 # e do preco sombra e o par (barra, fase), o DSO vigia a tensao de cada fase e le
 # a matriz `sensitivity_fase.npz`. Com 0, a analise e por barra, com uma tensao e
 # um preco sombra por no e a media das fases quando a barra e multifasica, que
-# fica para comparacao. Ver docs/paginas/mercado.md.
+# fica para comparacao. Ver docs/explanation/market-model.md.
 FASE = os.environ.get("MARKET_FASE", "1") == "1"
 # Como o armazenamento injeta nas fases, so com MARKET_FASE=1:
 #   independente  cada fase e despachada separadamente (tres inversores

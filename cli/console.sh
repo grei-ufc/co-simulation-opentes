@@ -482,12 +482,13 @@ abrir_figuras() {
 
 documentacao() {
     titulo "Documentação"
-    if [ -f docs/site/index.html ] && command -v xdg-open >/dev/null 2>&1; then
-        xdg-open docs/site/index.html >/dev/null 2>&1 &
-        nota "Abrindo docs/site/index.html no navegador."
+    local url=https://grei-ufc.github.io/co-simulation-opentes/
+    if command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$url" >/dev/null 2>&1 &
+        nota "Abrindo $url no navegador."
     fi
-    nota "As páginas estão em docs/paginas/. Para o site com busca:"
-    printf '     %suvx --with mkdocs-material mkdocs serve -f docs/mkdocs.yml%s\n' "$CIANO" "$NORMAL"
+    nota "As páginas estão em docs/. Para o site local, com mudanças ainda não publicadas:"
+    printf '     %suv run --only-group docs mkdocs serve%s\n' "$CIANO" "$NORMAL"
 }
 
 ajuda() {

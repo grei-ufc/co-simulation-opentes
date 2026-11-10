@@ -72,4 +72,4 @@ O simulador Mosaik do OpenDSS (`api_opendss.py`, `opendss_wrapper.py`) e o
 gerador de curvas de PV são da equipe TSRE do OpenTES; o `pv_creator.py` foi
 adaptado do `tsre-der-opentes`. O caso de mercado e as matrizes de
 sensibilidade são do time TTESO. Mais sobre o caso em
-[docs/paginas/caso.md](../../docs/paginas/caso.md).
+[docs/explanation/ieee13-case.md](../../docs/explanation/ieee13-case.md).

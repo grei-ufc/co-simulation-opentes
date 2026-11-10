@@ -89,7 +89,7 @@ _exige_cplex() {
     if [ ! -x "${CPLEX_HOME:-/nao-definido}/bin/x86-64_linux/cplex" ]; then
         echo "!! CPLEX nao encontrado. Defina CPLEX_HOME, por exemplo:" >&2
         echo "     export CPLEX_HOME=\$HOME/IBM/CPLEX_Studio2211/cplex" >&2
-        echo "   Detalhes em docs/paginas/instalacao.md" >&2
+        echo "   Detalhes em docs/getting-started/installation.md" >&2
         exit 1
     fi
     export CPLEX_HOME

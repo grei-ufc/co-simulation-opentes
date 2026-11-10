@@ -27,7 +27,7 @@ simulators/comm-opentes/Makefile
 *.o.d
 
 # Site estatico gerado pelo MkDocs a partir de docs/
-docs/site/
+site/
 
 # Sensibilidade dV/dP e dV/dQ: 3 MB por matriz, derivada do circuito e
 # regenerada pelo run.sh na primeira execucao. E produto, nao fonte.

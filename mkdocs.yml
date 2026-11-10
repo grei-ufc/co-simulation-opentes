@@ -1,0 +1,136 @@
+site_name: co-simulation-opentes
+site_description: Documentação técnica da plataforma de co-simulação multidomínio do OpenTES, aplicada a um mercado transativo por fase sobre a IEEE 13 barras
+site_url: "https://grei-ufc.github.io/co-simulation-opentes/"
+repo_url: "https://github.com/grei-ufc/co-simulation-opentes"
+edit_uri: "edit/main/docs/"
+
+theme:
+  name: material
+  language: pt-BR
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: green
+      accent: green
+      toggle:
+        icon: material/brightness-7
+        name: Alternar para modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: green
+      accent: green
+      toggle:
+        icon: material/brightness-4
+        name: Alternar para modo claro
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+
+extra_css:
+  - assets/grei-colors.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+  - tables
+  - def_list
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: date
+      enable_creation_date: false
+      fallback_to_build_date: true
+  - mkdocstrings:
+      handlers:
+        python:
+          paths:
+            - simulators/market-opentes
+            - simulators/grid-opentes/src
+            - simulators/pade-opentes/agents
+          options:
+            docstring_style: google
+            # As docstrings do projeto nao anotam tipos nas secoes Args/Returns;
+            # sem isto, o build --strict falha por aviso de estilo, nao de conteudo.
+            docstring_options:
+              warnings: false
+            show_source: true
+            show_root_heading: true
+            separate_signature: true
+            show_signature_annotations: true
+            merge_init_into_class: true
+            members_order: source
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: "https://github.com/grei-ufc/co-simulation-opentes"
+
+nav:
+  - Início: index.md
+  - Primeiros Passos:
+      - getting-started/installation.md
+      - getting-started/first-simulation.md
+  - Tutoriais:
+      - tutorials/console.md
+      - tutorials/compare-formulations.md
+      - tutorials/communication-networks.md
+  - Guias:
+      - how-to-guides/choose-network.md
+      - how-to-guides/regenerate-case.md
+      - how-to-guides/generate-figures.md
+      - how-to-guides/run-single-simulator.md
+      - how-to-guides/troubleshoot-common-issues.md
+  - Referência:
+      - reference/cli.md
+      - reference/environment-variables.md
+      - reference/docker-services.md
+      - reference/output-files.md
+      - reference/data-files.md
+      - API (gerada):
+          - reference/api/index.md
+          - reference/api/market.md
+          - reference/api/grid.md
+          - reference/api/agents.md
+  - Conceitos:
+      - explanation/architecture.md
+      - explanation/ieee13-case.md
+      - explanation/market-model.md
+      - explanation/communication-network.md
+  - Resultados: results.md
+  - Contribuir:
+      - contributing/development-setup.md
+      - contributing/documentation.md
+  - Changelog: changelog.md
+  - Citação: citation.md
+  - Licença: license.md

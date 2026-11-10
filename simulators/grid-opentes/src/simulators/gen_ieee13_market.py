@@ -56,7 +56,7 @@ DECISOES DE CONVERSAO, TODAS MEDIDAS
   fase-neutro `Port_{no}_{fase}` em cada fase em que o `Load_{no}` esta ligado,
   com potencia zero (22 portas). Sao usadas so pela analise por fase
   (MARKET_FASE=1), que despacha o armazenamento de cada fase nelas; com zero, o
-  circuito resolve exatamente como sem elas. Ver docs/paginas/mercado.md.
+  circuito resolve exatamente como sem elas. Ver docs/explanation/market-model.md.
 
 Uso, dentro do container grid:
 

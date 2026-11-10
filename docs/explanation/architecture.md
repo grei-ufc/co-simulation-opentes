@@ -10,7 +10,7 @@ os dados entre eles.
 | `grid` | `simulators/grid-opentes` | a rede elétrica, no OpenDSS |
 | `mosaik` | `simulators/mosaik-opentes` | o orquestrador e o cenário de mercado |
 | `collector` | `simulators/mosaik-opentes` | grava as tensões e potências de cada passo |
-| `comm` | `simulators/comm-opentes` | a rede de comunicação 6TiSCH, no OMNeT++ |
+| `comm` | `simulators/comm-opentes` | a rede de comunicação 6TiSCH ou Wi-SUN FAN, no OMNeT++ |
 
 A pasta `simulators/market-opentes` não é contêiner: é a biblioteca Python com os
 modelos de otimização (Pyomo), a decomposição dual, a liquidação e as figuras.
@@ -58,7 +58,7 @@ FIPA. A pasta traz a versão 3.0 do framework (`pade/`) e os agentes do mercado
 (`agents/market_agents.py`), que vivem num processo só e compartilham uma conexão
 com o Mosaik. A camada `agents/network_link.py` intercepta o envio de cada
 mensagem e a entrega com o atraso e a perda do modelo de rede escolhido em
-`NET_BACKEND`: `ideal`, `lossy` (sorteio) ou `omnet` (a rede 6TiSCH).
+`NET_BACKEND`: `ideal`, `lossy` (sorteio) ou `omnet` (6TiSCH ou Wi-SUN FAN).
 
 ### `grid-opentes`: a rede elétrica
 
@@ -81,16 +81,22 @@ O OMNeT++ com o servidor `Tisch.cc`: uma rede LPWA 6TiSCH (IEEE 802.15.4g, 50
 kbps, TSCH com salto de canal), com perda de quadro pelo modelo de propagação de
 Pister-Hack e roteamento por menor número esperado de transmissões. Ele não
 participa do passo do Mosaik: os agentes o consultam por ZMQ a cada mensagem, e
-ele responde com o caminho, o atraso e se a mensagem se perdeu.
+ele responde com o caminho, o atraso e se a mensagem se perdeu. Com
+`TISCH_MAC=wisun`, o mesmo rádio funciona como Wi-SUN FAN, com acesso por
+disputa e quadros maiores. Os dois modelos estão em
+[A rede de comunicação](communication-network.md).
 
 ## Pastas fora de `simulators/`
 
 | Pasta | O que tem |
 |---|---|
-| `docs/` | esta documentação: o conteúdo em `docs/paginas/` e o site compilado em `docs/site/` |
+| `docs/` | esta documentação; o `mkdocs.yml` fica na raiz e o site compilado em `site/` |
 | `output/` | os resultados das execuções, fora do git |
 
 ## Cuidados de operação
+
+Os problemas mais frequentes e como resolvê-los estão em
+[Problemas comuns](../how-to-guides/troubleshoot-common-issues.md).
 
 !!! danger "Não sonde as portas dos simuladores `--remote`"
 

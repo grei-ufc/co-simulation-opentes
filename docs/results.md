@@ -68,7 +68,7 @@ ser três, uma por fase, cada uma só com as barras que têm aquela fase.
 Os vales mais fundos, de −700 a −1.000, aparecem ao meio-dia, nas barras onde o
 fotovoltaico mais excede a carga: é onde o DSO precisa que o armazenamento
 absorva. O λ está na unidade de `Ck` vezes potência, e não em moeda (ver
-[O modelo de mercado](mercado.md)).
+[O modelo de mercado](explanation/market-model.md)).
 
 ## A negociação centralizada
 
@@ -90,7 +90,7 @@ fios fica em 11 leituras acima e 26 abaixo, sem sair da ANSI A, e leva 63
 rodadas contra 42.
 
 As rodadas são as do critério de parada relativo (`MARKET_EPS_REL = 1e-3`, ver
-[O modelo de mercado](mercado.md)). Com o critério absoluto da tese, eram 81, 66
+[O modelo de mercado](explanation/market-model.md)). Com o critério absoluto da tese, eram 81, 66
 e 108, para as mesmas contagens de tensão.
 
 ## Sobre a rede 6TiSCH
@@ -175,5 +175,5 @@ resultado elétrico é idêntico ao da rede ideal, tensão a tensão.
 
 Cada execução grava em `output/market/` (por fase) ou `output/market_por_no/`
 (por barra). A lista do que cada arquivo contém está em
-[Instalação e execução](instalacao.md#o-que-fica-gravado), e as figuras em
-`figuras/`, dentro da mesma pasta.
+[Arquivos de saída](reference/output-files.md), e as figuras em `figuras/`,
+dentro da mesma pasta.
