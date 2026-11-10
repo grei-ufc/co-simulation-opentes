@@ -1,0 +1,2948 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação técnica da plataforma de co-simulação multidomínio do OpenTES, aplicada a um mercado transativo por fase sobre a IEEE 13 barras">
+      
+      
+      
+        <link rel="canonical" href="https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/">
+      
+      
+        <link rel="prev" href="../ieee13-case/">
+      
+      
+        <link rel="next" href="../communication-network/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>O modelo de mercado - co-simulation-opentes</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../assets/grei-colors.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#o-modelo-de-mercado" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href="../.." title="co-simulation-opentes" class="md-header__button md-logo" aria-label="co-simulation-opentes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            co-simulation-opentes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              O modelo de mercado
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="green" data-md-color-accent="green"  aria-label="Alternar para modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="green" data-md-color-accent="green"  aria-label="Alternar para modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Alternar para modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/grei-ufc/co-simulation-opentes" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Primeiros Passos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/console/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tutoriais
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to-guides/choose-network/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guias
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../reference/cli/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Referência
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Conceitos
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../results/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Resultados
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../contributing/development-setup/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Contribuir
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../citation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Citação
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Licença
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="co-simulation-opentes" class="md-nav__button md-logo" aria-label="co-simulation-opentes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    co-simulation-opentes
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/grei-ufc/co-simulation-opentes" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primeiros Passos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Primeiros Passos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Instalação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Primeira Simulação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutoriais
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutoriais
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/console/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usando o console
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/compare-formulations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparando formulações
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/communication-networks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redes de comunicação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guias
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guias
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/choose-network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Escolher a rede de comunicação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/regenerate-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Regenerar o caso IEEE 13
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/generate-figures/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Gerar as figuras
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/run-single-simulator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rodar um simulador sozinho
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/troubleshoot-common-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Problemas comuns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referência
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referência
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/environment-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Variáveis de ambiente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/docker-services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serviços Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/output-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquivos de saída
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/data-files/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquivos de dados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API (gerada)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API (gerada)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/market/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mercado (market_opentes)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/grid/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rede elétrica (grid-opentes)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/api/agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agentes (pade-opentes)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conceitos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Conceitos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A plataforma
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ieee13-case/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    O caso IEEE 13
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    O modelo de mercado
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    O modelo de mercado
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#de-onde-vem-a-formulacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        De onde vem a formulação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-papeis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Os papéis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-modelos-de-otimizacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Os modelos de otimização
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Os modelos de otimização">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agente-prosumidor-eq-61-a-69" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente Prosumidor (Eq. 6.1 a 6.9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agente-concentrador-eq-625-e-626" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente Concentrador (Eq. 6.25 e 6.26)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agente-dso-eq-627-a-629" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente DSO (Eq. 6.27 a 6.29)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decomposicao-dual-eq-624-e-630" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposição dual (Eq. 6.24 e 6.30)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-restricao-de-tensao-eq-615-a-617" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A restrição de tensão (Eq. 6.15 a 6.17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-analise-por-fase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A análise por fase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A análise por fase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#por-que-a-media-nao-serve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por que a média não serve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-formulacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A formulação
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-inversor-quatro-fios-ou-tres-fios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O inversor: quatro fios ou três fios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custo-de-comunicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custo de comunicação
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-regulador-de-tensao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O regulador de tensão
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-fase-de-operacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A fase de operação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-despacho-e-a-comunicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O despacho e a comunicação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nao-esta-em-unidade-monetaria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        λ não está em unidade monetária
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#desvios-em-relacao-a-implementacao-original" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Desvios em relação à implementação original
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitacoes-conhecidas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitações conhecidas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referências
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../communication-network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A rede de comunicação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resultados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribuir
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contribuir
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/development-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ambiente de desenvolvimento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../citation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Citação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Licença
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#de-onde-vem-a-formulacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        De onde vem a formulação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-papeis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Os papéis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-modelos-de-otimizacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Os modelos de otimização
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Os modelos de otimização">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agente-prosumidor-eq-61-a-69" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente Prosumidor (Eq. 6.1 a 6.9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agente-concentrador-eq-625-e-626" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente Concentrador (Eq. 6.25 e 6.26)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agente-dso-eq-627-a-629" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente DSO (Eq. 6.27 a 6.29)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decomposicao-dual-eq-624-e-630" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposição dual (Eq. 6.24 e 6.30)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-restricao-de-tensao-eq-615-a-617" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A restrição de tensão (Eq. 6.15 a 6.17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-analise-por-fase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A análise por fase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A análise por fase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#por-que-a-media-nao-serve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Por que a média não serve
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-formulacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A formulação
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-inversor-quatro-fios-ou-tres-fios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O inversor: quatro fios ou três fios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custo-de-comunicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custo de comunicação
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-regulador-de-tensao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O regulador de tensão
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-fase-de-operacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A fase de operação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o-despacho-e-a-comunicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O despacho e a comunicação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#nao-esta-em-unidade-monetaria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        λ não está em unidade monetária
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#desvios-em-relacao-a-implementacao-original" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Desvios em relação à implementação original
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitacoes-conhecidas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitações conhecidas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referências
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navegação" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Início
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../architecture/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Conceitos
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="o-modelo-de-mercado">O modelo de mercado<a class="headerlink" href="#o-modelo-de-mercado" title="Permanent link">&para;</a></h1>
+<p>Esta página responde três perguntas sem que seja preciso ler o código: <strong>qual é
+o modelo matemático, onde ele está implementado e em que ele difere da
+formulação de origem.</strong> Os resultados ficam em <a href="../../results/">Resultados</a>.</p>
+<h2 id="de-onde-vem-a-formulacao">De onde vem a formulação<a class="headerlink" href="#de-onde-vem-a-formulacao" title="Permanent link">&para;</a></h2>
+<p>O mecanismo é o da tese de doutorado de Lucas Silveira Melo (<em>Modelo de
+simulação computacional multidomínio para análise de redes elétricas
+inteligentes com aplicação em transações econômicas de energia</em>, UFC, 2022,
+capítulo 6), que por sua vez adapta o controle transativo com restrições de
+rede de Hu et al. (2017). A tese o aplica à MVLV75, uma rede de média e baixa
+tensão sintética em que <strong>todas as barras são trifásicas e equilibradas</strong>: lá,
+uma tensão e um preço sombra por barra bastam.</p>
+<p>Este trabalho parte dessa formulação e a leva à IEEE 13 barras, que tem barras
+mono, bi e trifásicas e é <strong>desequilibrada</strong> de propósito. A MVLV75 é a
+inspiração e a base de comparação da formulação; nenhum resultado dela é usado
+aqui. A mudança central é que a análise passa a ser <strong>por fase</strong>: o operador vigia
+a tensão de cada fase, e o preço sombra é calculado por fase.</p>
+<h2 id="os-papeis">Os papéis<a class="headerlink" href="#os-papeis" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Sigla</th>
+<th>Papel</th>
+<th style="text-align: right;">Na IEEE 13</th>
+<th>Onde está</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AP</td>
+<td>Agente Prosumidor: programa o próprio armazenamento e compra energia</td>
+<td style="text-align: right;">10</td>
+<td><code>market_agents.ProsumerAgent</code></td>
+</tr>
+<tr>
+<td>AC</td>
+<td>Agente Concentrador: agrega os prosumidores e aciona os dispositivos sob ele</td>
+<td style="text-align: right;">1</td>
+<td><code>market_agents.ConcentratorAgent</code></td>
+</tr>
+<tr>
+<td>AD</td>
+<td>Agente DSO: detém o modelo da rede e as restrições operacionais</td>
+<td style="text-align: right;">1</td>
+<td><code>market_agents.DSOAgent</code></td>
+</tr>
+<tr>
+<td>AM</td>
+<td>Agente Mercado: coordena a descoberta do preço sombra</td>
+<td style="text-align: right;">1</td>
+<td><code>market_agents.MarketAgent</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Solver: resolve os modelos fora do reactor do Twisted</td>
+<td style="text-align: right;">1</td>
+<td><code>market_agents.SolverAgent</code></td>
+</tr>
+</tbody>
+</table>
+<p>A tese põe um concentrador por transformador de distribuição. A IEEE 13 tem um
+transformador só, então há um concentrador, que representa a cabeceira do
+alimentador. Os modelos de otimização ficam em
+<code>simulators/market-opentes/market_opentes/optimization.py</code>; os agentes, em
+<code>simulators/pade-opentes/agents/market_agents.py</code>.</p>
+<h2 id="os-modelos-de-otimizacao">Os modelos de otimização<a class="headerlink" href="#os-modelos-de-otimizacao" title="Permanent link">&para;</a></h2>
+<h3 id="agente-prosumidor-eq-61-a-69">Agente Prosumidor (Eq. 6.1 a 6.9)<a class="headerlink" href="#agente-prosumidor-eq-61-a-69" title="Permanent link">&para;</a></h3>
+<p>Minimiza o custo operacional esperado em dois estágios: no primeiro, quanto
+contratar no mercado bilateral de preço fixo e como programar o armazenamento; no
+segundo, os lances no mercado de tempo real, por cenário.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>min  Σ_t Φ_bl · APP_bl(t) · Δt  +  Σ_z Σ_t π(z) · Φ_tr(z,t) · APP_tr(z,t) · Δt
+</span></code></pre></div>
+<p>Sujeito ao balanço energético, à impossibilidade de vender o que foi comprado no
+bilateral e à operação do armazenamento (exclusão entre carga e descarga,
+limites de potência e memória do estado de carga). O modelo do prosumidor é
+<strong>econômico e não enxerga fase</strong>: a proposta dele é uma série por dispositivo.</p>
+<h3 id="agente-concentrador-eq-625-e-626">Agente Concentrador (Eq. 6.25 e 6.26)<a class="headerlink" href="#agente-concentrador-eq-625-e-626" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>min  Σ_t Σ_l C_k · (ACP_init(t,l) − ACP_result(t,l))²  +  Σ_t Σ_l λ(t,l) · ACP_result(t,l)
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sujeito a   Σ_t ACP_result(t,l) · Δt  ≥  D · Σ_t ACP_init(t,l) · Δt
+</span></code></pre></div>
+<h3 id="agente-dso-eq-627-a-629">Agente DSO (Eq. 6.27 a 6.29)<a class="headerlink" href="#agente-dso-eq-627-a-629" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>min  Σ_t Σ_l [ a · (ADP_init − ADP_result)² + b · (ADP̄_init − ADP̄_result)² ]  −  Σ_t Σ_l λ(t,l) · ADP_result(t,l)
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>sujeito a   Σ_l (ADP_result + ADP̄_result)  ≤  ADP_trans_max(t)
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>            U_min  ≤  U_0(t,r) + ΔU(t,r)  ≤  U_max          para cada linha r
+</span></code></pre></div>
+<p>O sinal de λ é positivo no concentrador e negativo no DSO. Isso é da formulação.</p>
+<h3 id="decomposicao-dual-eq-624-e-630">Decomposição dual (Eq. 6.24 e 6.30)<a class="headerlink" href="#decomposicao-dual-eq-624-e-630" title="Permanent link">&para;</a></h3>
+<p>A restrição de acoplamento <code>ACP_result = ADP_result</code> é relaxada por multiplicador
+de Lagrange, e o agente de mercado atualiza o preço sombra por subgradiente:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>λ(t,l) ← λ(t,l) + α · ( ACP_result(t,l) − ADP_result(t,l) )
+</span></code></pre></div>
+<p>até o critério de parada.</p>
+<p><strong>O critério de parada é relativo ao tamanho dos dispositivos.</strong> A negociação
+termina quando, em toda variável de armazenamento e em todo intervalo, o
+desacordo entre concentrador e DSO fica abaixo de uma fração da potência máxima
+do próprio dispositivo (por porta, Pmax/|F|):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>max |ACP_result − ADP_result| / Pmax  ≤  ε_rel        (MARKET_EPS_REL = 1e-3)
+</span></code></pre></div>
+<p>O critério da tese, <code>|Δλ| ≤ ε</code>, continua disponível com <code>MARKET_CRITERIO=absoluto</code>.
+Como <code>Δλ = α · (ACP − ADP)</code>, ele limita o desacordo a ε/α kW, o mesmo valor
+absoluto para uma bateria de 2 kW ou de 800 kW. Com α = 0,6 e ε = 10⁻³, são
+1,7 W: cerca de 0,1% da potência na rede da tese, de bancos de 2 kW, e 0,001% ou
+menos na IEEE 13, de bancos de 150 a 800 kW, um rigor que não muda a solução e
+custa rodadas.
+Com ε_rel = 10⁻³, o rigor da IEEE 13 passa a ser o mesmo que o ε absoluto dava
+na rede da tese, e as rodadas caem de 82 para 48 por barra, de 66 para 42 por
+fase e de 108 para 63 com o inversor de três fios, sem mudar nenhuma contagem
+de tensão no fluxo não linear.</p>
+<h3 id="a-restricao-de-tensao-eq-615-a-617">A restrição de tensão (Eq. 6.15 a 6.17)<a class="headerlink" href="#a-restricao-de-tensao-eq-615-a-617" title="Permanent link">&para;</a></h3>
+<p>A tensão é linearizada em torno do ponto de operação da previsão:
+<code>ΔU = −S · (p + q)</code>, com <code>S = ∂V/∂P</code>. A tese obtinha <code>S</code> do Jacobiano do
+pandapower; aqui ela é medida por perturbação no próprio OpenDSS
+(<code>grid-opentes/src/simulators/sensitivity.py</code>), o que dispensa um segundo
+simulador e vale para rede desequilibrada.</p>
+<h2 id="a-analise-por-fase">A análise por fase<a class="headerlink" href="#a-analise-por-fase" title="Permanent link">&para;</a></h2>
+<h3 id="por-que-a-media-nao-serve">Por que a média não serve<a class="headerlink" href="#por-que-a-media-nao-serve" title="Permanent link">&para;</a></h3>
+<p>Na IEEE 13 o modelo por barra precisa resumir as fases numa só tensão, e a
+escolha natural é a média. A média esconde violação: a negociação feita sobre ela
+deixa a média dentro da faixa e a fase B acima de 1,03 pu (ver
+<a href="../../results/">Resultados</a>).</p>
+<p>A causa é física. Injetar 1 kW só na fase A da barra 671 sobe a fase A em 51 µpu,
+<strong>baixa a fase B em 71 µpu</strong> e sobe a C em 39 (média do dia). O efeito sobre a
+fase vizinha é do mesmo tamanho do efeito próprio, e metade dos termos cruzados
+é negativa: a impedância mútua da linha tem ângulo de cerca de 73°, e projetada
+na direção da tensão da fase B, que está a −120°, fica quase oposta a ela. Uma
+injeção equilibrada na 671 move a fase B em 4,4 µpu/kW, enquanto o modelo da
+média enxerga 9,2. O DSO superestimava em duas a três vezes a eficácia do
+armazenamento justamente na fase que viola.</p>
+<h3 id="a-formulacao">A formulação<a class="headerlink" href="#a-formulacao" title="Permanent link">&para;</a></h3>
+<p>O índice l das Eq. 6.18 a 6.30 passa a ser o par (barra, fase). É a adaptação que
+o próprio artigo-base indica para rede desequilibrada: introduzir o preço sombra
+em cada fase (Hu et al., 2017, seção V).</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>por barra (<code>MARKET_FASE=0</code>)</th>
+<th>por fase (padrão)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>linha da restrição de tensão</td>
+<td>barra (média das fases)</td>
+<td>(barra, fase): 32 na IEEE 13</td>
+</tr>
+<tr>
+<td>variável e preço sombra</td>
+<td>um por barra</td>
+<td>um por porta (barra, fase): 22</td>
+</tr>
+<tr>
+<td>matriz de sensibilidade</td>
+<td><code>sensitivity_day.npz</code></td>
+<td><code>sensitivity_fase.npz</code></td>
+</tr>
+</tbody>
+</table>
+<p>Uma <strong>porta</strong> é cada fase em que o dispositivo de uma barra pode injetar: as
+fases em que a carga daquela barra está ligada, cada uma como carga monofásica
+fase-neutro <code>Port_&lt;barra&gt;_&lt;fase&gt;</code> no circuito. Quatro regras completam o modelo:</p>
+<ol>
+<li><strong>Cada porta tem limite Pmax/|F|</strong>, sendo |F| o número de fases do
+   dispositivo, e o dispositivo tem <strong>um estado de carga só</strong>, a soma das portas.</li>
+<li><strong>A proposta do prosumidor continua escalar.</strong> O concentrador a reparte
+   igualmente entre as portas do dispositivo e redistribui a partir daí, que é o
+   papel que a tese lhe dá: agregar os prosumidores e acionar os dispositivos
+   sob ele.</li>
+<li><strong>Os pesos Ck, a e b são multiplicados por |F|.</strong> Sem isso a penalidade de
+   desviar o dispositivo inteiro cairia para Ck/|F|.</li>
+<li><strong>O passo α é multiplicado por |F| em cada porta</strong>, porque o resíduo de cada
+   porta é 1/|F| do resíduo do dispositivo.</li>
+</ol>
+<p>Com as regras 3 e 4, numa rede equilibrada a formulação por fase reproduz a por
+barra rodada a rodada, com λ igual nas três fases e igual ao λ da barra
+(verificado numa rede de teste equilibrada: mesmo número de rodadas e mesma
+trajetória de λ, desde que as duas usem a mesma matriz). A formulação por barra
+da referência é, portanto, um caso particular desta.</p>
+<h3 id="o-inversor-quatro-fios-ou-tres-fios">O inversor: quatro fios ou três fios<a class="headerlink" href="#o-inversor-quatro-fios-ou-tres-fios" title="Permanent link">&para;</a></h3>
+<p><code>MARKET_DISPOSITIVO</code> diz como o armazenamento injeta nas fases, e corresponde aos
+dois tipos de inversor de baterias:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>independente</code> (padrão)</th>
+<th><code>equilibrado</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inversor</td>
+<td>trifásico a <strong>quatro fios</strong>, com controle por fase</td>
+<td>trifásico a <strong>três fios</strong>, equilibrado</td>
+</tr>
+<tr>
+<td>correntes</td>
+<td>I_A ≠ I_B ≠ I_C, cada fase despachada separadamente</td>
+<td>iguais nas três fases</td>
+</tr>
+<tr>
+<td>variável e preço sombra</td>
+<td>por porta (barra, fase)</td>
+<td>por barra</td>
+</tr>
+<tr>
+<td>o DSO vigia</td>
+<td>cada fase</td>
+<td>cada fase</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que o modo <code>independente</code> representa.</strong> Cada porta é um elemento
+fase-neutro, então a corrente de cada fase é independente e volta pelo neutro,
+que existe em todos os trechos da IEEE 13 (alimentador a quatro fios,
+multiaterrado). O estado de carga compartilhado é o barramento CC comum, por onde
+um inversor de quatro braços transfere potência de uma fase para outra: absorver
+na fase B e injetar na A para baixar a B é uma decisão que o modelo toma, e que
+um inversor equilibrado não consegue tomar. O limite Pmax/|F| por fase é o teto
+por fase que os equipamentos comerciais desse tipo declaram.</p>
+<p><strong>O que ele não representa.</strong> Só potência ativa por fase: o reativo segue a
+hipótese ΔQ = 0 da tese. Não há perdas de conversão, dinâmica de controle do
+inversor nem limite de corrente de neutro além do que o próprio fluxo de
+potência do OpenDSS impõe. São simplificações de modelo quase estático, com
+passo de 15 minutos, e não ausências da topologia.</p>
+<p><strong>O modo <code>equilibrado</code></strong> reparte a potência do dispositivo igualmente entre as
+portas, e a coluna da matriz é a média das colunas das fases. Ele aproxima o
+inversor de três fios por injeção igual em estrela; um inversor de três fios real
+não tem caminho de sequência zero, o que difere disso apenas quando as tensões
+das fases estão desequilibradas. Nas barras mono e bifásicas (611, 645, 652, 646
+e 692) um inversor trifásico não se liga, e os dois modos coincidem.</p>
+<h3 id="custo-de-comunicacao">Custo de comunicação<a class="headerlink" href="#custo-de-comunicacao" title="Permanent link">&para;</a></h3>
+<p>O CFP de cada rodada carrega λ por porta: na IEEE 13, 22 séries em vez de 10. O
+CFP ao DSO passa de 10,9 para 24,2 kB por rodada, e a resposta do concentrador de
+11,2 para 24,4 kB.</p>
+<p>Na rede 6TiSCH isso pesa: as mensagens dos ciclos 2 e 3 têm de 20 a 34 kB, e o
+ciclo 3 gasta de 474 a 541 s de rede por rodada, acima do orçamento de 300 s em
+todas elas (ver <a href="../../results/#sobre-a-rede-6tisch">Resultados</a>). Para caber, a
+mensagem precisa ser comprimida, ou só a parte que mudou ser enviada.</p>
+<h2 id="o-regulador-de-tensao">O regulador de tensão<a class="headerlink" href="#o-regulador-de-tensao" title="Permanent link">&para;</a></h2>
+<p>O circuito tem um banco de três reguladores monofásicos com derivações
+independentes. O mercado decide com a tensão do <strong>ponto de operação da
+previsão</strong>, que o regulador alcança ajustando as derivações; se o regulador
+continuasse livre para reagir ao despacho do armazenamento, os dois controladores
+disputariam a mesma variável, e parte da correção do mercado seria desfeita.</p>
+<p>Por isso o sequenciamento é o da operação real: a matriz de sensibilidade é
+calculada com o regulador livre no ponto da previsão, e as derivações resultantes
+são gravadas com ela. Na co-simulação, o DSO aplica essas derivações a cada
+passo, por uma entidade Mosaik <code>Regulador</code> ligada a cada regulador do OpenDSS
+(<code>MARKET_REGULADOR=previsao</code>, o padrão). O regulador ajusta pela previsão; o
+mercado decide depois, com a derivação como condição de contorno.</p>
+<h2 id="a-fase-de-operacao">A fase de operação<a class="headerlink" href="#a-fase-de-operacao" title="Permanent link">&para;</a></h2>
+<p>A programação do dia seguinte é calculada contra uma previsão. A cada 15 minutos,
+com a demanda realizada (a previsão perturbada em até ±10%, o mecanismo da tese),
+o DSO confere se o desvio viola alguma restrição. Primeiro tenta corrigir só com o
+armazenamento de rede, que despacha diretamente; o leilão de tempo real, a mesma
+decomposição dual sobre um período, liquida em toda janela. O ponto de operação
+realizado é resolvido pelo OpenDSS, e não extrapolado pelo modelo linear.</p>
+<h2 id="o-despacho-e-a-comunicacao">O despacho e a comunicação<a class="headerlink" href="#o-despacho-e-a-comunicacao" title="Permanent link">&para;</a></h2>
+<p>Fechada a negociação, a programação precisa <strong>chegar</strong> a quem a executa. A cadeia
+é a da tese, por FIPA-Subscribe: o DSO publica aos concentradores, cada
+concentrador aciona o armazenamento de rede sob ele e repassa a parte de cada
+prosumidor, e as confirmações sobem até o agente de mercado, que só então encerra
+o passo do Mosaik.</p>
+<p>Dois cuidados que só aparecem com entrega não instantânea, e que valem para
+qualquer rede:</p>
+<ul>
+<li>O <code>FipaContractNetProtocol</code> do PADE supõe entrega imediata: com atraso, os
+  contadores internos e o conjunto efetivamente recebido divergem. Os agentes
+  fazem contabilidade própria, por remetente e por número de rodada.</li>
+<li>O FIPA não define retransmissão. Cada ciclo tem timeout com reenvio só aos
+  faltantes, e uma política explícita para quem nunca responde: entra com
+  programação nula.</li>
+<li>O PADE sobrescreve a mensagem guardada de todo comportamento a cada mensagem
+  recebida e, 2 s depois da partida, manda todo iniciador enviar a mensagem
+  guardada. Se a negociação começa antes disso, um iniciador reenvia a última
+  mensagem recebida para si mesmo: o DSO respondia a um CFP falso, a proposta
+  da rodada não chegava ao mercado e a rodada esperava o timeout inteiro, e as
+  assinaturas do despacho nunca saíam. Os agentes do mercado lançam os
+  comportamentos uma vez, antes de anunciar que estão prontos, e um iniciador
+  não envia mensagem que veio de outro agente.</li>
+</ul>
+<h2 id="nao-esta-em-unidade-monetaria">λ não está em unidade monetária<a class="headerlink" href="#nao-esta-em-unidade-monetaria" title="Permanent link">&para;</a></h2>
+<p>No ótimo do concentrador, <code>2 Ck (x − x_init) + λ = 0</code>, então λ tem unidade de <code>Ck</code>
+vezes potência. Com o <code>Ck = 1</code> adimensional da tese, λ é numericamente um desvio
+de potência, e a tese o lê como <strong>variável de controle</strong>, não como preço. Para
+virar preço, <code>Ck</code> precisa ser calibrado em moeda (<code>MARKET_CK_EUR</code>, em
+EUR/(kW²·h)). Sem calibração, as colunas de preço do <code>dlmp.csv</code> saem com o sufixo
+<code>_signal</code>.</p>
+<h2 id="desvios-em-relacao-a-implementacao-original">Desvios em relação à implementação original<a class="headerlink" href="#desvios-em-relacao-a-implementacao-original" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Original</th>
+<th>Aqui</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PySP para o modelo estocástico</td>
+<td>forma extensiva em Pyomo</td>
+<td>PySP saiu do Pyomo 6; com 9 cenários não há o que decompor</td>
+</tr>
+<tr>
+<td>parada pela variação absoluta de λ</td>
+<td>desacordo relativo à potência do dispositivo</td>
+<td>o mesmo rigor em dispositivos de qualquer porte</td>
+</tr>
+<tr>
+<td><code>J⁻¹₂₁</code> do pandapower</td>
+<td><code>∂V/∂P</code> por perturbação no OpenDSS</td>
+<td>um simulador só, e vale para rede desequilibrada</td>
+</tr>
+<tr>
+<td>uma tensão e um λ por barra</td>
+<td>por (barra, fase)</td>
+<td>a IEEE 13 é desequilibrada</td>
+</tr>
+<tr>
+<td>restrição de corrente por matriz de incidência</td>
+<td>carregamento do transformador</td>
+<td>é a Eq. 6.13 e a que tem limite conhecido</td>
+</tr>
+<tr>
+<td>conteúdo das mensagens em <code>pickle</code></td>
+<td>JSON</td>
+<td>o tamanho serializado alimenta o modelo de rede</td>
+</tr>
+<tr>
+<td>um simulador Mosaik por agente</td>
+<td>um para todos</td>
+<td>escala e menos sockets</td>
+</tr>
+<tr>
+<td>sem retransmissão</td>
+<td>timeout com reenvio aos faltantes</td>
+<td>o FIPA supõe entrega</td>
+</tr>
+<tr>
+<td>regulador livre durante o despacho</td>
+<td>derivações da previsão</td>
+<td>os dois controladores disputariam a tensão</td>
+</tr>
+<tr>
+<td>estado de carga final livre</td>
+<td>estado final ≥ inicial (<code>MARKET_TERMINAL_SOC</code>)</td>
+<td>sem isso as baterias despejam a energia no último intervalo</td>
+</tr>
+<tr>
+<td>limites de tensão exatos</td>
+<td>recuo de 1 mpu (<code>MARKET_V_BACKOFF</code>)</td>
+<td>o otimizador cola no limite e o erro da linearização vira violação</td>
+</tr>
+</tbody>
+</table>
+<h2 id="limitacoes-conhecidas">Limitações conhecidas<a class="headerlink" href="#limitacoes-conhecidas" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Erro de linearização.</strong> O despacho por fase move potências grandes e
+  desequilibradas, e o erro do modelo linear chega a 9 mpu no pior ponto, contra a
+  margem de 1 mpu. É ele que deixa os poucos pontos abaixo de 0,97 pu que sobram
+  no fluxo não linear. Relinearizar em torno do ponto negociado é a extensão
+  natural.</li>
+<li><strong>Representação das fases do caso.</strong> A conversão do IEEE 13 para o mercado usa
+  uma carga por barra, equilibrada entre as fases dela, e liga o PV1 em triângulo
+  B-C (fisicamente ele é estrela B e C). Com as cargas e os PV nas fases físicas o
+  desequilíbrio é bem maior, e o armazenamento atual não basta: ver
+  <a href="../ieee13-case/">O caso IEEE 13</a>.</li>
+<li><strong>O reativo é consequência, não decisão.</strong> Com <code>MARKET_STORAGE_PF</code> o reativo
+  acompanha o ativo pelo fator de potência; despachar reativo como serviço seria
+  controle Volt/Var, fora do escopo desta camada.</li>
+</ul>
+<h2 id="referencias">Referências<a class="headerlink" href="#referencias" title="Permanent link">&para;</a></h2>
+<ul>
+<li>MELO, L. S. <em>Modelo de simulação computacional multidomínio para análise de
+  redes elétricas inteligentes com aplicação em transações econômicas de
+  energia.</em> Tese (Doutorado), UFC, 2022.</li>
+<li>HU, J. et al. Application of network-constrained transactive control to
+  electric vehicle charging for secure grid operation. <em>IEEE Transactions on
+  Sustainable Energy</em>, v. 8, n. 2, p. 505-515, 2017.</li>
+<li>LIU, Y.; LI, J.; WU, L. Distribution system restructuring: distribution LMP
+  via unbalanced ACOPF. <em>IEEE Transactions on Smart Grid</em>, v. 9, n. 5,
+  p. 4038-4048, 2018.</li>
+<li>CHEN, J.; GUO, Y.; WU, W. Optimal dispatch scheme for DSO and prosumers by
+  implementing three-phase distribution locational marginal prices. <em>IET
+  Generation, Transmission &amp; Distribution</em>, 2020.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Última atualização">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="21 de outubro de 2026 21:06:17 UTC">21 de outubro de 2026</span>
+  </span>
+
+    
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../ieee13-case/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: O caso IEEE 13">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                O caso IEEE 13
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../communication-network/" class="md-footer__link md-footer__link--next" aria-label="Próximo: A rede de comunicação">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                A rede de comunicação
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/grei-ufc/co-simulation-opentes" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

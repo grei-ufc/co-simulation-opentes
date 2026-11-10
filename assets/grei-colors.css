@@ -1,0 +1,118 @@
+/*
+ * GREI-UFC Color Palette
+ *
+ * Cores oficiais extraídas de: https://grei-ufc.github.io
+ * #2F5D4B — Verde escuro (header, hero, botões)
+ * #F4FFEB — Verde-claro (fundo conteúdo)
+ * #2b2b40 — Azul-marinho (footer)
+ * #007024 — Verde (links)
+ */
+
+/* =============================================
+   Light Mode — ajustes sobre o verde padrão
+   ============================================= */
+
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #2F5D4B;
+  --md-primary-fg-color--light: #3d7a64;
+  --md-primary-fg-color--dark: #234538;
+  --md-primary-bg-color: #F4FFEB;
+  --md-accent-fg-color: #007024;
+  --md-accent-fg-color--transparent: rgba(0, 112, 36, 0.1);
+  --md-default-bg-color: #F4FFEB;
+}
+
+/* =============================================
+   Dark Mode
+   ============================================= */
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #2F5D4B;
+  --md-primary-fg-color--light: #3d7a64;
+  --md-primary-fg-color--dark: #234538;
+  --md-accent-fg-color: #5cb87a;
+  --md-accent-fg-color--transparent: rgba(92, 184, 122, 0.1);
+  --md-default-bg-color: #1e1e30;
+}
+
+/* =============================================
+   Sidebar (fundo claro no light mode)
+   ============================================= */
+
+[data-md-color-scheme="default"] .md-sidebar--primary .md-sidebar__scrollwrap,
+[data-md-color-scheme="default"] .md-sidebar--secondary .md-sidebar__scrollwrap {
+  background-color: #f0f7ed;
+}
+
+/* =============================================
+   Footer
+   ============================================= */
+
+[data-md-color-scheme="default"] .md-footer {
+  background-color: #2b2b40;
+}
+
+[data-md-color-scheme="default"] .md-footer a {
+  color: #999;
+}
+
+[data-md-color-scheme="default"] .md-footer a:hover {
+  color: #fff;
+}
+
+[data-md-color-scheme="default"] .md-footer__copyright {
+  color: #999;
+  font-size: 0.7em;
+}
+
+[data-md-color-scheme="slate"] .md-footer {
+  background-color: #14141f;
+}
+
+/* =============================================
+   Tabs (navegação superior)
+   ============================================= */
+
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #234538;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: #1a2e22;
+}
+
+/* =============================================
+   Tabelas
+   ============================================= */
+
+[data-md-color-scheme="default"] .md-typeset table:not([class]) th {
+  background-color: #2F5D4B;
+  color: #F4FFEB;
+}
+
+[data-md-color-scheme="default"] .md-typeset table:not([class]) tr:hover {
+  background-color: rgba(47, 93, 75, 0.05);
+}
+
+/* =============================================
+   Code blocks
+   ============================================= */
+
+[data-md-color-scheme="default"] .md-typeset code {
+  color: #2F5D4B;
+  background-color: rgba(47, 93, 75, 0.06);
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre {
+  background-color: #1a2e22;
+}
+
+/* =============================================
+   Admonitions
+   ============================================= */
+
+[data-md-color-scheme="default"] .md-typeset .admonition,
+[data-md-color-scheme="default"] .md-typeset details {
+  border-color: #2F5D4B;
+}
