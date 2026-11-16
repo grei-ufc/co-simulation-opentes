@@ -13,4 +13,8 @@ papel de cada um está em [Arquitetura](../../explanation/architecture.md).
 
 ## O circuito exposto ao Mosaik
 
-::: simulators.api_opendss
+O adaptador é o da equipe TSRE, copiado sem alteração do
+[tsre-der-opentes](https://github.com/grei-ufc/tsre-der-opentes); a referência
+completa dele está na documentação daquele repositório.
+
+::: simulators.opendss.api_opendss

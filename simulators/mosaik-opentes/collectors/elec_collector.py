@@ -61,6 +61,12 @@ class Collector(mosaik_api.Simulator):
         data = inputs.get(self.eid, {})
         for attr, values in data.items():
             for src, value in values.items():
+                # O adaptador do OpenDSS marca com NaN a fase que a barra nao
+                # tem. No arquivo de resultado essa celula continua 0.0, a
+                # convencao que as figuras, o console e as execucoes anteriores
+                # usam para "fase inexistente".
+                if isinstance(value, float) and value != value:
+                    value = 0.0
                 self.data[src][attr][time] = value
                 df_dict[f'{src}-{attr}'] = [value]
 

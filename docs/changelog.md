@@ -3,6 +3,18 @@
 As mudanças entram no `main` por pull request. A lista abaixo resume cada um,
 do mais recente ao mais antigo.
 
+## Adaptador do OpenDSS atualizado para o do TSRE
+
+- O adaptador do OpenDSS (`simulators/grid-opentes/src/simulators/opendss/`)
+  passa a ser a cópia sem alteração do `tsre-der-opentes` no commit `b086ea8`
+  (10/11/2026), no lugar da cópia de maio de 2026 (`api_opendss.py` e
+  `opendss_wrapper.py`).
+- Resultados conferidos contra a versão anterior nos modos por fase, por barra
+  e `MARKET_REGULADOR=neutro`: mesmas rodadas e potências, e tensões com
+  diferença máxima de 8e-9 pu.
+- O coletor mantém `0.0` na fase que a barra não tem, e o modo `neutro` passa a
+  enviar a derivação 0 de forma explícita.
+
 ## Documentação no padrão do OpenTES
 
 - Site reorganizado no modelo do `tsre-der-opentes`: `mkdocs.yml` na raiz,

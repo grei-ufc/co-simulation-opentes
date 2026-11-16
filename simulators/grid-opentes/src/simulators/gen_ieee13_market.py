@@ -261,7 +261,7 @@ def perfis(cargas, formas):
         f = formas[c["daily"].lower()]
         passo_s = f["intervalo_s"]
         for t in range(PERIODS):
-            # Mesma indexacao do `api_opendss.step`: o instante do intervalo cai
+            # Mesma indexacao do `opendss/api_opendss.step`: o instante do intervalo cai
             # dentro de um ponto da curva, sem interpolar.
             k = int(t * DT_MIN * 60 // passo_s) % len(f["mult"])
             carga[n][t] += c["kw"] * f["mult"][k]

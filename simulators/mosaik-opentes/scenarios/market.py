@@ -46,8 +46,9 @@ RESULT_CSV = str(OUTPUT_DIR / f"result_{RESULT_TAG}.csv")
 # monofasica `Port_<no>_<fase>` do circuito, e o Load_<no> leva so a demanda.
 FASE = os.environ.get("MARKET_FASE", "0") == "1"
 # Regulador: `previsao` aplica, a cada passo, as derivacoes do ponto de operacao da
-# previsao, que o DSO usou para calcular a matriz de sensibilidade. Sem comando,
-# o simulador OpenDSS deixa as derivacoes travadas em 0 (`neutro`).
+# previsao, que o DSO usou para calcular a matriz de sensibilidade; `neutro` aplica
+# a derivacao 0. O comando vai nos dois modos, porque sem ele o simulador OpenDSS
+# deixa as derivacoes onde o circuito as resolveu ao compilar.
 REGULADOR = os.environ.get("MARKET_REGULADOR", "previsao")
 
 START_DATE = os.environ.get("MOSAIK_START_DATE", "2026-01-01 00:00:00")
@@ -119,11 +120,10 @@ def create_scenario(world):
         ignoradas = [e for e in ignoradas if not porta_re.match(e)]
 
     n_reg = 0
-    if REGULADOR == "previsao":
-        for reg in (e for e in grid.children if e.type == "RegControl"):
-            agent = pade_sim.Regulador(nome=reg.eid.split("-", 1)[1])
-            world.connect(agent, reg, ("tap", "tap"))
-            n_reg += 1
+    for reg in (e for e in grid.children if e.type == "RegControl"):
+        agent = pade_sim.Regulador(nome=reg.eid.split("-", 1)[1])
+        world.connect(agent, reg, ("tap", "tap"))
+        n_reg += 1
 
     for bus in buses:
         world.connect(bus, monitor, "V1_pu", "V2_pu", "V3_pu")
@@ -134,7 +134,9 @@ def create_scenario(world):
             f"tem o que acionar. Cargas encontradas: {sorted(loads)[:8]}")
     print(f"   {n_ligados} nos acionados pelos agentes, "
           + (f"{n_portas} portas por fase, " if FASE else "")
-          + (f"{n_reg} reguladores pela previsao, " if n_reg else "")
+          + (f"{n_reg} reguladores "
+             f"{'pela previsao' if REGULADOR == 'previsao' else 'na derivacao 0'}, "
+             if n_reg else "")
           + f"{len(buses)} barras registradas")
     if ignoradas:
         print(f"   {len(ignoradas)} cargas fora da convencao do mercado, "
