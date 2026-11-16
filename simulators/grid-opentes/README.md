@@ -26,8 +26,9 @@ flowchart LR
 ```
 src/simulators/
   opendss_simulator.py   entrada do contêiner (--remote 0.0.0.0:5671)
-  api_opendss.py         o circuito exposto ao Mosaik: cargas, barras, linhas, reguladores
-  opendss_wrapper.py     a interface com o OpenDSS por trás da API
+  opendss/               adaptador do OpenDSS da equipe TSRE, copiado sem alteração:
+                         api_opendss.py expõe o circuito ao Mosaik (cargas, barras,
+                         linhas, reguladores) e opendss_wrapper.py é a fachada do motor
   gen_ieee13_market.py   monta o caso de mercado (./run.sh caso)
   sensitivity.py         matrizes de sensibilidade de tensão, por barra e por fase
   pv_creator.py          curvas de irradiância e temperatura dos cinco PV
@@ -68,8 +69,16 @@ root no contêiner.
 
 ## Autoria
 
-O simulador Mosaik do OpenDSS (`api_opendss.py`, `opendss_wrapper.py`) e o
-gerador de curvas de PV são da equipe TSRE do OpenTES; o `pv_creator.py` foi
-adaptado do `tsre-der-opentes`. O caso de mercado e as matrizes de
+O simulador Mosaik do OpenDSS e o gerador de curvas de PV são da equipe TSRE do
+OpenTES. A pasta `src/simulators/opendss/` é cópia sem alteração de
+`src/simulators/opendss/` do
+[tsre-der-opentes](https://github.com/grei-ufc/tsre-der-opentes), no commit
+`b086ea8` de 10/11/2026: para atualizar, basta substituir a pasta e rodar
+`./run.sh market` para conferir o resultado. O `pv_creator.py` foi adaptado do
+mesmo repositório (versão 1.1.1). O que este repositório muda em relação ao
+adaptador fica fora da pasta: o coletor grava `0.0` na fase que a barra não tem
+(o adaptador devolve `NaN`), e o cenário envia a derivação do regulador a cada
+passo, porque sem comando o adaptador a deixa onde o circuito a resolveu ao
+compilar. O caso de mercado e as matrizes de
 sensibilidade são do time TTESO. Mais sobre o caso em
 [docs/explanation/ieee13-case.md](../../docs/explanation/ieee13-case.md).

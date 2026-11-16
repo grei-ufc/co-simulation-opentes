@@ -7,7 +7,7 @@ Elas cobrem os módulos Python que definem o comportamento da plataforma:
 | Página | Pasta | Módulos |
 |---|---|---|
 | [Mercado](market.md) | `simulators/market-opentes/` | `config`, `optimization`, `dual`, `operation`, `scenarios`, `settlement` |
-| [Rede elétrica](grid.md) | `simulators/grid-opentes/src/` | `gen_ieee13_market`, `sensitivity`, `api_opendss` |
+| [Rede elétrica](grid.md) | `simulators/grid-opentes/src/` | `gen_ieee13_market`, `sensitivity`, `opendss.api_opendss` |
 | [Agentes](agents.md) | `simulators/pade-opentes/agents/` | `market_agents`, `network_link` |
 
 O servidor de rede (`Tisch.cc`) é C++ e fica fora desta referência; os

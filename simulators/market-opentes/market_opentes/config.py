@@ -101,8 +101,8 @@ LETRA = {1: "A", 2: "B", 3: "C"}
 #             fisicamente correto: o regulador ajusta pela previsao e o mercado
 #             decide depois, com a derivacao como condicao de contorno. Sem isso
 #             os dois controladores disputam a mesma variavel.
-#   neutro    nenhum comando: o simulador OpenDSS trava as derivacoes em 0 ao
-#             montar a rede. Existe so para comparacao; o DSO negocia contra uma
+#   neutro    as derivacoes ficam em 0 o dia inteiro, por comando do cenario.
+#             Existe so para comparacao; o DSO negocia contra uma
 #             rede e a co-simulacao mede outra.
 REGULADOR = os.environ.get("MARKET_REGULADOR", "previsao")
 if REGULADOR not in ("previsao", "neutro"):

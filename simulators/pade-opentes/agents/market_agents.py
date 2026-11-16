@@ -1740,7 +1740,11 @@ class MarketMosaikSim(MosaikCon):
     def create(self, num, model, node=None, porta=None, nome=None, **params):
         if model == "Regulador":
             eid = f"reg_{nome}"
-            self.entities[eid] = ("regulador", self.reguladores.index(str(nome).lower()))
+            # Em `neutro` nao ha derivacoes da previsao: o indice fica vazio e o
+            # `get_data` envia a derivacao 0.
+            indice = (self.reguladores.index(str(nome).lower())
+                      if REGULADOR == "previsao" else None)
+            self.entities[eid] = ("regulador", indice)
             return [{"eid": eid, "type": model}]
         # Por fase, cada porta de armazenamento e uma entidade propria, ligada a
         # carga monofasica `Port_<no>_<fase>`; a entidade do no passa a levar so a
@@ -1779,7 +1783,11 @@ class MarketMosaikSim(MosaikCon):
             node = self.entities[eid]
             data[eid] = {}
             if isinstance(node, tuple):                  # regulador
-                data[eid]["tap"] = int(self.taps[t][node[1]])
+                # `neutro` envia a derivacao 0 de forma explicita: o adaptador do
+                # OpenDSS deixa o regulador onde o circuito o resolveu ao
+                # compilar, e nao mais em 0.
+                data[eid]["tap"] = (0 if node[1] is None
+                                    else int(self.taps[t][node[1]]))
                 continue
             for attr in attrs:
                 if attr == "P_kw":
