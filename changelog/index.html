@@ -1795,6 +1795,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#adaptador-do-opendss-atualizado-para-o-do-tsre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adaptador do OpenDSS atualizado para o do TSRE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#documentacao-no-padrao-do-opentes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1982,6 +1993,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#adaptador-do-opendss-atualizado-para-o-do-tsre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Adaptador do OpenDSS atualizado para o do TSRE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#documentacao-no-padrao-do-opentes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2111,6 +2133,18 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <p>As mudanças entram no <code>main</code> por pull request. A lista abaixo resume cada um,
 do mais recente ao mais antigo.</p>
+<h2 id="adaptador-do-opendss-atualizado-para-o-do-tsre">Adaptador do OpenDSS atualizado para o do TSRE<a class="headerlink" href="#adaptador-do-opendss-atualizado-para-o-do-tsre" title="Permanent link">&para;</a></h2>
+<ul>
+<li>O adaptador do OpenDSS (<code>simulators/grid-opentes/src/simulators/opendss/</code>)
+  passa a ser a cópia sem alteração do <code>tsre-der-opentes</code> no commit <code>b086ea8</code>
+  (10/11/2026), no lugar da cópia de maio de 2026 (<code>api_opendss.py</code> e
+  <code>opendss_wrapper.py</code>).</li>
+<li>Resultados conferidos contra a versão anterior nos modos por fase, por barra
+  e <code>MARKET_REGULADOR=neutro</code>: mesmas rodadas e potências, e tensões com
+  diferença máxima de 8e-9 pu.</li>
+<li>O coletor mantém <code>0.0</code> na fase que a barra não tem, e o modo <code>neutro</code> passa a
+  enviar a derivação 0 de forma explícita.</li>
+</ul>
 <h2 id="documentacao-no-padrao-do-opentes">Documentação no padrão do OpenTES<a class="headerlink" href="#documentacao-no-padrao-do-opentes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Site reorganizado no modelo do <code>tsre-der-opentes</code>: <code>mkdocs.yml</code> na raiz,
@@ -2187,7 +2221,7 @@ do mais recente ao mais antigo.</p>
     <span class="md-icon" title="Última atualização">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="10 de novembro de 2026 21:58:15 UTC">10 de novembro de 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="16 de novembro de 2026 23:31:00 UTC">16 de novembro de 2026</span>
   </span>
 
     
