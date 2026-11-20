@@ -12,7 +12,7 @@
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"   # segue o link de ~/.local/bin/opentes
 
-CASO=simulators/grid-opentes/src/data/13Bus
+CASO=temp/grid-opentes/src/data/13Bus
 RESULT=""
 
 usage() {
@@ -39,6 +39,10 @@ Comandos:
   caso            Regenera o caso IEEE 13 (gen_ieee13_market.py) e as duas
                   matrizes de sensibilidade. So depois de mudar o circuito,
                   as curvas de PV ou a alocacao de armazenamento.
+  submodulos      O codigo de cada time em teams/ (git submodule): o commit
+                  fixado e se a branch integration-<time> ja existe.
+                  'submodulos atualizar' leva cada um a ponta da sua
+                  branch integration-<time>; sem a branch, fica no commit fixado.
 
 Variaveis mais usadas (todas em docker-compose.yaml):
   CPLEX_HOME            instalacao do CPLEX no host (obrigatoria)
@@ -145,6 +149,7 @@ _passada() {
     # de todos os agentes, e os simuladores --remote morrem se forem sondados.
     _wait_log pade "market-mas. pronto" "os agentes PADE" 120
     _wait_log collector "Waiting for connection" "o coletor" 60
+    _wait_log grid "awaits connection" "o simulador OpenDSS" 60
     docker compose up --abort-on-container-exit --exit-code-from mosaik mosaik
 }
 
@@ -169,9 +174,10 @@ cmd_centralizado() {
 }
 
 cmd_figuras() {
-    docker compose run --rm --no-deps -v "$PWD/simulators/market-opentes:/market:ro" \
+    docker compose run --rm --no-deps -v "$PWD/teams/tteso-market-opentes:/market:ro" \
         -v "$PWD/$CASO:/app/src/data/13Bus" \
-        -e PYTHONPATH=/market -e MARKET_GRID_DIR=/app/src/data/13Bus -e MPLCONFIGDIR=/tmp \
+        -e PYTHONPATH=/market -e MARKET_GRID_DIR=/app/src/data/13Bus \
+        -e MARKET_DATA_DIR=/app/src/data/13Bus -e MPLCONFIGDIR=/tmp \
         mosaik python -m market_opentes.figuras --resultados "/app/output/$SAIDA"
     RESULT="output/$SAIDA/figuras/"
 }
@@ -183,13 +189,70 @@ cmd_caso() {
     RESULT="$CASO/"
 }
 
+# --- submodulos (teams/) -----------------------------------------------------
+# Cada time entra por um submodulo que segue a branch integration-<time>
+# (campo `branch` do .gitmodules). Enquanto a branch nao existe no repositorio
+# do time, o submodulo fica no commit fixado aqui, que e o do `main` dele.
+_submodulos() {
+    git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | awk '{print $2}'
+}
+
+_exige_submodulos() {
+    local p faltando=""
+    for p in $(_submodulos); do
+        [ -n "$(ls -A "$p" 2>/dev/null)" ] || faltando="$faltando $p"
+    done
+    if [ -n "$faltando" ]; then
+        echo "!! submodulos sem conteudo:$faltando" >&2
+        echo "   Clone com 'git clone --recurse-submodules', ou rode:" >&2
+        echo "     git submodule update --init" >&2
+        exit 1
+    fi
+}
+
+cmd_submodulos() {
+    local acao="${1:-}" p br fixado atual remoto
+    if [ -n "$acao" ] && [ "$acao" != "atualizar" ]; then
+        echo "!! uso: opentes submodulos [atualizar]" >&2; exit 1
+    fi
+    for p in $(_submodulos); do
+        br=$(git config -f .gitmodules --get "submodule.$p.branch" || echo main)
+        if [ -z "$(ls -A "$p" 2>/dev/null)" ]; then
+            git submodule update --init -- "$p"
+        fi
+        fixado=$(git ls-files -s -- "$p" | awk '{print substr($2, 1, 7)}')
+        atual=$(git -C "$p" rev-parse --short=7 HEAD)
+        remoto=$(git -C "$p" ls-remote --heads origin "$br" | awk '{print substr($1, 1, 7)}')
+        if [ "$acao" = "atualizar" ] && [ -n "$remoto" ]; then
+            git -C "$p" fetch -q origin "$br"
+            git -C "$p" checkout -q --detach FETCH_HEAD
+            atual=$(git -C "$p" rev-parse --short=7 HEAD)
+        fi
+        printf "  %-28s %-18s " "$p" "$br"
+        if [ -z "$remoto" ]; then
+            printf "branch ainda nao criada; "
+        else
+            printf "ponta %s; " "$remoto"
+        fi
+        printf "fixado %s, em uso %s" "${fixado:--}" "$atual"
+        [ -n "$(git -C "$p" status --porcelain)" ] && printf " (com mudancas locais)"
+        printf "\n"
+    done
+    if [ "$acao" = "atualizar" ]; then
+        echo ">> confira com 'opentes market' e registre os commits novos com:"
+        echo "     git add teams/ && git commit"
+    fi
+}
+
 COMMAND="${1:-}"
 case "$COMMAND" in
     ""|-h|--help|help) usage; exit 0 ;;
+    submodulos) shift; cmd_submodulos "$@"; exit 0 ;;
     market|centralizado|figuras|caso) ;;
     *) echo "!! comando desconhecido: '${COMMAND}' (use opentes --help)" >&2; exit 1 ;;
 esac
 
+_exige_submodulos
 _cleanup
 echo ">> [OpenTES] ${COMMAND} (resultados em output/$SAIDA)"
 "cmd_${COMMAND}"

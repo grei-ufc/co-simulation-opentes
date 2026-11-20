@@ -13,10 +13,15 @@
 ## Obter e construir
 
 ```bash
-git clone https://github.com/grei-ufc/co-simulation-opentes
+git clone --recurse-submodules https://github.com/grei-ufc/co-simulation-opentes
 cd co-simulation-opentes
 docker compose build        # uma vez, ou depois de mudar um Dockerfile
 ```
+
+O `--recurse-submodules` baixa o código dos times, que fica em `teams/` (ver
+[Organização dos repositórios](../explanation/repositories.md)). Num clone feito
+sem ele, rode `git submodule update --init`; o `run.sh` avisa se algum submódulo
+estiver vazio.
 
 O primeiro `build` compila o OMNeT++ e leva alguns minutos. São construídas
 quatro imagens: `opentes/comm`, `opentes/grid`, `opentes/pade` e

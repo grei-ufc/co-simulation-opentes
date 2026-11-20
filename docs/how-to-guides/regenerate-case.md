@@ -1,6 +1,6 @@
 # Regenerar o caso IEEE 13
 
-O caso de mercado em `simulators/grid-opentes/src/data/13Bus/` é gerado a partir
+O caso de mercado em `temp/grid-opentes/src/data/13Bus/` é gerado a partir
 do circuito oficial. Regenere depois de mudar o circuito, as curvas de PV ou a
 alocação de armazenamento; fora isso, não é preciso.
 
@@ -53,6 +53,9 @@ de PV (`ieee13_*_5min.*`, saídas do `pv_creator`) e o preço spot
 !!! warning "Os repositórios do TTESO carregam uma cópia do caso"
 
     O [tteso-market-opentes](https://github.com/grei-ufc/tteso-market-opentes)
-    traz os arquivos do caso e as matrizes em `market_opentes/dados/ieee13/`.
-    Depois de regenerar aqui, copie-os para lá, ou os dois repositórios passam a
-    negociar sobre casos diferentes.
+    traz os arquivos do caso e as matrizes em `market_opentes/dados/ieee13/`
+    (no submódulo, `teams/tteso-market-opentes/market_opentes/dados/ieee13/`).
+    A co-simulação não lê essa cópia: os contêineres apontam para
+    `temp/grid-opentes/src/data/13Bus/`. Depois de regenerar aqui, leve os
+    arquivos para lá pela branch `integration-tteso`, ou o mercado isolado e a
+    co-simulação passam a negociar sobre casos diferentes.

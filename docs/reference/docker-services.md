@@ -6,7 +6,7 @@ O `docker-compose.yaml` define cinco serviços na rede `opentes-net`. Não os su
 | Serviço | Imagem | Porta | Comando | Papel |
 |---|---|---|---|---|
 | `comm` | `opentes/comm` | 5556 | compila o modelo e roda `sim_exec` (Cmdenv) | servidor de rede 6TiSCH e Wi-SUN no OMNeT++, consultado por ZMQ; só com `NET_BACKEND=omnet` |
-| `grid` | `opentes/grid` | 5671 | `python -m simulators.opendss_simulator --remote 0.0.0.0:5671` | o circuito no OpenDSS, resolvido a cada passo de 15 min |
+| `grid` | `opentes/grid` | 5671 | `python -m simulators.opendss.api_opendss --remote 0.0.0.0:5671` (o adaptador do TSRE) | o circuito no OpenDSS, resolvido a cada passo de 15 min |
 | `collector` | `opentes/mosaik` | 5673 | `python collectors/elec_collector.py --remote 0.0.0.0:5673` | grava tensões e potências de cada passo em `result_<tag>.csv` |
 | `pade` | `opentes/pade` | 5678 | `python3 agents/market_agents.py` | os agentes do mercado (prosumidores, concentrador, DSO, mercado) e o simulador mosaik deles |
 | `mosaik` | `opentes/mosaik` | nenhuma | `python scenarios/market.py` | o orquestrador: liga os agentes ao circuito no mesmo relógio |
@@ -19,19 +19,20 @@ passada.
 
 | Serviço | Pasta do host | No contêiner |
 |---|---|---|
-| `comm` | `simulators/comm-opentes` | `/root/models` |
-| `comm` | `simulators/grid-opentes/src/data` | `/grid-data` (posições dos agentes e topologia de rádio gravada) |
-| `grid` | `simulators/grid-opentes/src` | `/app/src` |
-| `collector`, `mosaik` | `simulators/mosaik-opentes` | `/app` |
+| `comm` | `temp/comm-opentes` | `/root/models` |
+| `comm` | `temp/grid-opentes/src/data` | `/grid-data` (posições dos agentes e topologia de rádio gravada) |
+| `grid` | `temp/grid-opentes/src` | `/app/src` (o caso e as ferramentas que o geram) |
+| `grid` | `teams/tsre-der-opentes/src` | `/tsre/src` (o adaptador do OpenDSS, somente leitura) |
+| `collector`, `mosaik` | `temp/mosaik-opentes` | `/app` |
 | `collector`, `mosaik`, `pade` | `output` | `/app/output` |
-| `pade` | `simulators/pade-opentes/agents` | `/app/agents` |
-| `pade` | `simulators/market-opentes` | `/market` |
-| `pade` | `simulators/grid-opentes/src/data` | `/grid-data` (somente leitura) |
+| `pade` | `teams/tteso-agents-opentes/agentes` | `/app/agents` (somente leitura) |
+| `pade` | `teams/tteso-market-opentes` | `/market` (somente leitura) |
+| `pade` | `temp/grid-opentes/src/data` | `/grid-data` (somente leitura) |
 | `pade` | `$CPLEX_HOME` | `/opt/cplex` (somente leitura) |
 
-Como o código é montado por volume, mudanças em `agents/`, `market-opentes/`,
-`mosaik-opentes/` e `grid-opentes/src/` valem na próxima execução, sem
-reconstruir a imagem. Mudanças em Dockerfile ou dependências pedem
+Como o código é montado por volume, mudanças em `teams/` (um submódulo
+atualizado), `temp/mosaik-opentes/` e `temp/grid-opentes/src/` valem na próxima execução,
+sem reconstruir a imagem. Mudanças em Dockerfile ou dependências pedem
 `docker compose build`.
 
 ## Imagens

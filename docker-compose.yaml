@@ -1,7 +1,10 @@
 name: opentes
 
-# Co-simulacao do mercado transativo sobre a IEEE 13 barras. Cinco servicos, um
-# por dominio:
+# Co-simulacao do mercado transativo sobre a IEEE 13 barras. O codigo de cada
+# time vem dos submodulos em teams/ (git submodule), montado nos conteineres;
+# temp/ guarda o que ainda nao tem time dono (imagens, o caso IEEE 13, o cenario
+# e a rede 6TiSCH) e se esvazia a medida que cada time absorve a sua parte.
+# Cinco servicos, um por dominio:
 #
 #   comm       OMNeT++: rede 6TiSCH entre os agentes (so com NET_BACKEND=omnet)
 #   grid       OpenDSS: o circuito, resolvido a cada passo de 15 min
@@ -16,16 +19,16 @@ name: opentes
 services:
   comm:
     build:
-      context: ./simulators/comm-opentes
+      context: ./temp/comm-opentes
       dockerfile: Dockerfile
     image: opentes/comm:local
     container_name: opentes-comm
     expose:
       - "5556"
     volumes:
-      - ./simulators/comm-opentes:/root/models
+      - ./temp/comm-opentes:/root/models
       # Posicoes dos agentes e saida `tisch_links.csv` (a rede de radio simulada).
-      - ./simulators/grid-opentes/src/data:/grid-data
+      - ./temp/grid-opentes/src/data:/grid-data
     command: >-
       bash -lc "source /root/omnetpp/setenv &&
       opp_makemake -f --deep -O out -o sim_exec -lzmq && make -j4 &&
@@ -39,16 +42,22 @@ services:
 
   grid:
     build:
-      context: ./simulators/grid-opentes
+      context: ./temp/grid-opentes
       dockerfile: Dockerfile
     image: opentes/grid:local
     container_name: opentes-grid
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1   # nao grava .pyc no src montado
+      # O simulador OpenDSS e o do TSRE, lido do submodulo, sem copia.
+      - PYTHONPATH=/tsre/src
     volumes:
-      - ./simulators/grid-opentes/src:/app/src
-    command: python -u -m simulators.opendss_simulator --remote 0.0.0.0:5671
+      # O caso de mercado (circuito, perfis, matrizes) e as ferramentas que o
+      # geram, do TTESO.
+      - ./temp/grid-opentes/src:/app/src
+      # O adaptador OpenDSS do TSRE (submodulo teams/tsre-der-opentes).
+      - ./teams/tsre-der-opentes/src:/tsre/src:ro
+    command: python -u -m simulators.opendss.api_opendss --remote 0.0.0.0:5671
     expose:
       - "5671"
     networks:
@@ -56,12 +65,12 @@ services:
 
   collector:
     build:
-      context: ./simulators/mosaik-opentes
+      context: ./temp/mosaik-opentes
       dockerfile: Dockerfile
     image: opentes/mosaik:local
     container_name: opentes-collector
     volumes:
-      - ./simulators/mosaik-opentes:/app
+      - ./temp/mosaik-opentes:/app
       - ./output:/app/output
     command: python -u collectors/elec_collector.py --remote 0.0.0.0:5673
     expose:
@@ -71,7 +80,7 @@ services:
 
   pade:
     build:
-      context: ./simulators/pade-opentes
+      context: ./temp/pade-opentes
       dockerfile: Dockerfile
     image: opentes/pade:local
     container_name: opentes-pade
@@ -149,9 +158,12 @@ services:
     expose:
       - "5678"
     volumes:
-      - ./simulators/pade-opentes/agents:/app/agents
-      - ./simulators/market-opentes:/market
-      - ./simulators/grid-opentes/src/data:/grid-data:ro
+      # Os agentes (teams/tteso-agents-opentes) e o modelo de mercado
+      # (teams/tteso-market-opentes), lidos dos submodulos do TTESO. O PADE vem
+      # instalado na imagem, do PyPI (pade-agents).
+      - ./teams/tteso-agents-opentes/agentes:/app/agents:ro
+      - ./teams/tteso-market-opentes:/market:ro
+      - ./temp/grid-opentes/src/data:/grid-data:ro
       - ./output:/app/output
       - ${CPLEX_HOME:-/nonexistent}:/opt/cplex:ro
     command: python3 agents/market_agents.py
@@ -160,7 +172,7 @@ services:
 
   mosaik:
     build:
-      context: ./simulators/mosaik-opentes
+      context: ./temp/mosaik-opentes
       dockerfile: Dockerfile
     image: opentes/mosaik:local
     container_name: opentes-mosaik
@@ -181,7 +193,7 @@ services:
       - OPENDSS_HOST=grid
       - ELEC_COLLECTOR_HOST=collector
     volumes:
-      - ./simulators/mosaik-opentes:/app
+      - ./temp/mosaik-opentes:/app
       - ./output:/app/output
     command: python -u scenarios/market.py
     networks:

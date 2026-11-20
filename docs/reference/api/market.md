@@ -1,6 +1,6 @@
 # Mercado (`market_opentes`)
 
-A biblioteca do modelo de mercado, em `simulators/market-opentes/`. Os agentes
+A biblioteca do modelo de mercado, do submódulo `teams/tteso-market-opentes/`. Os agentes
 a importam, e ela também roda sozinha no `./run.sh centralizado`. A formulação
 está em [O modelo de mercado](../../explanation/market-model.md).
 

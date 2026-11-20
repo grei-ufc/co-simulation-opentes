@@ -6,16 +6,20 @@ os dados entre eles.
 
 | Contêiner | Pasta | Domínio |
 |---|---|---|
-| `pade` | `simulators/pade-opentes` | os agentes do mercado, sobre o framework PADE |
-| `grid` | `simulators/grid-opentes` | a rede elétrica, no OpenDSS |
-| `mosaik` | `simulators/mosaik-opentes` | o orquestrador e o cenário de mercado |
-| `collector` | `simulators/mosaik-opentes` | grava as tensões e potências de cada passo |
-| `comm` | `simulators/comm-opentes` | a rede de comunicação 6TiSCH ou Wi-SUN FAN, no OMNeT++ |
+| `pade` | `temp/pade-opentes`, com os agentes de `teams/tteso-agents-opentes` | os agentes do mercado, sobre o framework PADE |
+| `grid` | `temp/grid-opentes`, com o adaptador de `teams/tsre-der-opentes` | a rede elétrica, no OpenDSS |
+| `mosaik` | `temp/mosaik-opentes` | o orquestrador e o cenário de mercado |
+| `collector` | `temp/mosaik-opentes` | grava as tensões e potências de cada passo |
+| `comm` | `temp/comm-opentes` | a rede de comunicação 6TiSCH ou Wi-SUN FAN, no OMNeT++ |
 
-A pasta `simulators/market-opentes` não é contêiner: é a biblioteca Python com os
-modelos de otimização (Pyomo), a decomposição dual, a liquidação e as figuras.
-Os agentes a importam, e ela também roda sozinha, sem agentes, no comando
-`./run.sh centralizado`.
+O mercado (`teams/tteso-market-opentes`) não é contêiner: é a biblioteca Python
+com os modelos de otimização (Pyomo), a decomposição dual, a liquidação e as
+figuras. Os agentes a importam, e ela também roda sozinha, sem agentes, no
+comando `./run.sh centralizado`.
+
+O código dos times vem dos submódulos em `teams/`, montados nos contêineres; o
+que é de cada repositório está em
+[Organização dos repositórios](repositories.md).
 
 ## Uma execução
 
@@ -54,15 +58,17 @@ mercado.
 ### `pade-opentes`: os agentes
 
 O PADE é o framework de sistemas multiagentes do GREI, em Python, com protocolos
-FIPA. A pasta traz a versão 3.0 do framework (`pade/`) e os agentes do mercado
-(`agents/market_agents.py`), que vivem num processo só e compartilham uma conexão
-com o Mosaik. A camada `agents/network_link.py` intercepta o envio de cada
+FIPA. A imagem instala a versão 3.0 do PyPI (`pade-agents`), e os agentes do
+mercado vêm do submódulo `teams/tteso-agents-opentes`
+(`agentes/market_agents.py`): vivem num processo só e compartilham uma conexão
+com o Mosaik. A camada `agentes/network_link.py` intercepta o envio de cada
 mensagem e a entrega com o atraso e a perda do modelo de rede escolhido em
 `NET_BACKEND`: `ideal`, `lossy` (sorteio) ou `omnet` (6TiSCH ou Wi-SUN FAN).
 
 ### `grid-opentes`: a rede elétrica
 
-O OpenDSS, chamado pelo `py-dss-interface`. O `opendss_simulator.py` expõe o
+O OpenDSS, chamado pelo `py-dss-interface`. O adaptador do TSRE
+(`simulators.opendss.api_opendss`, do submódulo `teams/tsre-der-opentes`) expõe o
 circuito ao Mosaik (cargas, barras, reguladores); o `sensitivity.py` mede as
 matrizes de sensibilidade de tensão por perturbação; o `gen_ieee13_market.py`
 monta o caso de mercado. O `pv_creator.py` gera as curvas de irradiância e
@@ -86,10 +92,12 @@ ele responde com o caminho, o atraso e se a mensagem se perdeu. Com
 disputa e quadros maiores. Os dois modelos estão em
 [A rede de comunicação](communication-network.md).
 
-## Pastas fora de `simulators/`
+## Outras pastas
 
 | Pasta | O que tem |
 |---|---|
+| `teams/` | o código dos times, por submódulo git (ver [Organização dos repositórios](repositories.md)) |
+| `temp/` | o que ainda não tem time dono, provisório (ver [A pasta `temp/`](repositories.md#a-pasta-temp)) |
 | `docs/` | esta documentação; o `mkdocs.yml` fica na raiz e o site compilado em `site/` |
 | `output/` | os resultados das execuções, fora do git |
 

@@ -13,7 +13,7 @@ RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$RAIZ"
 CONF="$RAIZ/.opentes.env"
 LOGS="$RAIZ/output/console"
-CASO="simulators/grid-opentes/src/data/13Bus"
+CASO="temp/grid-opentes/src/data/13Bus"
 
 # --------------------------------------------------------------------------
 # Cores

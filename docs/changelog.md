@@ -3,6 +3,29 @@
 As mudanças entram no `main` por pull request. A lista abaixo resume cada um,
 do mais recente ao mais antigo.
 
+## Código dos times por submódulo git
+
+- O código de cada time entra por submódulo em `teams/`, que segue a branch
+  `integration-<time>` do repositório do time (`.gitmodules`): `tsre-der-opentes`,
+  `tteso-market-opentes`, `tteso-agents-opentes` e `tscc-com-opentes`. Enquanto
+  a branch não existe, o submódulo fica no commit do `main` do time.
+- Saem as cópias: `simulators/market-opentes/`, `simulators/pade-opentes/pade/`
+  e `agents/`, e `simulators/grid-opentes/src/simulators/opendss/` com o
+  `opendss_simulator.py`. A pasta `simulators/` deixa de existir: `teams/` faz o
+  papel dela, e `grid-opentes/`, `pade-opentes/`, `mosaik-opentes/` e
+  `comm-opentes/` (as imagens e a cola da integração) vão para `temp/`, pasta
+  provisória que se esvazia à medida que cada time absorve a sua parte
+  (`temp/README.md`). O contêiner `grid` roda o adaptador do TSRE direto
+  (`python -m simulators.opendss.api_opendss`), e a imagem `pade` instala o
+  `pade-agents==3.0` do PyPI.
+- Novo comando `opentes submodulos [atualizar]`, e o `run.sh` passa a esperar o
+  `grid` ficar pronto, pelo log, antes de subir o Mosaik.
+- Página nova: [Organização dos repositórios](explanation/repositories.md).
+- Resultados conferidos contra o `main` e contra a referência de 21/10/2026:
+  por fase e por barra, mesmas rodadas (42 e 48) e potências, tensões com
+  diferença máxima de 2e-9 pu; `neutro` idêntico; saídas do `centralizado`
+  idênticas.
+
 ## Adaptador do OpenDSS atualizado para o do TSRE
 
 - O adaptador do OpenDSS (`simulators/grid-opentes/src/simulators/opendss/`)

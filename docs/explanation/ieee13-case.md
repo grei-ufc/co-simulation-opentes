@@ -3,7 +3,7 @@
 O caso de estudo é o *IEEE 13 Node Test Feeder* (Distribution System Analysis
 Subcommittee): um alimentador de 4,16 kV, curto, carregado e desequilibrado de
 propósito, com barras mono, bi e trifásicas. Ele fica em
-`simulators/grid-opentes/src/data/13Bus/` e é **gerado**, e não escrito à mão,
+`temp/grid-opentes/src/data/13Bus/` e é **gerado**, e não escrito à mão,
 por `gen_ieee13_market.py` (ou `./run.sh caso`), que lê a topologia do circuito
 oficial já compilado.
 

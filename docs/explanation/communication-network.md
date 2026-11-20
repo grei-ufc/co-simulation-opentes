@@ -10,7 +10,7 @@ Pister-Hack e roteamento multi-salto. O modelo de rede é o de Melo (2022, seç�
 A negociação acontece inteira dentro de um passo de 15 minutos, com o relógio da
 co-simulação parado. Por isso o OMNeT++ não participa do passo do mosaik: ele
 roda como **servidor de rotas**. A cada mensagem que um agente envia, a camada
-de rede dos agentes (`simulators/pade-opentes/agents/network_link.py`) pergunta
+de rede dos agentes (`teams/tteso-agents-opentes/agentes/network_link.py`) pergunta
 por ZMQ, na porta 5556, qual o caminho, o atraso e se a mensagem se perdeu, e
 agenda a entrega de acordo.
 
@@ -68,7 +68,7 @@ enlace, então o modelo é menos otimista ali.
 ## Os arquivos
 
 ```
-simulators/comm-opentes/
+temp/comm-opentes/
   Tisch.cc        o servidor: modelo de rádio, enlaces, rotas e atraso salto a salto
   Tisch.ned       os parâmetros do modelo, com o motivo de cada valor
   omnetpp.ini     a configuração usada pelo projeto (seed, escala de tempo, arquivos)

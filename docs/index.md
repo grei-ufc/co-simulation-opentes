@@ -64,12 +64,13 @@ Universidade Federal do Ceará), sobre componentes das equipes do projeto:
 
 | Equipe | Contribuição | Onde está |
 |---|---|---|
-| TSCC | rede de comunicação e a ponte com o mosaik | `simulators/comm-opentes`, `simulators/mosaik-opentes` |
-| TSRE | rede elétrica, sistemas fotovoltaicos e o simulador OpenDSS | `simulators/grid-opentes` |
-| TTESO | agentes, otimização, mercado transativo e a integração | `simulators/pade-opentes`, `simulators/market-opentes` |
+| TSCC | rede de comunicação e a ponte com o mosaik | `temp/comm-opentes`, `temp/mosaik-opentes`; submódulo `teams/tscc-com-opentes` |
+| TSRE | rede elétrica, sistemas fotovoltaicos e o simulador OpenDSS | submódulo `teams/tsre-der-opentes`, usado pelo `temp/grid-opentes` |
+| TTESO | agentes, otimização, mercado transativo e a integração | submódulos `teams/tteso-market-opentes` e `teams/tteso-agents-opentes`; `temp/grid-opentes` (o caso) |
 
-O mercado e os agentes também têm repositórios próprios, que rodam sem os outros
-simuladores: [tteso-market-opentes](https://grei-ufc.github.io/tteso-market-opentes/)
+O código de cada time entra aqui por submódulo git, sem cópia (ver
+[Organização dos repositórios](explanation/repositories.md)). O mercado e os
+agentes rodam também sem os outros simuladores, nos repositórios deles: [tteso-market-opentes](https://grei-ufc.github.io/tteso-market-opentes/)
 e [tteso-agents-opentes](https://grei-ufc.github.io/tteso-agents-opentes/).
 
 ## Licença

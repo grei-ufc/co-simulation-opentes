@@ -1,0 +1,16 @@
+[submodule "teams/tsre-der-opentes"]
+	path = teams/tsre-der-opentes
+	url = https://github.com/grei-ufc/tsre-der-opentes.git
+	branch = integration-tsre
+[submodule "teams/tteso-market-opentes"]
+	path = teams/tteso-market-opentes
+	url = https://github.com/grei-ufc/tteso-market-opentes.git
+	branch = integration-tteso
+[submodule "teams/tteso-agents-opentes"]
+	path = teams/tteso-agents-opentes
+	url = https://github.com/grei-ufc/tteso-agents-opentes.git
+	branch = integration-tteso
+[submodule "teams/tscc-com-opentes"]
+	path = teams/tscc-com-opentes
+	url = https://github.com/grei-ufc/tscc-com-opentes.git
+	branch = integration-tscc

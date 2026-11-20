@@ -16,11 +16,11 @@ logs/
 # Configuracao salva pelo console (cli/console.sh)
 .opentes.env
 
-# OMNeT++: artefatos de compilacao e de execucao do comm-opentes
+# OMNeT++: artefatos de compilacao e de execucao do temp/comm-opentes
 out/
 sim_exec
 .cmdenv-log
-simulators/comm-opentes/Makefile
+temp/comm-opentes/Makefile
 *.sca
 *.vec
 *.o
@@ -31,11 +31,11 @@ site/
 
 # Sensibilidade dV/dP e dV/dQ: 3 MB por matriz, derivada do circuito e
 # regenerada pelo run.sh na primeira execucao. E produto, nao fonte.
-simulators/grid-opentes/src/data/*/sensitivity_day.npz
-simulators/grid-opentes/src/data/*/sensitivity_fase.npz
+temp/grid-opentes/src/data/*/sensitivity_day.npz
+temp/grid-opentes/src/data/*/sensitivity_fase.npz
 
 # Topologia de radio do Wi-SUN FAN, uma por taxa, regravada a cada execucao
-simulators/grid-opentes/src/data/*/tisch_links_wisun_*.csv
+temp/grid-opentes/src/data/*/tisch_links_wisun_*.csv
 
 # Local editor/system files
 .idea/

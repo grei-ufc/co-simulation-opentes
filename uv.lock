@@ -381,7 +381,7 @@ wheels = [
 [[package]]
 name = "grid-opentes"
 version = "0.1.0"
-source = { editable = "simulators/grid-opentes" }
+source = { editable = "temp/grid-opentes" }
 dependencies = [
     { name = "mosaik" },
     { name = "mosaik-api" },
@@ -1015,6 +1015,7 @@ dependencies = [
     { name = "py-dss-interface" },
     { name = "pyzmq" },
     { name = "setuptools" },
+    { name = "tteso-market-opentes" },
 ]
 
 [package.dev-dependencies]
@@ -1027,16 +1028,17 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "grid-opentes", editable = "simulators/grid-opentes" },
+    { name = "grid-opentes", editable = "temp/grid-opentes" },
     { name = "matplotlib", specifier = ">=3.10.0" },
     { name = "mosaik", specifier = "==3.5.0" },
     { name = "mosaik-api", specifier = "==3.0.6" },
     { name = "mosaik-api-v3", specifier = ">=3.0.13,<3.1" },
-    { name = "pade-agents", editable = "simulators/pade-opentes" },
+    { name = "pade-agents", specifier = "==3.0" },
     { name = "pandas", specifier = ">=2.3.2" },
     { name = "py-dss-interface", specifier = ">=2.3.0" },
     { name = "pyzmq", specifier = ">=26.0.3,<28" },
     { name = "setuptools", specifier = "==69.5.1" },
+    { name = "tteso-market-opentes", editable = "teams/tteso-market-opentes" },
 ]
 
 [package.metadata.requires-dev]
@@ -1058,20 +1060,17 @@ wheels = [
 
 [[package]]
 name = "pade-agents"
-source = { editable = "simulators/pade-opentes" }
+version = "3.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "requests" },
     { name = "terminaltables" },
     { name = "twisted" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "click", specifier = ">=8.1.0" },
-    { name = "requests", specifier = ">=2.31.0" },
-    { name = "terminaltables", specifier = ">=3.1.0" },
-    { name = "twisted", specifier = ">=22.10.0" },
+sdist = { url = "https://files.pythonhosted.org/packages/90/91/986c42f68b0a78fe9b96da7385f85d893f62f33d65ce5e8f6229962d779a/pade_agents-3.0.tar.gz", hash = "sha256:15f644cf93c7f5e00a0055b0d2aad998acd8164f612e84c52a888940c4d39c92", size = 72985, upload-time = "2026-04-21T22:59:20.747Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5d/8e/5275cd1122beaf9edcc635de7a87d7397b3d62429fb3a001cf1655160396/pade_agents-3.0-py3-none-any.whl", hash = "sha256:7fd9d8460b232e607fa4e1b8d40725b951ab655715c11ac372a4ef6a614cb9ee", size = 99767, upload-time = "2026-04-21T22:59:18.846Z" },
 ]
 
 [[package]]
@@ -1257,6 +1256,31 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c6/ef/6496e7e9fb63427ace8636a481b3f8151e0dfaa6a76512e6b01f7c815a4b/pymdown_extensions-13.0.tar.gz", hash = "sha256:092524bea4fb3e62891204495de9e56b98603912df167ddd90d4f91bf2cd0414", size = 881230, upload-time = "2026-11-08T14:20:29.437Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f6/47/e96d2b3439b9fab6dc085747f25aee0cbae2bae16743e86ca60907bd0d59/pymdown_extensions-13.0-py3-none-any.whl", hash = "sha256:c68f6e69b14604fb55227735bd0c4c4d3d1d9299a2d1314352190c48aa0d1040", size = 280470, upload-time = "2026-11-08T14:20:27.756Z" },
+]
+
+[[package]]
+name = "pyomo"
+version = "6.10.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/9b/16/5ee100614f82b8bc482336afc15a554b98d847d0bcdc22e51bb559112183/pyomo-6.10.1.tar.gz", hash = "sha256:74a9109c3b4ab97e69d6b1a1ca4e96a54442a177d8b1a19393e417e6ba008ba3", size = 3276980, upload-time = "2026-06-04T21:45:42.76Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9a/3d/55089dbb8fdbed2b08600c50c52a7f2193f1de8bd6454a6541a8c56643ee/pyomo-6.10.1-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:f446764a499e535c6980435b71f297873cb13f0b040a1275853431abd35033d9", size = 4554942, upload-time = "2026-06-04T21:49:53.156Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/c9/2aeb79f0cb6069a7391b6724be6137624a78ac38856a3b89f62b57d1bcfb/pyomo-6.10.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:1ffae4d4cd96c87d48ea19a25dd942b69b3d8383374e133f7a040ea63e361f68", size = 4540416, upload-time = "2026-06-04T21:49:55.855Z" },
+    { url = "https://files.pythonhosted.org/packages/2b/b9/dd9e82c7cf1c13a5ee4f0e30fb802ec599d5a765c1e759d0b7c101a802fc/pyomo-6.10.1-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:2ed5fe352c74b249c35437e366413582c24d1869b995fdc648e29675bb9e8c3a", size = 4610464, upload-time = "2026-06-04T22:43:09.79Z" },
+    { url = "https://files.pythonhosted.org/packages/e9/1a/e82ad06861982b139e20a903b12edb654ac912c1f8669fb2efb9b2193ff0/pyomo-6.10.1-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:be91786a9340230c031bec0e82c17acfcb5bba04801253ad09e85e4ddaf87d51", size = 4639806, upload-time = "2026-06-04T21:49:58.235Z" },
+    { url = "https://files.pythonhosted.org/packages/8a/e7/52c567616293d70f58895450b0a40ea4cb12471c09f591a897bf40ee0e16/pyomo-6.10.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:1a8b838d7b66ffefa29c6a033a67dddfbcd048a94ac1ed4e11bc7e1abc40262d", size = 4555004, upload-time = "2026-06-04T21:50:00.926Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/50/f8a92a0738a06db030ff0a729a122c2ebbc1e0321a1a1ff4bf31a3d174c5/pyomo-6.10.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:c2c9b69066428ec0b9b01e5ef146d0ff36c709fff747e20e8af00667e5d55b76", size = 4540444, upload-time = "2026-06-04T21:50:03.358Z" },
+    { url = "https://files.pythonhosted.org/packages/0b/09/0c91db7da564b07493ad6899e8b72da9f8fa580bd19128ba944a1cf2ff16/pyomo-6.10.1-cp313-cp313-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:ab4799b3a2c2728cfba1c9a1754c06dda48e2f4463c7692a027b5b884e54b16a", size = 4611118, upload-time = "2026-06-04T22:43:12.131Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/a4/cdcd433eed4a226014b898a14adecc94aa2e48cae69e3f831c04dc56ccfe/pyomo-6.10.1-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9efddbc4c83971189047e734ba108ca6fdde8ff3390e0944e6eb928db0707ecd", size = 4639577, upload-time = "2026-06-04T21:50:07.168Z" },
+    { url = "https://files.pythonhosted.org/packages/56/31/7a3d182c44596a346bd590312bad947160157ea54ed9d61823e3b6df74cb/pyomo-6.10.1-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:8c0f3174094e058eb2d0a274c45242c6214070d1f4db43f6ac1d176ae543026f", size = 4555836, upload-time = "2026-06-04T21:50:11.623Z" },
+    { url = "https://files.pythonhosted.org/packages/20/7e/c7dae636bb9a30d35fb246073629905ca50488e14c4cbc7edbedc6a15eed/pyomo-6.10.1-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:b1f1f5f21e98ceb082be6f3dfcba13310605e4b28713ca22e35b4ce100524f0d", size = 4541457, upload-time = "2026-06-04T21:50:16.58Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/3e/142ca94e17a7e68443ffaa52b900f8b6ea2a6b5be5ac3558c17063c889a4/pyomo-6.10.1-cp314-cp314-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:02501a1d1b19557fa95ac302425496c49c1b1ce66c4a7ee5a61e95e570975096", size = 4613854, upload-time = "2026-06-04T22:43:14.783Z" },
+    { url = "https://files.pythonhosted.org/packages/58/74/a0e916ad096456459574677f888c8f748ad095a8934823ed2603cd4d27bb/pyomo-6.10.1-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:7899f5261e59d60e7de4d0d6d2185e3e72b2ac79e33b888625eeb32aee8b7b9a", size = 4640473, upload-time = "2026-06-04T21:50:21.707Z" },
+    { url = "https://files.pythonhosted.org/packages/f0/e9/67b333bae139f04edcd36b3713a4e0386ac5c38f896f57be6170e62f5d63/pyomo-6.10.1-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:2f2d63dda6c9ee8e200627c6c9cb9b5e778eddf9089c813a281dd4868b71c684", size = 4577625, upload-time = "2026-06-04T21:50:25.366Z" },
+    { url = "https://files.pythonhosted.org/packages/77/39/eb746f8c9a597e272d462db1ddf4ba571638dde80527d9a50c0ddb77a500/pyomo-6.10.1-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:3dbe06a08c0c73f8069a35671e680323857213007859f2c63a0ba51ea149aaa0", size = 4564114, upload-time = "2026-06-04T21:50:27.921Z" },
+    { url = "https://files.pythonhosted.org/packages/b4/97/d39a5ed45bcd506898906268acc552973d1b3a9f3263c31b2e10f6449f18/pyomo-6.10.1-cp314-cp314t-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:785d9973fa7802bbb396872ff13514fdf3cee3f8d3afa736369660518f0f90de", size = 4605976, upload-time = "2026-06-04T22:43:17.523Z" },
+    { url = "https://files.pythonhosted.org/packages/38/17/49812b37738b90ff3343260fe25eaccd390142cd1fb1ca5aad16ea490b44/pyomo-6.10.1-cp314-cp314t-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1c8719faf9f4dcfefcb75066989b1781a45d9bac20e2a5ad236fdb21bb09a505", size = 4634159, upload-time = "2026-06-04T21:50:30.352Z" },
+    { url = "https://files.pythonhosted.org/packages/40/ba/8526e3d84432a01dd4d12a3c0b3cdc8ec67432792b854ebc911e575646ca/pyomo-6.10.1-py3-none-any.whl", hash = "sha256:7a81b5301d4c0389809c1afd12311d23db04522341566332229d8ce4226bccb1", size = 4175938, upload-time = "2026-06-04T21:45:39.569Z" },
 ]
 
 [[package]]
@@ -1460,6 +1484,47 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/09/a9/6ba95a270c6f1fbcd8dac228323f2777d886cb206987444e4bce66338dd4/tqdm-4.67.3.tar.gz", hash = "sha256:7d825f03f89244ef73f1d4ce193cb1774a8179fd96f31d7e1dcde62092b960bb", size = 169598, upload-time = "2026-02-03T17:35:53.048Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl", hash = "sha256:ee1e4c0e59148062281c49d80b25b67771a127c85fc9676d3be5f243206826bf", size = 78374, upload-time = "2026-02-03T17:35:50.982Z" },
+]
+
+[[package]]
+name = "tteso-market-opentes"
+version = "1.0.0"
+source = { editable = "teams/tteso-market-opentes" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "pyomo" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "matplotlib", specifier = ">=3.8" },
+    { name = "numpy", specifier = ">=2.0" },
+    { name = "pandas", specifier = ">=2.0" },
+    { name = "pyomo", specifier = ">=6.9" },
+]
+
+[package.metadata.requires-dev]
+docs = [
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-git-revision-date-localized-plugin", specifier = ">=1.3.0" },
+    { name = "mkdocs-material", specifier = ">=9.7.7" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.27.0" },
+]
+fundamentacao = [
+    { name = "haversine", specifier = "==2.9.0" },
+    { name = "matplotlib", specifier = "==3.10.7" },
+    { name = "numpy", specifier = "==2.3.4" },
+    { name = "pandas", specifier = "==2.3.3" },
+    { name = "pillow", specifier = "==12.0.0" },
+    { name = "plotly", specifier = "==6.4.0" },
+    { name = "pymoo", specifier = "==0.6.1.5" },
+    { name = "pyomo", specifier = "==6.9.5" },
+    { name = "pyswarms", specifier = "==1.3.0" },
+    { name = "seaborn", specifier = "==0.13.2" },
+    { name = "streamlit", specifier = "==1.51.0" },
+    { name = "tables", specifier = "==3.10.2" },
 ]
 
 [[package]]

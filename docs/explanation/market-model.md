@@ -33,8 +33,8 @@ a tensão de cada fase, e o preço sombra é calculado por fase.
 A tese põe um concentrador por transformador de distribuição. A IEEE 13 tem um
 transformador só, então há um concentrador, que representa a cabeceira do
 alimentador. Os modelos de otimização ficam em
-`simulators/market-opentes/market_opentes/optimization.py`; os agentes, em
-`simulators/pade-opentes/agents/market_agents.py`.
+`teams/tteso-market-opentes/market_opentes/optimization.py`; os agentes, em
+`teams/tteso-agents-opentes/agentes/market_agents.py`.
 
 ## Os modelos de otimização
 
@@ -106,7 +106,7 @@ de tensão no fluxo não linear.
 A tensão é linearizada em torno do ponto de operação da previsão:
 `ΔU = −S · (p + q)`, com `S = ∂V/∂P`. A tese obtinha `S` do Jacobiano do
 pandapower; aqui ela é medida por perturbação no próprio OpenDSS
-(`grid-opentes/src/simulators/sensitivity.py`), o que dispensa um segundo
+(`temp/grid-opentes/src/simulators/sensitivity.py`), o que dispensa um segundo
 simulador e vale para rede desequilibrada.
 
 ## A análise por fase
