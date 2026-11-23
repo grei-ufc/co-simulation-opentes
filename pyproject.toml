@@ -7,7 +7,7 @@ requires-python = ">=3.12.11"
 dependencies = [
     "pade-agents==3.0",
     "tteso-market-opentes",
-    "grid-opentes",
+    "tsre-der-opentes",
     "mosaik==3.5.0",
     "mosaik-api==3.0.6",
     "mosaik-api-v3>=3.0.13,<3.1",
@@ -29,9 +29,8 @@ docs = [
 [tool.uv]
 package = false
 
-# O PADE vem do PyPI; o mercado, do submodulo do TTESO. O adaptador OpenDSS do
-# TSRE nao entra neste ambiente: o pacote dele tambem se chama `simulators`, como
-# o do temp/grid-opentes, e roda so no conteiner `grid`.
+# O PADE vem do PyPI; o mercado e a rede eletrica, dos submodulos do TTESO e do
+# TSRE.
 [tool.uv.sources]
 tteso-market-opentes = { path = "teams/tteso-market-opentes", editable = true }
-grid-opentes = { path = "temp/grid-opentes", editable = true }
+tsre-der-opentes = { path = "teams/tsre-der-opentes", editable = true }

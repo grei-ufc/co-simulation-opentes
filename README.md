@@ -14,8 +14,8 @@ sincronizados pelo Mosaik.
 ```mermaid
 flowchart TB
     subgraph prep["1. o caso (./run.sh caso)"]
-        G[grid-opentes<br/>gen_ieee13_market.py] --> D[(13Bus/<br/>circuito, perfis,<br/>armazenamento)]
-        D --> S[grid-opentes<br/>sensitivity.py] --> Mx[(matrizes dV/dP<br/>por fase)]
+        G[tsre-der-opentes<br/>gen_ieee13_market.py] --> D[(13Bus/<br/>circuito, perfis,<br/>armazenamento)]
+        D --> S[tsre-der-opentes<br/>sensitivity.py] --> Mx[(matrizes dV/dP<br/>por fase)]
     end
     subgraph neg["2. a negociação (passo 0 do Mosaik)"]
         A[tteso-agents-opentes<br/>agentes PADE] <-- modelos --> L[tteso-market-opentes<br/>Pyomo + CPLEX]
@@ -30,7 +30,7 @@ flowchart TB
     R --> F[tteso-market-opentes<br/>figuras.py] --> Out[(output/market/)]
 ```
 
-1. **O caso.** O `grid-opentes` monta o caso de mercado a partir do circuito
+1. **O caso.** O `tsre-der-opentes` monta o caso de mercado a partir do circuito
    oficial da IEEE 13 e mede, no próprio OpenDSS, quanto a tensão de cada fase
    muda com 1 kW injetado em cada ponto: são as matrizes que o DSO usa para
    prever o efeito do armazenamento.
@@ -51,7 +51,7 @@ flowchart TB
 | Para entender... | Comece por | E leia |
 |---|---|---|
 | o que é medido e o que deu | [Resultados](https://grei-ufc.github.io/co-simulation-opentes/results/) | `output/market/` depois de rodar |
-| como a IEEE 13 vira um caso de mercado | [O caso IEEE 13](https://grei-ufc.github.io/co-simulation-opentes/explanation/ieee13-case/) | `temp/grid-opentes/src/simulators/gen_ieee13_market.py` |
+| como a IEEE 13 vira um caso de mercado | [O caso IEEE 13](https://grei-ufc.github.io/co-simulation-opentes/explanation/ieee13-case/) | `teams/tsre-der-opentes/src/simulators/gen_ieee13_market.py` |
 | a formulação: os três modelos e o preço sombra | [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/) | `teams/tteso-market-opentes/market_opentes/optimization.py`, `dual.py` |
 | por que a análise é por fase | [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/), "A análise por fase" | `config.py` (as chaves por porta) e `sensitivity.py` (a matriz por fase) |
 | quem manda mensagem para quem, e em que ordem | [temp/pade-opentes/README.md](temp/pade-opentes/README.md) | `teams/tteso-agents-opentes/agentes/market_agents.py` |
@@ -111,15 +111,15 @@ run.sh                  ponto de entrada: market, centralizado, figuras, caso, s
 cli/                    o console interativo que o ./run.sh abre, e o logo
 docker-compose.yaml     os cinco contêineres e todas as variáveis, comentadas
 .gitmodules             os submódulos dos times e a branch integration-<time> de cada um
-teams/                  o código dos times, por submódulo git (não editar aqui)
-  tsre-der-opentes/       TSRE: o adaptador do OpenDSS (simulador Mosaik do circuito)
+teams/                  o código dos times, por submódulo git
+  tsre-der-opentes/       TSRE: adaptador do OpenDSS, coletor e o caso IEEE 13
   tteso-market-opentes/   TTESO: modelo de mercado, decomposição dual, liquidação, figuras
   tteso-agents-opentes/   TTESO: agentes do mercado sobre o PADE e a camada de rede
   tscc-com-opentes/       TSCC: comunicação (integração na próxima etapa)
-temp/                   provisório: o que ainda não tem time dono (ver temp/README.md)
-  grid-opentes/           imagem do OpenDSS, o caso IEEE 13 e as matrizes de sensibilidade
+temp/                   referência provisória, a apagar no fim do projeto (ver temp/README.md)
+  grid-opentes/           já absorvido por teams/tsre-der-opentes
   pade-opentes/           imagem dos agentes (PADE 3.0 do PyPI)
-  mosaik-opentes/         o cenário e o coletor de resultados
+  mosaik-opentes/         o cenário e a imagem do Mosaik
   comm-opentes/           rede de comunicação 6TiSCH no OMNeT++
 docs/, mkdocs.yml       documentação (MkDocs), publicada no GitHub Pages
 output/                 resultados das execuções (fora do git)

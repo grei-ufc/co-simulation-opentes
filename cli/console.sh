@@ -13,7 +13,7 @@ RAIZ="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$RAIZ"
 CONF="$RAIZ/.opentes.env"
 LOGS="$RAIZ/output/console"
-CASO="temp/grid-opentes/src/data/13Bus"
+CASO="teams/tsre-der-opentes/data/13Bus"
 
 # --------------------------------------------------------------------------
 # Cores
@@ -243,8 +243,9 @@ if res.exists():
         m = re.search(r"Bus-([^-]+)-V([123])_pu", h)
         if not m:
             continue
-        col = [float(l[i]) for l in dados]
-        if max(col) < 0.5:
+        # A fase que a barra nao tem vem como NaN no arquivo.
+        col = [v for v in (float(l[i]) for l in dados) if v == v]
+        if not col or max(col) < 0.5:
             continue
         fora += sum(1 for v in col if v < 0.95 or v > 1.05); n += len(col)
         if m.group(1) in sub:

@@ -18,6 +18,12 @@ do mais recente ao mais antigo.
   (`temp/README.md`). O contêiner `grid` roda o adaptador do TSRE direto
   (`python -m simulators.opendss.api_opendss`), e a imagem `pade` instala o
   `pade-agents==3.0` do PyPI.
+- A rede elétrica passa para `teams/tsre-der-opentes`, na branch
+  `integration-tsre`, reduzida ao que o caso usa: o adaptador do OpenDSS, o
+  coletor do TSRE, o caso IEEE 13 e as ferramentas que o geram. Os contêineres
+  `grid` e `collector` deixam de usar `temp/grid-opentes` e o coletor antigo.
+- O coletor do TSRE grava `NaN` na fase que a barra não tem, no lugar de `0.0`:
+  a ARGOS do TSDQ lê `0.0` como tensão crítica.
 - Novo comando `opentes submodulos [atualizar]`, e o `run.sh` passa a esperar o
   `grid` ficar pronto, pelo log, antes de subir o Mosaik.
 - Página nova: [Organização dos repositórios](explanation/repositories.md).

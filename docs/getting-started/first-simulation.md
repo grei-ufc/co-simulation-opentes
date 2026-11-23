@@ -14,7 +14,7 @@ mensagens entre os agentes. Pressupõe a [Instalação](installation.md) feita e
 Roda a decomposição dual num laço único, sem agentes nem mosaik, e grava a
 liquidação. Leva cerca de um minuto. Na primeira vez, antes de começar, o
 `run.sh` gera a matriz de sensibilidade por fase
-(`temp/grid-opentes/src/data/13Bus/sensitivity_fase.npz`).
+(`teams/tsre-der-opentes/data/13Bus/sensitivity_fase.npz`).
 
 O terminal mostra uma linha por rodada, com o desacordo entre concentrador e
 operador, o preço sombra máximo e a tensão mínima e máxima prevista. A última

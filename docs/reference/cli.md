@@ -23,7 +23,7 @@ explicitamente.
 | `market` | co-simulação completa, em duas passadas sobre a mesma demanda realizada: `baseline` (programação dos prosumidores, sem mecanismo) e `negociado` (negociação multiagente e fase de operação) | `result_baseline.csv`, `result_negociado.csv`, `run.json` | ~1 min; 17 a 18 com a 6TiSCH |
 | `centralizado` | a mesma negociação, sem agentes nem mosaik, mais a liquidação | `figuras.npz`, `history.json`, `dlmp.csv`, `flexibility.csv`, `transactions.csv`, `market_series.csv` | ~1 min |
 | `figuras` | as figuras a partir das saídas dos dois comandos acima | `figuras/` | segundos |
-| `caso` | regenera o caso IEEE 13 e as duas matrizes de sensibilidade | `temp/grid-opentes/src/data/13Bus/` | ~1 min |
+| `caso` | regenera o caso IEEE 13 e as duas matrizes de sensibilidade | `teams/tsre-der-opentes/data/13Bus/` | ~1 min |
 
 `market` e `centralizado` exigem o `CPLEX_HOME` e geram a matriz de
 sensibilidade da formulação em uso, se ela faltar.

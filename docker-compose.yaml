@@ -2,8 +2,8 @@ name: opentes
 
 # Co-simulacao do mercado transativo sobre a IEEE 13 barras. O codigo de cada
 # time vem dos submodulos em teams/ (git submodule), montado nos conteineres;
-# temp/ guarda o que ainda nao tem time dono (imagens, o caso IEEE 13, o cenario
-# e a rede 6TiSCH) e se esvazia a medida que cada time absorve a sua parte.
+# temp/ guarda o que ainda nao foi absorvido por um time (imagens, o cenario e a
+# rede 6TiSCH) e se esvazia a medida que cada time assume a sua parte.
 # Cinco servicos, um por dominio:
 #
 #   comm       OMNeT++: rede 6TiSCH entre os agentes (so com NET_BACKEND=omnet)
@@ -28,7 +28,7 @@ services:
     volumes:
       - ./temp/comm-opentes:/root/models
       # Posicoes dos agentes e saida `tisch_links.csv` (a rede de radio simulada).
-      - ./temp/grid-opentes/src/data:/grid-data
+      - ./teams/tsre-der-opentes/data:/grid-data
     command: >-
       bash -lc "source /root/omnetpp/setenv &&
       opp_makemake -f --deep -O out -o sim_exec -lzmq && make -j4 &&
@@ -42,21 +42,19 @@ services:
 
   grid:
     build:
-      context: ./temp/grid-opentes
-      dockerfile: Dockerfile
+      context: ./teams/tsre-der-opentes
+      dockerfile: dockerfile
     image: opentes/grid:local
     container_name: opentes-grid
     environment:
       - PYTHONUNBUFFERED=1
-      - PYTHONDONTWRITEBYTECODE=1   # nao grava .pyc no src montado
-      # O simulador OpenDSS e o do TSRE, lido do submodulo, sem copia.
-      - PYTHONPATH=/tsre/src
+      - PYTHONDONTWRITEBYTECODE=1   # nao grava .pyc no submodulo
+      - PYTHONPATH=/app/src
     volumes:
-      # O caso de mercado (circuito, perfis, matrizes) e as ferramentas que o
-      # geram, do TTESO.
-      - ./temp/grid-opentes/src:/app/src
-      # O adaptador OpenDSS do TSRE (submodulo teams/tsre-der-opentes).
-      - ./teams/tsre-der-opentes/src:/tsre/src:ro
+      # O adaptador OpenDSS e as ferramentas do caso (submodulo do TSRE).
+      - ./teams/tsre-der-opentes/src:/app/src:ro
+      # O caso IEEE 13: circuito, perfis e matrizes de sensibilidade.
+      - ./teams/tsre-der-opentes/data:/app/data
     command: python -u -m simulators.opendss.api_opendss --remote 0.0.0.0:5671
     expose:
       - "5671"
@@ -65,14 +63,19 @@ services:
 
   collector:
     build:
-      context: ./temp/mosaik-opentes
-      dockerfile: Dockerfile
-    image: opentes/mosaik:local
+      context: ./teams/tsre-der-opentes
+      dockerfile: dockerfile
+    image: opentes/grid:local
     container_name: opentes-collector
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONPATH=/app/src
     volumes:
-      - ./temp/mosaik-opentes:/app
+      # O coletor do TSRE: a fase que a barra nao tem fica NaN no CSV.
+      - ./teams/tsre-der-opentes/src:/app/src:ro
       - ./output:/app/output
-    command: python -u collectors/elec_collector.py --remote 0.0.0.0:5673
+    command: python -u -m simulators.collector.collector --remote 0.0.0.0:5673
     expose:
       - "5673"
     networks:
@@ -163,7 +166,7 @@ services:
       # instalado na imagem, do PyPI (pade-agents).
       - ./teams/tteso-agents-opentes/agentes:/app/agents:ro
       - ./teams/tteso-market-opentes:/market:ro
-      - ./temp/grid-opentes/src/data:/grid-data:ro
+      - ./teams/tsre-der-opentes/data:/grid-data:ro
       - ./output:/app/output
       - ${CPLEX_HOME:-/nonexistent}:/opt/cplex:ro
     command: python3 agents/market_agents.py
@@ -185,7 +188,7 @@ services:
       - MOSAIK_N_PASSOS=${MOSAIK_N_PASSOS:-96}
       - MOSAIK_STEP_SIZE=900
       - RESULT_TAG=${RESULT_TAG:-negociado}
-      - MARKET_CIRCUIT=/app/src/data/13Bus/Master.dss
+      - MARKET_CIRCUIT=/app/data/13Bus/Master.dss
       - MARKET_FASE=${MARKET_FASE:-1}
       - MARKET_REGULADOR=${MARKET_REGULADOR:-previsao}
       - PADE_HOST=pade

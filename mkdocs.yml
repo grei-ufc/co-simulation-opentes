@@ -74,12 +74,10 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          # O codigo dos times vem dos submodulos em teams/. O adaptador OpenDSS
-          # do TSRE nao entra: o pacote dele tambem se chama `simulators`, como
-          # o de temp/grid-opentes/src, e a referencia dele e publicada pelo TSRE.
+          # O codigo dos times vem dos submodulos em teams/.
           paths:
             - teams/tteso-market-opentes
-            - temp/grid-opentes/src
+            - teams/tsre-der-opentes/src
             - teams/tteso-agents-opentes/agentes
           options:
             docstring_style: google

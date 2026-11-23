@@ -7,9 +7,9 @@ os dados entre eles.
 | Contêiner | Pasta | Domínio |
 |---|---|---|
 | `pade` | `temp/pade-opentes`, com os agentes de `teams/tteso-agents-opentes` | os agentes do mercado, sobre o framework PADE |
-| `grid` | `temp/grid-opentes`, com o adaptador de `teams/tsre-der-opentes` | a rede elétrica, no OpenDSS |
+| `grid` | `teams/tsre-der-opentes` | a rede elétrica, no OpenDSS |
 | `mosaik` | `temp/mosaik-opentes` | o orquestrador e o cenário de mercado |
-| `collector` | `temp/mosaik-opentes` | grava as tensões e potências de cada passo |
+| `collector` | `teams/tsre-der-opentes` | grava as tensões e potências de cada passo |
 | `comm` | `temp/comm-opentes` | a rede de comunicação 6TiSCH ou Wi-SUN FAN, no OMNeT++ |
 
 O mercado (`teams/tteso-market-opentes`) não é contêiner: é a biblioteca Python
@@ -65,7 +65,7 @@ com o Mosaik. A camada `agentes/network_link.py` intercepta o envio de cada
 mensagem e a entrega com o atraso e a perda do modelo de rede escolhido em
 `NET_BACKEND`: `ideal`, `lossy` (sorteio) ou `omnet` (6TiSCH ou Wi-SUN FAN).
 
-### `grid-opentes`: a rede elétrica
+### `tsre-der-opentes`: a rede elétrica
 
 O OpenDSS, chamado pelo `py-dss-interface`. O adaptador do TSRE
 (`simulators.opendss.api_opendss`, do submódulo `teams/tsre-der-opentes`) expõe o
@@ -79,7 +79,7 @@ temperatura dos PV a partir dos dados de estação solar em `data/InfoPV/`.
 O cenário `scenarios/market.py` cria as entidades e as liga: cada barra com
 prosumidor, cada porta por fase e cada regulador do OpenDSS a uma entidade dos
 agentes, e as tensões de todas as barras ao coletor
-(`collectors/elec_collector.py`), que grava o `result_<tag>.csv`.
+do TSRE (`simulators.collector.collector`), que grava o `result_<tag>.csv`.
 
 ### `comm-opentes`: a rede de comunicação
 

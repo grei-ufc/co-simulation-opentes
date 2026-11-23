@@ -7,7 +7,7 @@ O `docker-compose.yaml` define cinco serviços na rede `opentes-net`. Não os su
 |---|---|---|---|---|
 | `comm` | `opentes/comm` | 5556 | compila o modelo e roda `sim_exec` (Cmdenv) | servidor de rede 6TiSCH e Wi-SUN no OMNeT++, consultado por ZMQ; só com `NET_BACKEND=omnet` |
 | `grid` | `opentes/grid` | 5671 | `python -m simulators.opendss.api_opendss --remote 0.0.0.0:5671` (o adaptador do TSRE) | o circuito no OpenDSS, resolvido a cada passo de 15 min |
-| `collector` | `opentes/mosaik` | 5673 | `python collectors/elec_collector.py --remote 0.0.0.0:5673` | grava tensões e potências de cada passo em `result_<tag>.csv` |
+| `collector` | `opentes/grid` | 5673 | `python -m simulators.collector.collector --remote 0.0.0.0:5673` (o coletor do TSRE) | grava tensões e potências de cada passo em `result_<tag>.csv` |
 | `pade` | `opentes/pade` | 5678 | `python3 agents/market_agents.py` | os agentes do mercado (prosumidores, concentrador, DSO, mercado) e o simulador mosaik deles |
 | `mosaik` | `opentes/mosaik` | nenhuma | `python scenarios/market.py` | o orquestrador: liga os agentes ao circuito no mesmo relógio |
 
@@ -20,18 +20,18 @@ passada.
 | Serviço | Pasta do host | No contêiner |
 |---|---|---|
 | `comm` | `temp/comm-opentes` | `/root/models` |
-| `comm` | `temp/grid-opentes/src/data` | `/grid-data` (posições dos agentes e topologia de rádio gravada) |
-| `grid` | `temp/grid-opentes/src` | `/app/src` (o caso e as ferramentas que o geram) |
-| `grid` | `teams/tsre-der-opentes/src` | `/tsre/src` (o adaptador do OpenDSS, somente leitura) |
-| `collector`, `mosaik` | `temp/mosaik-opentes` | `/app` |
+| `comm` | `teams/tsre-der-opentes/data` | `/grid-data` (posições dos agentes e topologia de rádio gravada) |
+| `grid`, `collector` | `teams/tsre-der-opentes/src` | `/app/src` (adaptador, coletor e ferramentas do caso, somente leitura) |
+| `grid` | `teams/tsre-der-opentes/data` | `/app/data` (o caso IEEE 13) |
+| `mosaik` | `temp/mosaik-opentes` | `/app` |
 | `collector`, `mosaik`, `pade` | `output` | `/app/output` |
 | `pade` | `teams/tteso-agents-opentes/agentes` | `/app/agents` (somente leitura) |
 | `pade` | `teams/tteso-market-opentes` | `/market` (somente leitura) |
-| `pade` | `temp/grid-opentes/src/data` | `/grid-data` (somente leitura) |
+| `pade` | `teams/tsre-der-opentes/data` | `/grid-data` (somente leitura) |
 | `pade` | `$CPLEX_HOME` | `/opt/cplex` (somente leitura) |
 
 Como o código é montado por volume, mudanças em `teams/` (um submódulo
-atualizado), `temp/mosaik-opentes/` e `temp/grid-opentes/src/` valem na próxima execução,
+atualizado) e `temp/mosaik-opentes/` valem na próxima execução,
 sem reconstruir a imagem. Mudanças em Dockerfile ou dependências pedem
 `docker compose build`.
 
@@ -40,6 +40,6 @@ sem reconstruir a imagem. Mudanças em Dockerfile ou dependências pedem
 | Imagem | Base | O que tem |
 |---|---|---|
 | `opentes/comm` | `omnetpp/omnetpp:u22.04-6.0` | ZMQ e JSON para o servidor de rede |
-| `opentes/grid` | `python:3.12.11-slim` | OpenDSS via `py-dss-interface` e o simulador mosaik do circuito |
+| `opentes/grid` | `python:3.12.11-slim` | OpenDSS via `py-dss-interface`, o adaptador mosaik do circuito e o coletor |
 | `opentes/pade` | `python:3.12.11-slim` | PADE 3.0, Pyomo, `mosaik-api-v3`, pyzmq e `py-dss-interface`; o CPLEX vem do host |
-| `opentes/mosaik` | `python:3.12.11-slim` | mosaik, pandas e matplotlib; serve ao orquestrador, ao coletor e às figuras |
+| `opentes/mosaik` | `python:3.12.11-slim` | mosaik, pandas e matplotlib; serve ao orquestrador e às figuras |

@@ -12,7 +12,7 @@
 set -euo pipefail
 cd "$(dirname "$(readlink -f "$0")")"   # segue o link de ~/.local/bin/opentes
 
-CASO=temp/grid-opentes/src/data/13Bus
+CASO=teams/tsre-der-opentes/data/13Bus
 RESULT=""
 
 usage() {
@@ -103,11 +103,11 @@ _exige_cplex() {
 # ponto da previsao). $1 = arquivo, $2 = opcao extra do sensitivity.py
 _sensibilidade() {
     echo ">> gerando $1"
-    docker compose run --rm --no-deps -e GRID_DIR=/app/src/data/13Bus grid \
+    docker compose run --rm --no-deps -e GRID_DIR=/app/data/13Bus grid \
         python src/simulators/sensitivity.py day $2 \
-        --load-csv /app/src/data/13Bus/load_kw.csv \
-        --pv-csv /app/src/data/13Bus/pv_kw.csv \
-        --out "/app/src/data/13Bus/$1"
+        --load-csv /app/data/13Bus/load_kw.csv \
+        --pv-csv /app/data/13Bus/pv_kw.csv \
+        --out "/app/data/13Bus/$1"
 }
 
 # A matriz e do circuito, e nao do mecanismo: gera uma vez, e de novo se faltar
@@ -148,7 +148,7 @@ _passada() {
     # Pela linha de log, e nao por TCP: o pade so fica pronto depois do listenTCP
     # de todos os agentes, e os simuladores --remote morrem se forem sondados.
     _wait_log pade "market-mas. pronto" "os agentes PADE" 120
-    _wait_log collector "Waiting for connection" "o coletor" 60
+    _wait_log collector "awaits connection" "o coletor" 60
     _wait_log grid "awaits connection" "o simulador OpenDSS" 60
     docker compose up --abort-on-container-exit --exit-code-from mosaik mosaik
 }
@@ -175,9 +175,9 @@ cmd_centralizado() {
 
 cmd_figuras() {
     docker compose run --rm --no-deps -v "$PWD/teams/tteso-market-opentes:/market:ro" \
-        -v "$PWD/$CASO:/app/src/data/13Bus" \
-        -e PYTHONPATH=/market -e MARKET_GRID_DIR=/app/src/data/13Bus \
-        -e MARKET_DATA_DIR=/app/src/data/13Bus -e MPLCONFIGDIR=/tmp \
+        -v "$PWD/$CASO:/app/data/13Bus" \
+        -e PYTHONPATH=/market -e MARKET_GRID_DIR=/app/data/13Bus \
+        -e MARKET_DATA_DIR=/app/data/13Bus -e MPLCONFIGDIR=/tmp \
         mosaik python -m market_opentes.figuras --resultados "/app/output/$SAIDA"
     RESULT="output/$SAIDA/figuras/"
 }

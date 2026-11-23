@@ -7,7 +7,7 @@ Elas cobrem os módulos Python que definem o comportamento da plataforma:
 | Página | Pasta | Módulos |
 |---|---|---|
 | [Mercado](market.md) | `teams/tteso-market-opentes/` (submódulo) | `config`, `optimization`, `dual`, `operation`, `scenarios`, `settlement` |
-| [Rede elétrica](grid.md) | `temp/grid-opentes/src/` | `gen_ieee13_market`, `sensitivity` |
+| [Rede elétrica](grid.md) | `teams/tsre-der-opentes/src/` | `gen_ieee13_market`, `sensitivity` |
 | [Agentes](agents.md) | `teams/tteso-agents-opentes/agentes/` (submódulo) | `market_agents`, `network_link` |
 
 O servidor de rede (`Tisch.cc`) é C++ e fica fora desta referência; os

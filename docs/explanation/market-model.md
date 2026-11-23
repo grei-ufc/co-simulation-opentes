@@ -106,7 +106,7 @@ de tensão no fluxo não linear.
 A tensão é linearizada em torno do ponto de operação da previsão:
 `ΔU = −S · (p + q)`, com `S = ∂V/∂P`. A tese obtinha `S` do Jacobiano do
 pandapower; aqui ela é medida por perturbação no próprio OpenDSS
-(`temp/grid-opentes/src/simulators/sensitivity.py`), o que dispensa um segundo
+(`teams/tsre-der-opentes/src/simulators/sensitivity.py`), o que dispensa um segundo
 simulador e vale para rede desequilibrada.
 
 ## A análise por fase

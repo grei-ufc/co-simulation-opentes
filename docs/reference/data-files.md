@@ -1,6 +1,6 @@
 # Arquivos de dados
 
-O caso fica em `temp/grid-opentes/src/data/13Bus/`. Uma parte é entrada
+O caso fica em `teams/tsre-der-opentes/data/13Bus/`. Uma parte é entrada
 (o circuito oficial, as curvas de PV e o preço), e o resto é gerado pelo
 `gen_ieee13_market.py` e pelo `sensitivity.py`
 ([Regenerar o caso](../how-to-guides/regenerate-case.md)).

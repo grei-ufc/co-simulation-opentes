@@ -24,8 +24,8 @@ uv sync                       # .venv local, para a IDE e scripts fora dos cont�
 uv sync --group docs          # acrescenta as ferramentas da documentação
 ```
 
-O código de `teams/` (os submódulos dos times), `temp/mosaik-opentes/` e
-`temp/grid-opentes/src/` é montado por volume nos contêineres: uma mudança vale na próxima execução, sem
+O código de `teams/` (os submódulos dos times) e `temp/mosaik-opentes/` é
+montado por volume nos contêineres: uma mudança vale na próxima execução, sem
 reconstruir a imagem ([Serviços Docker](../reference/docker-services.md#volumes)).
 
 ## Conferir uma mudança

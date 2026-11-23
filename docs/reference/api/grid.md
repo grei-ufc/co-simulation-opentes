@@ -1,6 +1,6 @@
-# Rede elétrica (`grid-opentes`)
+# Rede elétrica (`tsre-der-opentes`)
 
-Os módulos do simulador da rede elétrica, em `temp/grid-opentes/src/`. O
+Os módulos do simulador da rede elétrica, em `teams/tsre-der-opentes/src/`. O
 papel de cada um está em [Arquitetura](../../explanation/architecture.md).
 
 ## O caso de mercado

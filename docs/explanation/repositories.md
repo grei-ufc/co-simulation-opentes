@@ -17,18 +17,19 @@ flowchart LR
         T3[tteso-agents-opentes<br/>integration-tteso]
         T4[tscc-com-opentes<br/>integration-tscc]
     end
-    subgraph sim["temp/ (provisório, sem time dono)"]
-        G[grid-opentes<br/>imagem + caso IEEE 13]
+    subgraph sim["temp/ (provisório, ainda sem time dono)"]
         P[pade-opentes<br/>imagem]
-        M[mosaik-opentes<br/>cenário + coletor]
+        M[mosaik-opentes<br/>cenário]
         C[comm-opentes<br/>6TiSCH]
     end
-    T1 -- "src/simulators/opendss/<br/>em /tsre/src" --> G
+    T1 -- "adaptador, coletor<br/>e caso IEEE 13" --> GC[contêineres<br/>grid e collector]
+    GC --> R
     T2 -- "market_opentes<br/>em /market" --> P
     T3 -- "agentes/<br/>em /app/agents" --> P
     T4 -. "próxima etapa" .-> C
     PyPI[(PyPI<br/>pade-agents 3.0)] --> P
-    M --> R[(output/<br/>CSV e JSON)] --> D[TSDQ<br/>ARGOS]
+    M --> GC
+    R[(output/<br/>CSV e JSON)] --> D[TSDQ<br/>ARGOS]
 ```
 
 ## Os submódulos
@@ -39,7 +40,7 @@ a branch reservada para o que vai para a co-simulação. O campo `branch` do
 
 | Pasta | Repositório | Branch | O que a co-simulação usa | Onde entra |
 |---|---|---|---|---|
-| `teams/tsre-der-opentes` | [grei-ufc/tsre-der-opentes](https://github.com/grei-ufc/tsre-der-opentes) | `integration-tsre` | o adaptador do OpenDSS (`src/simulators/opendss/`), que expõe o circuito ao Mosaik | contêiner `grid`, em `/tsre/src` |
+| `teams/tsre-der-opentes` | [grei-ufc/tsre-der-opentes](https://github.com/grei-ufc/tsre-der-opentes) | `integration-tsre` | o adaptador do OpenDSS, o coletor, o caso IEEE 13 de mercado (`data/13Bus/`) e as ferramentas que o geram | contêineres `grid` e `collector`, em `/app`; o caso também em `comm` e `pade`, em `/grid-data` |
 | `teams/tteso-market-opentes` | [grei-ufc/tteso-market-opentes](https://github.com/grei-ufc/tteso-market-opentes) | `integration-tteso` | a biblioteca `market_opentes`: modelos de otimização, decomposição dual, operação, liquidação e figuras | contêineres `pade` e `mosaik` (figuras), em `/market` |
 | `teams/tteso-agents-opentes` | [grei-ufc/tteso-agents-opentes](https://github.com/grei-ufc/tteso-agents-opentes) | `integration-tteso` | os agentes do mercado (`agentes/market_agents.py`) e a camada de rede (`agentes/network_link.py`) | contêiner `pade`, em `/app/agents` |
 | `teams/tscc-com-opentes` | [grei-ufc/tscc-com-opentes](https://github.com/grei-ufc/tscc-com-opentes) | `integration-tscc` | ainda nada: a rede do caso é a 6TiSCH de `comm-opentes`, e a integração do TSCC é a próxima etapa | nenhum contêiner por enquanto |
@@ -61,8 +62,9 @@ Duas peças ficam de fora dos submódulos:
   `DSS-0.Bus-611-V3_pu`), e uma topologia JSON vinculada ao CSV pelo hash
   SHA-256 (campo `results_sha256`). Os detalhes estão em
   [docs/entrada_topologia.md](https://github.com/grei-ufc/tsdq-dataview-opentes/blob/main/docs/entrada_topologia.md)
-  do TSDQ. Hoje o `result_<tag>.csv` já segue a convenção de nomes; a
-  topologia vinculada ainda não é exportada.
+  do TSDQ. Hoje o `result_<tag>.csv` já segue a convenção de nomes das
+  tensões e grava `NaN` na fase que a barra não tem, porque `0.0` é medição
+  válida para a ARGOS; a topologia vinculada ainda não é exportada pelo `run.sh`.
 
 ## O que é do `co-simulation-opentes`
 
@@ -76,29 +78,27 @@ Duas peças ficam de fora dos submódulos:
 
 ## A pasta `temp/`
 
-Guarda o que a co-simulação precisa e que ainda não está no repositório de
-nenhum time. Cada item sai daqui quando o time que deve absorvê-lo publicar o
-equivalente na branch `integration-<time>`; a meta é a pasta vazia, e apagada,
-no fim do projeto. O destino é uma proposta, a confirmar com cada time.
+Guarda, como referência, o que foi desenvolvido no `co-simulation-opentes`
+antes dos submódulos. As mudanças são feitas em `teams/`, e cada item deixa de
+ser usado quando o time o absorve na branch `integration-<time>`; a meta é apagar
+a pasta no fim do projeto. O destino é uma proposta, a confirmar com cada time.
 
 | Pasta | O que tem | Destino proposto |
 |---|---|---|
-| `temp/grid-opentes/` | a imagem do OpenDSS e o caso IEEE 13 de mercado: o circuito (`src/data/13Bus/`) e as ferramentas que o geram (`gen_ieee13_market.py`, `sensitivity.py`, `pv_creator.py`, `pv_validator.py`) | imagem e `pv_creator` para o TSRE; o caso, o gerador e a sensibilidade para o TTESO (`tteso-market-opentes`) |
+| `temp/grid-opentes/` | cópia de referência: a co-simulação já não a usa | absorvida por `teams/tsre-der-opentes` |
 | `temp/pade-opentes/` | a imagem dos agentes (PADE, Pyomo, OpenDSS) | TTESO (`tteso-agents-opentes`) |
-| `temp/mosaik-opentes/` | a imagem do Mosaik, o cenário `scenarios/market.py` e o coletor `collectors/elec_collector.py` | cenário para o TTESO ou o TSCC; coletor para o TSRE |
+| `temp/mosaik-opentes/` | a imagem do Mosaik e o cenário `scenarios/market.py`; o coletor antigo ficou só como referência | cenário para o TTESO ou o TSCC |
 | `temp/comm-opentes/` | a rede 6TiSCH e Wi-SUN FAN no OMNeT++ (`Tisch.cc`) | TSCC (`tscc-com-opentes`) |
 
 O motivo de cada destino está em `temp/README.md`.
 
 ## Regras de trabalho
 
-1. **Não edite código dentro de `teams/`.** Uma mudança no código de um time vai
-   para a branch `integration-<time>` do repositório dele, por pull request lá.
-   Aqui só se atualiza o ponteiro do submódulo.
-2. **Adaptação da integração fica fora de `teams/`**, em `temp/`: um
-   cenário, um coletor, um parâmetro do compose. Se a adaptação for algo que o
-   time pode oferecer (um parâmetro, uma saída), ela vira pedido ao time, e sai
-   daqui quando ele a publicar.
+1. **As mudanças de cada time ficam em `teams/`**, na branch
+   `integration-<time>` do submódulo, que guarda só o que o caso do OpenTES usa.
+   O restante do repositório do time continua no `main` dele.
+2. **`temp/` é referência.** Ela não recebe mudanças: cada item é levado para o
+   submódulo do time, e a co-simulação passa a usar a versão de lá.
 3. **Toda atualização de submódulo é conferida** contra os resultados de
    referência antes de ser registrada (ver
    [Conferir uma mudança](../contributing/development-setup.md#conferir-uma-mudanca)).
