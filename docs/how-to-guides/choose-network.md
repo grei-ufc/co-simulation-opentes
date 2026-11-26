@@ -1,24 +1,27 @@
 # Escolher a rede de comunicação
 
-A rede entre os agentes é escolhida por `NET_BACKEND` e, no OMNeT++, por
-`TISCH_MAC`. Qual usar depende da pergunta do estudo.
+A rede padrão é a do projeto: o OMNeT++ do TSCC (`NET_BACKEND=omnet`), com o
+6TiSCH com TSCH da tese. `TSCC_CANAL`, `TSCC_TOPOLOGIA` e `TSCC_SUBESTACAO`
+trocam o canal, a topologia e a subestação; `ideal` e `lossy` servem a testes
+rápidos. Qual usar depende da pergunta do estudo.
 
 ## Qual backend
 
 | Pergunta | Backend | Variáveis |
 |---|---|---|
-| o mercado converge e o que ele faz com a tensão? | `ideal` (padrão) | nenhuma |
-| a negociação sobrevive a mensagens perdidas? | `lossy` | `NET_DROP_PROBABILITY`, `NET_TIME_SCALE=0.02` |
-| quanto tempo a negociação gasta numa rede de rádio real? | `omnet`, `TISCH_MAC=tsch` | `TISCH_CELLS`, `NET_TIME_SCALE=0.02` |
-| uma rede de medição inteligente atual cabe no orçamento? | `omnet`, `TISCH_MAC=wisun` | `TISCH_RATE_BPS`, `NET_TIME_SCALE=0.02` |
+| o mercado converge e o que ele faz com a tensão, rápido? | `ideal` | nenhuma |
+| a negociação sobrevive a mensagens perdidas? | `lossy` | `NET_DROP_PROBABILITY` |
+| quanto tempo a negociação gasta numa rede de rádio real? | `omnet` (padrão), `Link_6TiSCH_TSCH` | `TISCH_CELLS` |
+| uma rede de medição inteligente atual cabe no orçamento? | `omnet`, `TISCH_MAC=wisun` | `TISCH_RATE_BPS` |
+| e com outra tecnologia (PLC, RF Mesh, celular, cabo)? | `omnet` | `TSCC_CANAL`, `TSCC_TOPOLOGIA`, `TSCC_SUBESTACAO` |
 
-Com `omnet`, use sempre `NET_TIME_SCALE=0.02`; com `1.0`, cada rodada esperaria
-em relógio real todo o atraso da rede, que passa de minutos na 6TiSCH.
+`NET_TIME_SCALE=0.02` é o padrão; com `1.0`, cada rodada esperaria em relógio
+real todo o atraso da rede, que passa de minutos na 6TiSCH.
 
 ## Fatias por enlace na 6TiSCH
 
 ```bash
-NET_BACKEND=omnet NET_TIME_SCALE=0.02 TISCH_CELLS=5 OPENTES_SAIDA=market_omnet_c5 ./run.sh market
+TISCH_CELLS=5 OPENTES_SAIDA=market_6tisch_c5 ./run.sh market
 ```
 
 Cada fatia leva um quadro de 127 bytes por *slotframe* de 4,04 s. O padrão, 2, é
@@ -29,7 +32,7 @@ de 1 a 20.
 ## Taxa do Wi-SUN FAN
 
 ```bash
-NET_BACKEND=omnet NET_TIME_SCALE=0.02 TISCH_MAC=wisun TISCH_RATE_BPS=150000 OPENTES_SAIDA=market_wisun_150k ./run.sh market
+TISCH_MAC=wisun TISCH_RATE_BPS=150000 OPENTES_SAIDA=market_wisun_150k ./run.sh market
 ```
 
 `50000` é o rádio da tese. `150000` e `300000` transmitem mais rápido, mas a

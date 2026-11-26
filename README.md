@@ -19,7 +19,7 @@ flowchart TB
     end
     subgraph neg["2. a negociação (passo 0 do Mosaik)"]
         A[tteso-agents-opentes<br/>agentes PADE] <-- modelos --> L[tteso-market-opentes<br/>Pyomo + CPLEX]
-        A <-. cada mensagem .-> C[comm-opentes<br/>OMNeT++ 6TiSCH]
+        A <-. cada mensagem .-> C[tscc-com-opentes<br/>OMNeT++]
     end
     subgraph op["3. a operação (96 passos de 15 min)"]
         K[mosaik-opentes<br/>cenário] --> O[tsre-der-opentes<br/>OpenDSS] --> R[coletor<br/>result_*.csv]
@@ -38,8 +38,8 @@ flowchart TB
    negociam: os prosumidores propõem a programação das baterias, o DSO confere
    as restrições de tensão, e o agente de mercado ajusta o preço sombra até os
    dois lados concordarem. Cada agente resolve o seu modelo de otimização com a
-   biblioteca `tteso-market-opentes`. Com `NET_BACKEND=omnet`, cada mensagem passa
-   pelo modelo de rede 6TiSCH do `comm-opentes`, que diz quanto ela demora e se
+   biblioteca `tteso-market-opentes`. Cada mensagem passa pela rede de
+   comunicação do `tscc-com-opentes`, no OMNeT++, que diz quanto ela demora e se
    ela se perde.
 3. **A operação.** Nos 96 passos seguintes, o `mosaik-opentes` aplica a
    programação acordada no OpenDSS (o simulador do `tsre-der-opentes`), com a demanda realizada (diferente da
@@ -55,7 +55,7 @@ flowchart TB
 | a formulação: os três modelos e o preço sombra | [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/) | `teams/tteso-market-opentes/market_opentes/optimization.py`, `dual.py` |
 | por que a análise é por fase | [O modelo de mercado](https://grei-ufc.github.io/co-simulation-opentes/explanation/market-model/), "A análise por fase" | `config.py` (as chaves por porta) e `sensitivity.py` (a matriz por fase) |
 | quem manda mensagem para quem, e em que ordem | [temp/pade-opentes/README.md](temp/pade-opentes/README.md) | `teams/tteso-agents-opentes/agentes/market_agents.py` |
-| a rede de comunicação | [temp/comm-opentes/README.md](temp/comm-opentes/README.md) | `Tisch.cc` e `agents/network_link.py` |
+| a rede de comunicação | [teams/tscc-com-opentes/docs/INTEGRACAO_OPENTES.md](teams/tscc-com-opentes/docs/INTEGRACAO_OPENTES.md) | `ServidorConsulta.cc`, `AgentNode.cc` e `agentes/network_link.py` |
 | como os simuladores são ligados | [Arquitetura](https://grei-ufc.github.io/co-simulation-opentes/explanation/architecture/) | `temp/mosaik-opentes/scenarios/market.py` |
 | de onde vem o código de cada time | [Organização dos repositórios](https://grei-ufc.github.io/co-simulation-opentes/explanation/repositories/) | `.gitmodules` e `teams/` |
 | como rodar e o que cada variável muda | [Variáveis de ambiente](https://grei-ufc.github.io/co-simulation-opentes/reference/environment-variables/) | `run.sh` e `docker-compose.yaml` |
@@ -102,7 +102,8 @@ export CPLEX_HOME=$HOME/IBM/CPLEX_Studio2211/cplex
 `./run.sh --help` lista os comandos e as variáveis. As principais:
 `MARKET_FASE=0` analisa por barra, para comparação;
 `MARKET_DISPOSITIVO=equilibrado` troca o inversor de quatro fios pelo de três;
-`NET_BACKEND=omnet NET_TIME_SCALE=0.02` põe a rede 6TiSCH entre os agentes.
+`NET_BACKEND=ideal` tira a rede de comunicação, para um teste rápido;
+`TSCC_CANAL`, `TSCC_TOPOLOGIA` e `TSCC_SUBESTACAO` trocam o canal, a topologia e a subestação da rede.
 
 ## Estrutura
 
@@ -120,7 +121,7 @@ temp/                   referência provisória, a apagar no fim do projeto (ver
   grid-opentes/           já absorvido por teams/tsre-der-opentes
   pade-opentes/           imagem dos agentes (PADE 3.0 do PyPI)
   mosaik-opentes/         o cenário e a imagem do Mosaik
-  comm-opentes/           rede de comunicação 6TiSCH no OMNeT++
+  comm-opentes/           servidor 6TiSCH da tese, referência de validação (COMM=tese)
 docs/, mkdocs.yml       documentação (MkDocs), publicada no GitHub Pages
 output/                 resultados das execuções (fora do git)
 pyproject.toml          ambiente Python local (uv), para IDE e scripts fora dos contêineres

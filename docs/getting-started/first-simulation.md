@@ -1,8 +1,8 @@
 # Primeira Simulação
 
 Este passo a passo roda o estudo completo do cenário padrão: análise por fase,
-inversor de quatro fios, regulador seguindo a previsão e entrega ideal das
-mensagens entre os agentes. Pressupõe a [Instalação](installation.md) feita e o
+inversor de quatro fios, regulador seguindo a previsão e as mensagens entre os
+agentes pela rede do projeto (o OMNeT++ do TSCC, com o 6TiSCH com TSCH). Pressupõe a [Instalação](installation.md) feita e o
 `CPLEX_HOME` definido.
 
 ## 1. A negociação centralizada
@@ -39,8 +39,10 @@ realizada:
   passos de 15 minutos seguintes, o operador confere e corrige o desvio da
   demanda realizada.
 
-Leva cerca de um minuto com a entrega ideal. Ao fim, `output/market/` tem
-`result_baseline.csv`, `result_negociado.csv` e `run.json`.
+Leva de 17 a 24 minutos com a rede do projeto, ou cerca de um minuto com
+`NET_BACKEND=ideal ./run.sh market`, sem rede. Ao fim, `output/market/` tem
+`result_baseline.csv`, `result_negociado.csv`, `run.json` e, com a rede,
+`msg_trace.csv`.
 
 ## 3. As figuras
 

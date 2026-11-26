@@ -20,7 +20,7 @@ explicitamente.
 
 | Comando | O que faz | Grava | Tempo |
 |---|---|---|---|
-| `market` | co-simulação completa, em duas passadas sobre a mesma demanda realizada: `baseline` (programação dos prosumidores, sem mecanismo) e `negociado` (negociação multiagente e fase de operação) | `result_baseline.csv`, `result_negociado.csv`, `run.json` | ~1 min; 17 a 18 com a 6TiSCH |
+| `market` | co-simulação completa, em duas passadas sobre a mesma demanda realizada: `baseline` (programação dos prosumidores, sem mecanismo) e `negociado` (negociação multiagente e fase de operação) | `result_baseline.csv`, `result_negociado.csv`, `run.json`, `msg_trace.csv` | 17 a 24 min com a rede do projeto; ~1 min com `NET_BACKEND=ideal` |
 | `centralizado` | a mesma negociação, sem agentes nem mosaik, mais a liquidação | `figuras.npz`, `history.json`, `dlmp.csv`, `flexibility.csv`, `transactions.csv`, `market_series.csv` | ~1 min |
 | `figuras` | as figuras a partir das saídas dos dois comandos acima | `figuras/` | segundos |
 | `caso` | regenera o caso IEEE 13 e as duas matrizes de sensibilidade | `teams/tsre-der-opentes/data/13Bus/` | ~1 min |
@@ -42,8 +42,10 @@ sensibilidade da formulação em uso, se ela faltar.
 export CPLEX_HOME=$HOME/IBM/CPLEX_Studio2211/cplex
 opentes centralizado && opentes market && opentes figuras
 MARKET_FASE=0 opentes market
-NET_BACKEND=omnet NET_TIME_SCALE=0.02 opentes market
-NET_BACKEND=omnet NET_TIME_SCALE=0.02 TISCH_MAC=wisun OPENTES_SAIDA=market_wisun_50k opentes market
+NET_BACKEND=ideal opentes market
+TISCH_MAC=wisun OPENTES_SAIDA=market_wisun_50k opentes market
+TSCC_CANAL=PLC TSCC_TOPOLOGIA=estrela OPENTES_SAIDA=market_plc opentes market
+COMM=tese OPENTES_SAIDA=market_tese opentes market
 ```
 
 Qualquer variável de [Variáveis de ambiente](environment-variables.md) vale na
@@ -53,7 +55,7 @@ frente do comando.
 
 - Antes e depois de cada comando, derruba os contêineres e a rede do compose
   (`docker compose down --remove-orphans`).
-- No `market`, sobe `comm` (só com `NET_BACKEND=omnet`), depois `grid`,
+- No `market`, sobe a rede (`comm-tscc`, ou `comm` com `COMM=tese`; só com `NET_BACKEND=omnet`), depois `grid`,
   `collector` e `pade`, e só então o `mosaik`. Espera cada um pelo log, nunca
   por TCP.
 - Ao final, devolve a posse de `output/` e do caso a quem rodou o script, porque

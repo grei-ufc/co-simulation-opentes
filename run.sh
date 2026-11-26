@@ -50,23 +50,27 @@ Variaveis mais usadas (todas em docker-compose.yaml):
   MARKET_DISPOSITIVO    independente (padrao, quatro fios) ou equilibrado
   MARKET_REGULADOR      previsao (padrao) ou neutro
   MARKET_CRITERIO       relativo (padrao, MARKET_EPS_REL=1e-3) ou absoluto
-  NET_BACKEND           ideal (padrao), lossy ou omnet (rede 6TiSCH)
-  NET_TIME_SCALE        fracao do atraso nominal esperada em relogio (0.02 com omnet)
-  TISCH_MAC             com omnet: tsch (6TiSCH, padrao) ou wisun (Wi-SUN FAN)
-  TISCH_CELLS           fatias por enlace a cada slotframe na 6TiSCH (padrao 2)
-  TISCH_RATE_BPS        taxa do Wi-SUN: 50000 (padrao), 150000 ou 300000
-  COMM                  com omnet: tese (servidor 6TiSCH, padrao) ou tscc (rede do TSCC)
-  TSCC_CANAL            com COMM=tscc: canal(is) do TSCC (padrao Link_6TiSCH_TSCH)
-  TSCC_TOPOLOGIA        com COMM=tscc: malha (padrao) ou estrela
-  TSCC_SUBESTACAO       com COMM=tscc: radio (padrao) ou cabo
+  MARKET_SCENARIOS      cenarios por prosumidor: 1 (padrao, deterministico) ou 3
+  NET_BACKEND           omnet (padrao, a rede do projeto), ideal ou lossy
+  NET_TIME_SCALE        fracao do atraso nominal esperada em relogio (padrao 0.02)
+  TSCC_CANAL            canal da rede: Link_6TiSCH_TSCH (padrao), Link_WiSUN_FAN,
+                        Link_6TiSCH, Link_WiSUN, RFMesh, PLC, Link_4G, Link_5G...
+  TSCC_TOPOLOGIA        malha (padrao) ou estrela
+  TSCC_SUBESTACAO       radio (padrao) ou cabo, para concentrador, DSO e mercado
+  TISCH_CELLS           fatias por enlace do Link_6TiSCH_TSCH (padrao 2)
+  TISCH_MAC             wisun, sem TSCC_CANAL, escolhe o Link_WiSUN_FAN
+  TISCH_RATE_BPS        taxa do Wi-SUN FAN: 50000 (padrao), 150000 ou 300000
+  COMM                  tscc (padrao, a rede do projeto) ou tese (servidor 6TiSCH de
+                        referencia, em temp/comm-opentes, para validacao)
 
 Exemplos:
   export CPLEX_HOME=$HOME/IBM/CPLEX_Studio2211/cplex
   opentes centralizado && opentes market && opentes figuras
   MARKET_FASE=0 opentes market
-  NET_BACKEND=omnet NET_TIME_SCALE=0.02 opentes market
-  NET_BACKEND=omnet NET_TIME_SCALE=0.02 TISCH_MAC=wisun OPENTES_SAIDA=market_wisun_50k opentes market
-  NET_BACKEND=omnet NET_TIME_SCALE=0.02 COMM=tscc OPENTES_SAIDA=market_tscc opentes market
+  NET_BACKEND=ideal opentes market          (rapido, sem rede)
+  TISCH_MAC=wisun OPENTES_SAIDA=market_wisun_50k opentes market
+  TSCC_CANAL=PLC TSCC_TOPOLOGIA=estrela OPENTES_SAIDA=market_plc opentes market
+  COMM=tese OPENTES_SAIDA=market_tese opentes market   (referencia da tese)
 EOF
 }
 
@@ -84,6 +88,12 @@ fi
 if [ -n "${OPENTES_SAIDA:-}" ]; then SAIDA="$OPENTES_SAIDA"
 elif [ "${MARKET_FASE:-1}" = "1" ]; then SAIDA=market; else SAIDA=market_por_no; fi
 export MOSAIK_OUTPUT_DIR="/app/output/$SAIDA"
+# A rede padrao e a do projeto: o OMNeT++ do TSCC (servico comm-tscc). `ideal` e
+# `lossy` ficam para testes rapidos, e COMM=tese usa o servidor 6TiSCH de
+# referencia (temp/comm-opentes), para validacao.
+export NET_BACKEND="${NET_BACKEND:-omnet}"
+export COMM="${COMM:-tscc}"
+export NET_TIME_SCALE="${NET_TIME_SCALE:-0.02}"
 export MARKET_RUN_DIR="/app/output/$SAIDA"
 mkdir -p "output/$SAIDA"
 
@@ -143,12 +153,13 @@ _passada() {
     # As MESMAS variaveis nas duas chamadas do compose: se mudassem, o compose
     # recriaria o pade bem na hora em que o mosaik conecta.
     export RESULT_TAG="$tag" MARKET_NEGOTIATE="$negocia"
-    if [ "${NET_BACKEND:-ideal}" = "omnet" ]; then
+    if [ "$NET_BACKEND" = "omnet" ]; then
         export NET_TRACE="/app/output/$SAIDA/msg_trace.csv"
-        # COMM=tscc troca o servidor 6TiSCH da tese pela rede do TSCC, no mesmo
-        # endereco. Com TISCH_MAC=wisun e sem TSCC_CANAL, o canal e o Wi-SUN FAN.
+        # A rede do projeto (comm-tscc) ou, com COMM=tese, o servidor 6TiSCH de
+        # referencia, no mesmo endereco. Com TISCH_MAC=wisun e sem TSCC_CANAL, o
+        # canal e o Wi-SUN FAN.
         local rede=comm
-        if [ "${COMM:-tese}" = "tscc" ]; then
+        if [ "$COMM" = "tscc" ]; then
             rede=comm-tscc
             if [ -z "${TSCC_CANAL:-}" ] && [ "${TISCH_MAC:-tsch}" = "wisun" ]; then
                 export TSCC_CANAL=Link_WiSUN_FAN
@@ -183,7 +194,8 @@ cmd_centralizado() {
     _garante_sensibilidade
     docker compose run --rm --no-deps -w /tmp -e PYTHONPATH=/market pade \
         sh -c "python -m market_opentes.dual --config /grid-data/13Bus/config.json \
-               --max-rounds 300 --settle-dir /app/output/$SAIDA \
+               --max-rounds 300 --scenarios ${MARKET_SCENARIOS:-1} \
+               --settle-dir /app/output/$SAIDA \
                --out /app/output/$SAIDA/history.json"
     RESULT="output/$SAIDA/"
 }
@@ -273,6 +285,8 @@ echo ">> [OpenTES] ${COMMAND} (resultados em output/$SAIDA)"
 "cmd_${COMMAND}"
 _cleanup
 # Os conteineres gravam como root; devolve os arquivos a quem rodou o script.
-docker run --rm -v "$PWD/output:/o" -v "$PWD/$CASO:/c" opentes/mosaik:local \
-    chown -R "$(id -u):$(id -g)" /o /c >/dev/null 2>&1 || true
+# A rede do projeto compila o OMNeT++ dentro do submodulo do TSCC (fora do git).
+docker run --rm -v "$PWD/output:/o" -v "$PWD/$CASO:/c" \
+    -v "$PWD/teams/tscc-com-opentes/omnet-dir:/t" opentes/mosaik:local \
+    chown -R "$(id -u):$(id -g)" /o /c /t >/dev/null 2>&1 || true
 echo ">> [OpenTES] '${COMMAND}' concluido: ${RESULT}"

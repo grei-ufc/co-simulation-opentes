@@ -6,8 +6,8 @@ name: opentes
 # rede 6TiSCH) e se esvazia a medida que cada time assume a sua parte.
 # Cinco servicos, um por dominio, mais a alternativa do TSCC para a rede:
 #
-#   comm       OMNeT++: rede 6TiSCH entre os agentes (so com NET_BACKEND=omnet)
-#   comm-tscc  a rede do TSCC no lugar do comm (NET_BACKEND=omnet COMM=tscc)
+#   comm-tscc  OMNeT++: a rede do projeto (TSCC) entre os agentes
+#   comm       o servidor 6TiSCH da tese, referencia de validacao (COMM=tese)
 #   grid       OpenDSS: o circuito, resolvido a cada passo de 15 min
 #   collector  grava as tensoes e potencias de cada passo num CSV
 #   pade       os agentes PADE (prosumidores, concentrador, DSO, mercado)
@@ -56,6 +56,7 @@ services:
       - "5556"
     environment:
       - OMNET_PORT=5556
+      - PYTHONDONTWRITEBYTECODE=1   # nao grava .pyc no submodulo
       # Canal(is) de Profiles.ned do TSCC, separados por virgula.
       - TSCC_CANAL=${TSCC_CANAL:-Link_6TiSCH_TSCH}
       # malha (enlaces pelo modelo de radio da tese, rotas multissalto) ou
@@ -198,10 +199,10 @@ services:
       - MARKET_SOLVER_PATH=/opt/cplex/bin/x86-64_linux/cplex
       # Fator de potencia do armazenamento. `none` e a hipotese dQ = 0.
       - MARKET_STORAGE_PF=${MARKET_STORAGE_PF:-none}
-      # Camada de rede entre os agentes: `ideal` (entrega imediata), `lossy`
-      # (perda e atraso sorteados) ou `omnet` (a rede 6TiSCH do servico comm).
-      - NET_BACKEND=${NET_BACKEND:-ideal}
-      - NET_TIME_SCALE=${NET_TIME_SCALE:-1.0}
+      # Camada de rede entre os agentes: `omnet` (a rede do projeto, servico
+      # comm-tscc), `ideal` (entrega imediata) ou `lossy` (perda e atraso sorteados).
+      - NET_BACKEND=${NET_BACKEND:-omnet}
+      - NET_TIME_SCALE=${NET_TIME_SCALE:-0.02}
       # Probabilidade de perda por mensagem no backend `lossy`.
       - NET_DROP_PROBABILITY=${NET_DROP_PROBABILITY:-0.0}
       - NET_TRACE=${NET_TRACE:-}
