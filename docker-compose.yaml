@@ -4,9 +4,10 @@ name: opentes
 # time vem dos submodulos em teams/ (git submodule), montado nos conteineres;
 # temp/ guarda o que ainda nao foi absorvido por um time (imagens, o cenario e a
 # rede 6TiSCH) e se esvazia a medida que cada time assume a sua parte.
-# Cinco servicos, um por dominio:
+# Cinco servicos, um por dominio, mais a alternativa do TSCC para a rede:
 #
 #   comm       OMNeT++: rede 6TiSCH entre os agentes (so com NET_BACKEND=omnet)
+#   comm-tscc  a rede do TSCC no lugar do comm (NET_BACKEND=omnet COMM=tscc)
 #   grid       OpenDSS: o circuito, resolvido a cada passo de 15 min
 #   collector  grava as tensoes e potencias de cada passo num CSV
 #   pade       os agentes PADE (prosumidores, concentrador, DSO, mercado)
@@ -39,6 +40,57 @@ services:
       ${TISCH_ARGS:-}"
     networks:
       - opentes-net
+
+  # A rede de comunicacao do TSCC (teams/tscc-com-opentes), no modo de consulta
+  # por mensagem: cada envio de um agente atravessa os AgentNodes da topologia
+  # IEEE 13 do TSCC. Responde no mesmo endereco do `comm` (alias), e o run.sh sobe
+  # um ou outro. Todos os canais do TSCC servem; os da tese (Link_6TiSCH_TSCH e
+  # Link_WiSUN_FAN) reproduzem o `comm`.
+  comm-tscc:
+    build:
+      context: ./teams/tscc-com-opentes/omnet-dir
+      dockerfile: Dockerfile
+    image: opentes/comm-tscc:local
+    container_name: opentes-comm-tscc
+    expose:
+      - "5556"
+    environment:
+      - OMNET_PORT=5556
+      # Canal(is) de Profiles.ned do TSCC, separados por virgula.
+      - TSCC_CANAL=${TSCC_CANAL:-Link_6TiSCH_TSCH}
+      # malha (enlaces pelo modelo de radio da tese, rotas multissalto) ou
+      # estrela (cada barra direto ao concentrador).
+      - TSCC_TOPOLOGIA=${TSCC_TOPOLOGIA:-malha}
+      # radio (como na tese) ou cabo (concentrador, DSO e mercado por Link_Wired).
+      - TSCC_SUBESTACAO=${TSCC_SUBESTACAO:-radio}
+      # tisch_links.csv a repetir; vazio = levantamento de radio sorteado.
+      - TSCC_ENLACES=${TSCC_ENLACES:-}
+      - TSCC_SEMENTE=${TSCC_SEMENTE:-0}
+      - TISCH_CELLS=${TISCH_CELLS:-2}
+      - TISCH_RATE_BPS=${TISCH_RATE_BPS:-50000}
+      # Levantamento dos enlaces simulados (o run.sh aponta para a pasta dos
+      # resultados).
+      - TSCC_LINKS_CSV=${TSCC_LINKS_CSV:-/tmp/tscc_links.csv}
+      # Semente do AgentNode nos canais do repositorio.
+      - RANDOM_SEED=${TSCC_SEMENTE:-0}
+    volumes:
+      - ./teams/tscc-com-opentes:/root/models
+      - ./teams/tsre-der-opentes/data:/grid-data:ro
+      - ./output:/output
+    working_dir: /root/models
+    command: >-
+      bash -lc "python3 -m cosim.ieee13 --posicoes /grid-data/13Bus/nodes_xy.csv
+      --canal $$TSCC_CANAL --topologia $$TSCC_TOPOLOGIA --subestacao $$TSCC_SUBESTACAO
+      --cells $$TISCH_CELLS --taxa $$TISCH_RATE_BPS --semente $$TSCC_SEMENTE
+      --enlaces \"$$TSCC_ENLACES\"
+      --ned omnet-dir/DynamicNetwork.ned --enlaces-csv $$TSCC_LINKS_CSV &&
+      source /root/omnetpp/setenv && cd omnet-dir &&
+      opp_makemake -f --deep -o sim_exec -lzmq && make -j4 &&
+      ./sim_exec -u Cmdenv -f consulta.ini"
+    networks:
+      opentes-net:
+        aliases:
+          - comm
 
   grid:
     build:

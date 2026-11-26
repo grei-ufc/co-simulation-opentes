@@ -43,13 +43,31 @@ pausa() { printf '\n %sEnter para voltar ao menu%s ' "$CINZA" "$NORMAL"; read -r
 # --------------------------------------------------------------------------
 CHAVES=(MARKET_FASE MARKET_DISPOSITIVO MARKET_REGULADOR NET_BACKEND NET_TIME_SCALE
         NET_DROP_PROBABILITY TISCH_MAC TISCH_CELLS TISCH_RATE_BPS MARKET_CRITERIO
-        MARKET_EPS_REL MARKET_EPS MARKET_SCENARIOS CPLEX_HOME)
+        MARKET_EPS_REL MARKET_EPS MARKET_SCENARIOS CPLEX_HOME
+        TSCC_CANAL TSCC_TOPOLOGIA TSCC_SUBESTACAO)
+
+# Canais da rede do projeto (Profiles.ned do TSCC): identificador, nome no menu,
+# descricao e sufixo da pasta de resultados.
+CANAIS=(Link_6TiSCH_TSCH Link_WiSUN_FAN Link_6TiSCH Link_WiSUN RFMesh PLC Link_4G Link_5G Link_Wired)
+CANAIS_NOME=("6TiSCH com TSCH" "Wi-SUN FAN" "6TiSCH simplificado" "Wi-SUN simplificado"
+             "RF Mesh" "PLC" "4G" "5G" "Cabo")
+CANAIS_DESC=("fatias reservadas por enlace, o modelo da tese" "acesso por disputa (CSMA/CA), 50 a 300 kbps"
+             "50 kbps, perda pela distância" "150 kbps, perda pela distância" "150 kbps"
+             "100 kbps" "50 Mbps" "500 Mbps" "1 Gbps")
+CANAIS_PASTA=(6tisch wisun 6tisch_simples wisun_simples rfmesh plc 4g 5g cabo)
+
+canal_indice() {   # $1 = identificador; devolve o indice em CANAIS (0 se desconhecido)
+    local i
+    for i in "${!CANAIS[@]}"; do [ "${CANAIS[$i]}" = "$1" ] && { echo "$i"; return; }; done
+    echo 0
+}
 
 padroes() {
     MARKET_FASE=1; MARKET_DISPOSITIVO=independente; MARKET_REGULADOR=previsao
-    NET_BACKEND=ideal; NET_TIME_SCALE=1.0; NET_DROP_PROBABILITY=0.0
-    # rede de radio do OMNeT++: TSCH (6TiSCH) com 2 fatias por enlace, como na
-    # referencia, ou Wi-SUN FAN a 50 kbps
+    # A rede do projeto: o OMNeT++ do TSCC, com o 6TiSCH com TSCH (2 fatias por
+    # enlace), em malha e com a subestacao pelo radio, a configuracao da tese.
+    NET_BACKEND=omnet; NET_TIME_SCALE=0.02; NET_DROP_PROBABILITY=0.0
+    TSCC_CANAL=Link_6TiSCH_TSCH; TSCC_TOPOLOGIA=malha; TSCC_SUBESTACAO=radio
     TISCH_MAC=tsch; TISCH_CELLS=2; TISCH_RATE_BPS=50000
     MARKET_CRITERIO=relativo; MARKET_EPS_REL=1e-3; MARKET_EPS=1e-3
     MARKET_SCENARIOS=1
@@ -84,6 +102,9 @@ salvar() {
 exportar() {
     local k
     for k in "${CHAVES[@]}"; do export "${k?}"; done
+    # O console usa sempre a rede do projeto; o servidor da tese fica so no
+    # run.sh (COMM=tese), como referencia de validacao.
+    export COMM=tscc
     export OPENTES_SAIDA
     OPENTES_SAIDA="$(saida)"
 }
@@ -94,12 +115,11 @@ saida() {
     [ "$MARKET_FASE" = "0" ] && s=market_por_no
     [ "$MARKET_FASE" = "1" ] && [ "$MARKET_DISPOSITIVO" = "equilibrado" ] && s="${s}_equilibrado"
     if [ "$NET_BACKEND" = "omnet" ]; then
-        if [ "$TISCH_MAC" = "wisun" ]; then
-            s="${s}_wisun_$(( TISCH_RATE_BPS / 1000 ))k"
-        else
-            s="${s}_omnet"
-            [ "$TISCH_CELLS" != "2" ] && s="${s}_c${TISCH_CELLS}"
-        fi
+        s="${s}_${CANAIS_PASTA[$(canal_indice "$TSCC_CANAL")]}"
+        [ "$TSCC_CANAL" = "Link_6TiSCH_TSCH" ] && [ "$TISCH_CELLS" != "2" ] && s="${s}_c${TISCH_CELLS}"
+        [ "$TSCC_CANAL" = "Link_WiSUN_FAN" ] && s="${s}_$(( TISCH_RATE_BPS / 1000 ))k"
+        [ "$TSCC_TOPOLOGIA" = "estrela" ] && s="${s}_estrela"
+        [ "$TSCC_SUBESTACAO" = "cabo" ] && s="${s}_cabo"
     fi
     [ "$NET_BACKEND" = "lossy" ] && s="${s}_perda"
     echo "$s"
@@ -114,11 +134,12 @@ desc_rede() {
     case "$NET_BACKEND" in
         ideal) echo "ideal" ;;
         lossy) echo "com perda ($(awk "BEGIN{printf \"%g\", $NET_DROP_PROBABILITY*100}")%)" ;;
-        omnet) if [ "$TISCH_MAC" = "wisun" ]; then
-                   echo "Wi-SUN FAN (OMNeT++), $(( TISCH_RATE_BPS / 1000 )) kbps"
-               else
-                   echo "6TiSCH (OMNeT++), $TISCH_CELLS fatia(s) por enlace"
-               fi ;;
+        omnet) local c="${CANAIS_NOME[$(canal_indice "$TSCC_CANAL")]}"
+               case "$TSCC_CANAL" in
+                   Link_6TiSCH_TSCH) c="$c, $TISCH_CELLS fatia(s)" ;;
+                   Link_WiSUN_FAN) c="$c, $(( TISCH_RATE_BPS / 1000 )) kbps" ;;
+               esac
+               echo "OMNeT++: $c, $TSCC_TOPOLOGIA, subestação por $TSCC_SUBESTACAO" ;;
         *) echo "$NET_BACKEND" ;;
     esac
 }
@@ -385,28 +406,51 @@ inteiro_em() {   # $1 = texto, $2 = min, $3 = max, $4 = atual
 
 escolher_rede() {
     titulo "Rede entre os agentes"
-    item 1 "Ideal" "entrega imediata, sem perda"
-    item 2 "6TiSCH (OMNeT++)" "a rede da tese: TSCH, fatias reservadas por enlace"
-    item 3 "Wi-SUN FAN (OMNeT++)" "mesmo rádio, acesso por disputa, sem fatias"
-    item 4 "Com perda" "canal de 50 kbps com perda sorteada por mensagem"
+    item 1 "OMNeT++ (rede do projeto)" "a rede do TSCC: canal, topologia e subestação"
+    item 2 "Ideal" "entrega imediata, sem perda"
+    item 3 "Com perda" "canal de 50 kbps com perda sorteada por mensagem"
     printf '\n %srede ›%s ' "$VERDE_CLARO" "$NORMAL"; read -r r || return
     case "$r" in
-        1) NET_BACKEND=ideal; NET_TIME_SCALE=1.0 ;;
-        2) NET_BACKEND=omnet; NET_TIME_SCALE=0.02; TISCH_MAC=tsch
-           nota "Cada fatia leva um quadro de 127 bytes a cada slotframe de 4,04 s. A tese"
-           nota "não informa o número; 2 é a calibração com os tempos dela. Menos fatias,"
-           nota "execução mais longa: com 2, cerca de 18 min; com 1, o dobro; com 20, 3 min."
-           perguntar "Fatias por enlace, de 1 a 20" "$TISCH_CELLS"
-           TISCH_CELLS=$(inteiro_em "$RESPOSTA" 1 20 "$TISCH_CELLS") ;;
-        3) NET_BACKEND=omnet; NET_TIME_SCALE=0.02; TISCH_MAC=wisun
-           nota "50 kbps é o mesmo rádio da tese; taxas maiores encurtam o alcance"
-           nota "(menos enlaces, mais saltos)."
-           perguntar "Taxa em kbps: 50, 150 ou 300" "$(( TISCH_RATE_BPS / 1000 ))"
-           case "$RESPOSTA" in 50|150|300) TISCH_RATE_BPS=$(( RESPOSTA * 1000 )) ;; esac ;;
-        4) NET_BACKEND=lossy; NET_TIME_SCALE=0.02
+        1) escolher_rede_projeto ;;
+        2) NET_BACKEND=ideal; NET_TIME_SCALE=1.0 ;;
+        3) NET_BACKEND=lossy; NET_TIME_SCALE=0.02
            perguntar "Perda por mensagem, em %" "$(awk "BEGIN{printf \"%g\", $NET_DROP_PROBABILITY*100}")"
            NET_DROP_PROBABILITY=$(awk "BEGIN{printf \"%g\", $RESPOSTA/100}") ;;
     esac
+}
+
+# A rede do projeto: o OMNeT++ do TSCC, no modo de consulta por mensagem. O
+# 6TiSCH com TSCH e o Wi-SUN FAN sao o modelo da tese; os demais canais sao os
+# do proprio TSCC.
+escolher_rede_projeto() {
+    local i
+    titulo "OMNeT++: canal"
+    for i in "${!CANAIS[@]}"; do item "$((i + 1))" "${CANAIS_NOME[$i]}" "${CANAIS_DESC[$i]}"; done
+    printf '\n %scanal ›%s ' "$VERDE_CLARO" "$NORMAL"; read -r r || return
+    case "$r" in ''|*[!0-9]*) return ;; esac
+    [ "$r" -ge 1 ] && [ "$r" -le "${#CANAIS[@]}" ] || return
+    NET_BACKEND=omnet; NET_TIME_SCALE=0.02; TSCC_CANAL="${CANAIS[$((r - 1))]}"
+    case "$TSCC_CANAL" in
+        Link_6TiSCH_TSCH) TISCH_MAC=tsch
+            nota "Cada fatia leva um quadro de 127 bytes a cada slotframe de 4,04 s. A tese"
+            nota "não informa o número; 2 é a calibração com os tempos dela. Menos fatias,"
+            nota "execução mais longa: com 2, cerca de 18 min; com 1, o dobro; com 20, 3 min."
+            perguntar "Fatias por enlace, de 1 a 20" "$TISCH_CELLS"
+            TISCH_CELLS=$(inteiro_em "$RESPOSTA" 1 20 "$TISCH_CELLS") ;;
+        Link_WiSUN_FAN) TISCH_MAC=wisun
+            nota "50 kbps é o mesmo rádio da tese; taxas maiores encurtam o alcance"
+            nota "(menos enlaces, mais saltos)."
+            perguntar "Taxa em kbps: 50, 150 ou 300" "$(( TISCH_RATE_BPS / 1000 ))"
+            case "$RESPOSTA" in 50|150|300) TISCH_RATE_BPS=$(( RESPOSTA * 1000 )) ;; esac ;;
+    esac
+    nota "Malha: enlaces pelo modelo de rádio da tese, com rotas de vários saltos."
+    nota "Estrela: cada barra fala direto com o concentrador."
+    perguntar "Topologia: malha ou estrela" "$TSCC_TOPOLOGIA"
+    case "$RESPOSTA" in malha|estrela) TSCC_TOPOLOGIA="$RESPOSTA" ;; esac
+    nota "Rádio: concentrador, DSO e mercado também pelo rádio, como na tese."
+    nota "Cabo: os três ligados por cabo na subestação."
+    perguntar "Subestação: radio ou cabo" "$TSCC_SUBESTACAO"
+    case "$RESPOSTA" in radio|cabo) TSCC_SUBESTACAO="$RESPOSTA" ;; esac
 }
 
 configurar() {

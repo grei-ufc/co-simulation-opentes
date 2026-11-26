@@ -26,7 +26,9 @@ flowchart LR
     GC --> R
     T2 -- "market_opentes<br/>em /market" --> P
     T3 -- "agentes/<br/>em /app/agents" --> P
-    T4 -. "próxima etapa" .-> C
+    T4 -- "rede de comunicação<br/>(COMM=tscc)" --> CT[contêiner<br/>comm-tscc]
+    CT --> P
+    C -. "referência da tese<br/>(COMM=tese)" .-> P
     PyPI[(PyPI<br/>pade-agents 3.0)] --> P
     M --> GC
     R[(output/<br/>CSV e JSON)] --> D[TSDQ<br/>ARGOS]
@@ -43,7 +45,7 @@ a branch reservada para o que vai para a co-simulação. O campo `branch` do
 | `teams/tsre-der-opentes` | [grei-ufc/tsre-der-opentes](https://github.com/grei-ufc/tsre-der-opentes) | `integration-tsre` | o adaptador do OpenDSS, o coletor, o caso IEEE 13 de mercado (`data/13Bus/`) e as ferramentas que o geram | contêineres `grid` e `collector`, em `/app`; o caso também em `comm` e `pade`, em `/grid-data` |
 | `teams/tteso-market-opentes` | [grei-ufc/tteso-market-opentes](https://github.com/grei-ufc/tteso-market-opentes) | `integration-tteso` | a biblioteca `market_opentes`: modelos de otimização, decomposição dual, operação, liquidação e figuras | contêineres `pade` e `mosaik` (figuras), em `/market` |
 | `teams/tteso-agents-opentes` | [grei-ufc/tteso-agents-opentes](https://github.com/grei-ufc/tteso-agents-opentes) | `integration-tteso` | os agentes do mercado (`agentes/market_agents.py`) e a camada de rede (`agentes/network_link.py`) | contêiner `pade`, em `/app/agents` |
-| `teams/tscc-com-opentes` | [grei-ufc/tscc-com-opentes](https://github.com/grei-ufc/tscc-com-opentes) | `integration-tscc` | ainda nada: a rede do caso é a 6TiSCH de `comm-opentes`, e a integração do TSCC é a próxima etapa | nenhum contêiner por enquanto |
+| `teams/tscc-com-opentes` | [grei-ufc/tscc-com-opentes](https://github.com/grei-ufc/tscc-com-opentes) | `integration-tscc` | a rede de comunicação no OMNeT++, no modo de consulta por mensagem (`omnet-dir/ServidorConsulta.cc`), com os canais e as topologias IEEE 13 do TSCC | contêiner `comm-tscc`, em `/root/models` |
 
 Enquanto a branch `integration-<time>` não existe no repositório do time, o
 submódulo fica fixado no commit do `main` dele que está registrado aqui. Nada

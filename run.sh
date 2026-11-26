@@ -55,6 +55,10 @@ Variaveis mais usadas (todas em docker-compose.yaml):
   TISCH_MAC             com omnet: tsch (6TiSCH, padrao) ou wisun (Wi-SUN FAN)
   TISCH_CELLS           fatias por enlace a cada slotframe na 6TiSCH (padrao 2)
   TISCH_RATE_BPS        taxa do Wi-SUN: 50000 (padrao), 150000 ou 300000
+  COMM                  com omnet: tese (servidor 6TiSCH, padrao) ou tscc (rede do TSCC)
+  TSCC_CANAL            com COMM=tscc: canal(is) do TSCC (padrao Link_6TiSCH_TSCH)
+  TSCC_TOPOLOGIA        com COMM=tscc: malha (padrao) ou estrela
+  TSCC_SUBESTACAO       com COMM=tscc: radio (padrao) ou cabo
 
 Exemplos:
   export CPLEX_HOME=$HOME/IBM/CPLEX_Studio2211/cplex
@@ -62,6 +66,7 @@ Exemplos:
   MARKET_FASE=0 opentes market
   NET_BACKEND=omnet NET_TIME_SCALE=0.02 opentes market
   NET_BACKEND=omnet NET_TIME_SCALE=0.02 TISCH_MAC=wisun OPENTES_SAIDA=market_wisun_50k opentes market
+  NET_BACKEND=omnet NET_TIME_SCALE=0.02 COMM=tscc OPENTES_SAIDA=market_tscc opentes market
 EOF
 }
 
@@ -140,9 +145,19 @@ _passada() {
     export RESULT_TAG="$tag" MARKET_NEGOTIATE="$negocia"
     if [ "${NET_BACKEND:-ideal}" = "omnet" ]; then
         export NET_TRACE="/app/output/$SAIDA/msg_trace.csv"
-        docker compose up -d comm
+        # COMM=tscc troca o servidor 6TiSCH da tese pela rede do TSCC, no mesmo
+        # endereco. Com TISCH_MAC=wisun e sem TSCC_CANAL, o canal e o Wi-SUN FAN.
+        local rede=comm
+        if [ "${COMM:-tese}" = "tscc" ]; then
+            rede=comm-tscc
+            if [ -z "${TSCC_CANAL:-}" ] && [ "${TISCH_MAC:-tsch}" = "wisun" ]; then
+                export TSCC_CANAL=Link_WiSUN_FAN
+            fi
+            export TSCC_LINKS_CSV="/output/$SAIDA/tscc_links.csv"
+        fi
+        docker compose up -d "$rede"
         # A primeira vez compila o OMNeT++ e leva minutos.
-        _wait_log comm "6TiSCH. pronto" "o servidor 6TiSCH" 900
+        _wait_log "$rede" "] pronto" "a rede de comunicacao ($rede)" 900
     fi
     docker compose up -d grid collector pade
     # Pela linha de log, e nao por TCP: o pade so fica pronto depois do listenTCP

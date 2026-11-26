@@ -47,7 +47,7 @@ A tecla `c` abre a configuração:
 | Formulação | por fase (padrão) ou por barra |
 | Inversor | quatro fios (padrão) ou três fios; só na análise por fase |
 | Regulador | derivações pela previsão (padrão) ou neutro |
-| Rede entre agentes | ideal; 6TiSCH com 1 a 20 fatias por enlace; Wi-SUN FAN a 50, 150 ou 300 kbps; com perda, em % por mensagem |
+| Rede entre agentes | ideal; 6TiSCH com 1 a 20 fatias por enlace; Wi-SUN FAN a 50, 150 ou 300 kbps; com perda, em % por mensagem; rede do TSCC, com canal, topologia (malha ou estrela) e subestação (rádio ou cabo) |
 | Critério de parada | relativo (padrão) ou absoluto |
 | Tolerância | `ε_rel` do critério relativo ou `ε` do absoluto |
 | Cenários do prosumidor | 1 (determinístico) ou 3 |
@@ -72,6 +72,7 @@ apagar a outra. O nome é montado assim:
 | `_omnet` | rede 6TiSCH, com `_c5`, `_c20`... quando não usa 2 fatias |
 | `_wisun_50k` | rede Wi-SUN FAN, com a taxa |
 | `_perda` | canal com perda |
+| `_tscc_<canal>_<topologia>_<subestação>` | rede do TSCC, com as fatias ou a taxa nos canais da tese |
 
 Por exemplo, por fase com Wi-SUN a 50 kbps grava em `output/market_wisun_50k/`.
 Fora do console, a variável `OPENTES_SAIDA` escolhe a pasta.

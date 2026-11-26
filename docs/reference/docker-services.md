@@ -6,6 +6,7 @@ O `docker-compose.yaml` define cinco serviços na rede `opentes-net`. Não os su
 | Serviço | Imagem | Porta | Comando | Papel |
 |---|---|---|---|---|
 | `comm` | `opentes/comm` | 5556 | compila o modelo e roda `sim_exec` (Cmdenv) | servidor de rede 6TiSCH e Wi-SUN no OMNeT++, consultado por ZMQ; só com `NET_BACKEND=omnet` |
+| `comm-tscc` | `opentes/comm-tscc` | 5556 | gera a rede (`python -m cosim.ieee13`), compila e roda `sim_exec -f consulta.ini` | a rede do TSCC no lugar do `comm`, com o alias `comm`; só com `NET_BACKEND=omnet COMM=tscc` |
 | `grid` | `opentes/grid` | 5671 | `python -m simulators.opendss.api_opendss --remote 0.0.0.0:5671` (o adaptador do TSRE) | o circuito no OpenDSS, resolvido a cada passo de 15 min |
 | `collector` | `opentes/grid` | 5673 | `python -m simulators.collector.collector --remote 0.0.0.0:5673` (o coletor do TSRE) | grava tensões e potências de cada passo em `result_<tag>.csv` |
 | `pade` | `opentes/pade` | 5678 | `python3 agents/market_agents.py` | os agentes do mercado (prosumidores, concentrador, DSO, mercado) e o simulador mosaik deles |
@@ -21,6 +22,9 @@ passada.
 |---|---|---|
 | `comm` | `temp/comm-opentes` | `/root/models` |
 | `comm` | `teams/tsre-der-opentes/data` | `/grid-data` (posições dos agentes e topologia de rádio gravada) |
+| `comm-tscc` | `teams/tscc-com-opentes` | `/root/models` |
+| `comm-tscc` | `teams/tsre-der-opentes/data` | `/grid-data` (posições dos agentes, somente leitura) |
+| `comm-tscc` | `output` | `/output` (levantamento dos enlaces simulados, `tscc_links.csv`) |
 | `grid`, `collector` | `teams/tsre-der-opentes/src` | `/app/src` (adaptador, coletor e ferramentas do caso, somente leitura) |
 | `grid` | `teams/tsre-der-opentes/data` | `/app/data` (o caso IEEE 13) |
 | `mosaik` | `temp/mosaik-opentes` | `/app` |

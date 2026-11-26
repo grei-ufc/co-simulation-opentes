@@ -5,6 +5,19 @@ do mais recente ao mais antigo.
 
 ## Código dos times por submódulo git
 
+- A rede do TSCC entra pelo submódulo `teams/tscc-com-opentes` (serviço
+  `comm-tscc`, `NET_BACKEND=omnet COMM=tscc`), com o modo de consulta por
+  mensagem e os canais da tese (`Link_6TiSCH_TSCH`, `Link_WiSUN_FAN`), publicados
+  pelo TSCC na `integration-tscc`. Os canais do TSCC continuam
+  disponíveis (`TSCC_CANAL`), e a topologia e a subestação são opções
+  (`TSCC_TOPOLOGIA`, `TSCC_SUBESTACAO`). Com os canais da tese e a mesma
+  topologia de rádio, as 2.978 mensagens de um dia de mercado têm o mesmo
+  atraso e a mesma perda que no `comm-opentes`, e o mercado fecha nas mesmas 42
+  rodadas com o mesmo resultado elétrico.
+- O console ganha a rede do TSCC no menu de rede, com canal, topologia e
+  subestação.
+- `market_opentes`: o solver refaz com ênfase numérica quando o CPLEX não chega
+  ao ótimo (base singular no DSO com 3 cenários por prosumidor).
 - O código de cada time entra por submódulo em `teams/`, que segue a branch
   `integration-<time>` do repositório do time (`.gitmodules`): `tsre-der-opentes`,
   `tteso-market-opentes`, `tteso-agents-opentes` e `tscc-com-opentes`. Enquanto

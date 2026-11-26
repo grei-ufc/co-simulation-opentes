@@ -63,3 +63,8 @@ Só com `NET_BACKEND=omnet`.
 | `TISCH_CELLS` | `2` | na 6TiSCH, fatias por enlace a cada *slotframe* de 4,04 s |
 | `TISCH_RATE_BPS` | `50000` | no Wi-SUN, a taxa do rádio: `50000`, `150000` ou `300000` |
 | `TISCH_ARGS` | vazio | parâmetros extras do `Tisch.ned` na linha de comando do OMNeT++, como `--**.tisch.colocated_wired=true` |
+| `COMM` | `tese` | qual rede responde às consultas: `tese` (o servidor 6TiSCH de `temp/comm-opentes`) ou `tscc` (a rede do TSCC, do submódulo `teams/tscc-com-opentes`, no modo de consulta por mensagem) |
+| `TSCC_CANAL` | `Link_6TiSCH_TSCH` | com `COMM=tscc`, o canal (ou canais, separados por vírgula) do `Profiles.ned` do TSCC; com `TISCH_MAC=wisun` e sem valor, `Link_WiSUN_FAN`. `TISCH_CELLS` e `TISCH_RATE_BPS` valem para os canais da tese |
+| `TSCC_TOPOLOGIA` | `malha` | com `COMM=tscc`: `malha` (enlaces pelo modelo de rádio da tese, rotas multissalto) ou `estrela` (cada barra direto ao concentrador) |
+| `TSCC_SUBESTACAO` | `radio` | com `COMM=tscc`: `radio` (como na tese) ou `cabo` (concentrador, DSO e mercado por `Link_Wired`) |
+| `TSCC_ENLACES` | vazio | com `COMM=tscc`, um `tisch_links.csv` a repetir, como `/grid-data/13Bus/tisch_links.csv`; vazio = levantamento de rádio sorteado com `TSCC_SEMENTE` |

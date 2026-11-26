@@ -41,6 +41,30 @@ tempo limite da rodada estoura. O tempo limite acompanha `NET_TIME_SCALE`: com
 fecha nas mesmas 42 rodadas, com 18 retransmissões, e o resultado elétrico é
 idêntico ao da entrega ideal.
 
+## 4. A rede do TSCC
+
+A rede do `tscc-com-opentes` responde às mesmas consultas, no lugar do servidor
+6TiSCH, a partir do submódulo `teams/tscc-com-opentes` (modo de consulta por mensagem: cada
+envio atravessa os nós, as filas e os canais do OMNeT++ do TSCC).
+
+```bash
+# os canais da tese: reproduzem as seções 1 e 2
+NET_BACKEND=omnet NET_TIME_SCALE=0.02 COMM=tscc OPENTES_SAIDA=market_tscc ./run.sh market
+NET_BACKEND=omnet NET_TIME_SCALE=0.02 COMM=tscc TISCH_MAC=wisun OPENTES_SAIDA=market_tscc_wisun ./run.sh market
+# o 6TiSCH do próprio TSCC, em estrela, com a subestação por cabo
+NET_BACKEND=omnet NET_TIME_SCALE=0.02 COMM=tscc TSCC_CANAL=Link_6TiSCH \
+  TSCC_TOPOLOGIA=estrela TSCC_SUBESTACAO=cabo OPENTES_SAIDA=market_tscc_estrela ./run.sh market
+```
+
+`TSCC_CANAL` aceita qualquer canal do `Profiles.ned` do TSCC (`Link_6TiSCH`,
+`Link_WiSUN`, `RFMesh`, `PLC`, `Link_4G`, `Link_5G`...), e vários separados por
+vírgula se alternam entre os enlaces. `TSCC_TOPOLOGIA` escolhe entre a malha da
+tese e a estrela do TSCC; `TSCC_SUBESTACAO`, entre o rádio da tese e o cabo do
+TSCC para o concentrador, o DSO e o mercado. Com `TSCC_ENLACES=/grid-data/13Bus/tisch_links.csv`,
+a malha repete a topologia de rádio do servidor 6TiSCH. O `run.sh` espera a rede
+anunciar `[TSCC] pronto`, e o levantamento dos enlaces simulados fica em
+`output/<pasta>/tscc_links.csv`.
+
 ## Onde olhar
 
 Em cada pasta, o `run.json` registra o tempo de rede de cada ciclo e as

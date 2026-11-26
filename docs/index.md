@@ -64,7 +64,7 @@ Universidade Federal do Ceará), sobre componentes das equipes do projeto:
 
 | Equipe | Contribuição | Onde está |
 |---|---|---|
-| TSCC | rede de comunicação e a ponte com o mosaik | `temp/comm-opentes`, `temp/mosaik-opentes`; submódulo `teams/tscc-com-opentes` |
+| TSCC | rede de comunicação e a ponte com o mosaik | submódulo `teams/tscc-com-opentes` (rede de comunicação); `temp/comm-opentes` (referência da tese), `temp/mosaik-opentes` |
 | TSRE | rede elétrica, sistemas fotovoltaicos e o simulador OpenDSS | submódulo `teams/tsre-der-opentes` |
 | TTESO | agentes, otimização, mercado transativo e a integração | submódulos `teams/tteso-market-opentes` e `teams/tteso-agents-opentes`; o caso IEEE 13, em `teams/tsre-der-opentes/data/` |
 

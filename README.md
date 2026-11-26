@@ -115,7 +115,7 @@ teams/                  o código dos times, por submódulo git
   tsre-der-opentes/       TSRE: adaptador do OpenDSS, coletor e o caso IEEE 13
   tteso-market-opentes/   TTESO: modelo de mercado, decomposição dual, liquidação, figuras
   tteso-agents-opentes/   TTESO: agentes do mercado sobre o PADE e a camada de rede
-  tscc-com-opentes/       TSCC: comunicação (integração na próxima etapa)
+  tscc-com-opentes/       TSCC: a rede de comunicação no OMNeT++ (modo de consulta)
 temp/                   referência provisória, a apagar no fim do projeto (ver temp/README.md)
   grid-opentes/           já absorvido por teams/tsre-der-opentes
   pade-opentes/           imagem dos agentes (PADE 3.0 do PyPI)
